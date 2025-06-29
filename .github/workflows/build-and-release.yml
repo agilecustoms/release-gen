@@ -1,0 +1,35 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Build:
+    uses: ./.github/workflows/build.yml
+    with:
+      artifacts: true
+
+  Release:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_ACTIONS_TOKEN }} # Admin PAT to bypass push protection on 'main' branch
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        # after this we have changes in file dist/index.js
+
+      # generate new version, commit and push commit + tags
+      - name: Release
+        id: release
+        uses: agilecustoms/release@v1
+        with:
+          version-prefix: "v"
+
+      - name: Summary
+        run: echo "### Released ${{ steps.release.outputs.version }} $([ \"${{ steps.release.outputs.changes_detected }}\" == 'true' ] && echo ':pushpin:' || echo '(no changes)')" >> $GITHUB_STEP_SUMMARY

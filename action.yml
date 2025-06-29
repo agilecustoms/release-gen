@@ -1,0 +1,10 @@
+name: Generate release
+description: 'Generate next release version and notes'
+author: Alexey Chekulaev
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+# Node 20 is max as of June 2025
+# https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-javascript-action
+# https://docs.github.com/en/actions/sharing-automations/creating-actions/metadata-syntax-for-github-actions

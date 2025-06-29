@@ -1,0 +1,23 @@
+{
+  "include": [
+    "src"
+  ],
+  // Runtime is Node 20 (max available in GitHub actions as of Jan 2025)
+  // instead of 'tsc' the 'ncc' is used - it ignores/overrides some settings, but they are still used by IDE and vitest
+  "compilerOptions": {
+    "target": "ES2022",            // highest fully supported by Node 20
+    "moduleResolution": "bundler", // ignored by ncc. can use 'nodenext', but bundler allows to omit .js in imports
+    "module": "ESNext",            // ignored by ncc. only appropriate modern value for "bundler" mode
+    // "outDir": "dist"            // ignored by ncc, no matter for IDE. typical value for bundler mode
+
+    // DEFAULTS that are always "good to have" - expect to be the same for all projects
+    "allowJs": false,             // no need to compile JS, all is TS
+    "noUncheckedIndexedAccess": true,
+    // "removeComments": true,    // ignored by ncc, no matter for IDE
+    "skipLibCheck": true,         // skip type checking of declaration files (.d.ts) - allows quick hot reload
+    "strict": true,               // enable all strict type-checking options
+    "verbatimModuleSyntax": true, // force using 'import type' for types
+
+    // ADDITIONAL SETTINGS (vary per project)
+  }
+}
