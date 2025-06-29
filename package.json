@@ -1,16 +1,20 @@
 {
   "name": "release-gen",
-  "description": "Upload directory to AWS S3",
+  "description": "Generate release version and notes",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "lint": "eslint src/*.ts",
     "lint:fix": "npm run lint -- --fix",
-    "test": "vitest run --coverage",
-    "build": "ncc build src/index.ts --minify; rm dist/package.json"
+    "build-old": "ncc build src/index.ts --minify; rm dist/package.json",
+    "build": "ncc build src/index.ts --external semantic-release; rm dist/package.json",
+    "run": "node index.js",
+    "test-it": "node dist/index.js"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.3",
     "semantic-release": "^24.0.0"
   },
   "devDependencies": {
