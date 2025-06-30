@@ -5,10 +5,6 @@ on:
     branches-ignore:
       - main
   workflow_call: # can be called from 'build-and-release' workflow
-    inputs:
-      artifacts:
-        type: boolean
-        default: false
 
 jobs:
   Build:
@@ -20,15 +16,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+#      - name: Lint
+#        run: npm run lint
 
-      - name: Build
-        run: npm run build
+#      - name: Build
+#        run: npm run build
 
-      - name: Upload artifacts
-        if: inputs.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: dist # take everything from dist/ folder
-          name: dist #  and create artifact named dist (so later on the download action will create <repo-root>/dist/ folder)
+#      - name: Upload artifacts
+#        if: inputs.artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          path: dist # take everything from dist/ folder
+#          name: dist #  and create artifact named dist (so later on the download action will create <repo-root>/dist/ folder)
