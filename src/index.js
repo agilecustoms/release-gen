@@ -34,13 +34,17 @@ const release = async () => {
 
     const semanticRelease = await import('semantic-release');
     const result = await semanticRelease.default({
-        dryRun: true
-        // ...handleBranchesOption(),
-        // ...handleDryRunOption(),
-        // ...handleCiOption(),
-        // ...handleExtends(),
-        // ...handleTagFormat(),
-        // ...handleRepositoryUrlOption()
+        dryRun: true,
+        plugins: [
+            '@semantic-release/commit-analyzer',
+            '@semantic-release/release-notes-generator',
+            [
+                '@semantic-release/changelog',
+                {
+                    changelogFile: 'docs/CHANGELOG.md'
+                }
+            ]
+        ]
     });
 
     console.log(result)
