@@ -1,57 +1,52 @@
 const core = require('@actions/core');
-// const {
-//     handleBranchesOption,
-//     handleDryRunOption,
-//     handleCiOption,
-//     handleExtends,
-//     handleTagFormat,
-//     handleRepositoryUrlOption,
-// } = require('./handleOptions');
-// const setUpJob = require('./setUpJob.task');
-// const installSpecifyingVersionSemantic = require('./installSpecifyingVersionSemantic.task');
-// const preInstall = require('./preInstall.task');
-// const cleanupNpmrc = require('./cleanupNpmrc.task');
-// const windUpJob = require('./windUpJob.task');
-// const inputs = require('./inputs.json');
+// const github = require('@actions/github');
 
-/**
- * Release main task
- * @returns {Promise<void>}
- */
 const release = async () => {
-    // if (core.getInput(inputs.working_directory)) {
-    //     process.chdir(core.getInput(inputs.working_directory));
-    // }
-    // await setUpJob();
-    // await installSpecifyingVersionSemantic();
-    // await preInstall(core.getInput(inputs.extra_plugins));
-    // await preInstall(core.getInput(inputs.extends));
-    //
-    // if (core.getInput(inputs.unset_gha_env) === 'true') {
-    //     core.debug('Unset GITHUB_ACTIONS environment variable');
-    //     delete process.env.GITHUB_ACTIONS;
-    // }
-
     const semanticRelease = await import('semantic-release');
-    const result = await semanticRelease.default({
+    const options = {
         dryRun: true,
         plugins: [
             '@semantic-release/commit-analyzer',
             '@semantic-release/release-notes-generator',
-            [
-                '@semantic-release/changelog',
-                {
-                    changelogFile: 'docs/CHANGELOG.md'
-                }
-            ]
+            // [
+            //     '@semantic-release/changelog',
+            //     {
+            //         changelogFile: 'docs/CHANGELOG.md'
+            //     }
+            // ]
         ]
-    });
+    }
+    let result;
+    try {
+        result = await semanticRelease.default(options);
+    } catch (e) {
+        if (e.command.startsWith('git fetch --tags')) {
+            throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e })
+        }
+        throw e
+    }
 
     console.log(result)
-
-    // await cleanupNpmrc();
-    // await windUpJob(result);
 };
+
+// const cancelWorkflow = async () => {
+//     try {
+//         const token = core.getInput('github-token', { required: true });
+//         const runId = core.getInput('run-id', { required: true });
+//
+//         const octokit = github.getOctokit(token);
+//
+//         await octokit.rest.actions.cancelWorkflowRun({
+//             owner: github.context.repo.owner,
+//             repo: github.context.repo.repo,
+//             run_id: runId
+//         });
+//
+//         core.info(`Workflow run ${runId} has been successfully canceled.`);
+//     } catch (error) {
+//         core.setFailed(`Failed to cancel workflow: ${error.message}`);
+//     }
+// };
 
 module.exports = () => {
     core.debug('Initialization successful');
