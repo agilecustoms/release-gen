@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const fs = require('fs');
 // const github = require('@actions/github');
 
 const release = async () => {
@@ -24,6 +25,12 @@ const release = async () => {
             throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e })
         }
         throw e
+    }
+
+    if (result) {
+        const nextRelease = result.nextRelease
+        const version = nextRelease.version
+        fs.writeFileSync('next_version', version, 'utf8');
     }
 
     console.log(result)
