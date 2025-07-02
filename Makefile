@@ -15,3 +15,6 @@ app1-lint-fix:
 
 app3-build:
 	@npm run build
+
+git-fetch-tags:
+	@git fetch --tags --force

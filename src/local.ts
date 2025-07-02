@@ -1,6 +1,7 @@
 import { release, type ReleaseOptions } from './release.js'
 
 const options: ReleaseOptions = {
+  changelogPath: 'CHANGELOG.md',
   tagFormat: 'v${version}',
 }
 const res = await release(options)

@@ -1,5 +1,6 @@
 import { release } from './release.js';
 const options = {
+    changelogPath: 'CHANGELOG.md',
     tagFormat: 'v${version}',
 };
 const res = await release(options);
