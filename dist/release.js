@@ -1,5 +1,5 @@
+import semanticRelease from 'semantic-release';
 export const release = async () => {
-    const semanticRelease = await import('semantic-release');
     const options = {
         dryRun: true,
         plugins: [
@@ -9,7 +9,7 @@ export const release = async () => {
     };
     let result;
     try {
-        result = await semanticRelease.default(options);
+        result = await semanticRelease(options);
     }
     catch (e) {
         if (e.command.startsWith('git fetch --tags')) {

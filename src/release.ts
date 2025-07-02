@@ -1,4 +1,5 @@
 import type { NextRelease, Result } from 'semantic-release'
+import semanticRelease from 'semantic-release'
 
 export type Release = {
   nextVersion: string
@@ -6,7 +7,6 @@ export type Release = {
 }
 
 export const release = async (): Promise<Release | false> => {
-  const semanticRelease = await import('semantic-release')
   const options = {
     dryRun: true,
     plugins: [
@@ -22,7 +22,7 @@ export const release = async (): Promise<Release | false> => {
   }
   let result: Result
   try {
-    result = await semanticRelease.default(options)
+    result = await semanticRelease(options)
   } catch (e) {
     // @ts-expect-error do not know how to overcome this TS compilation error
     if (e.command.startsWith('git fetch --tags')) {
