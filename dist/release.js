@@ -1,15 +1,21 @@
 import semanticRelease from 'semantic-release';
-export const release = async () => {
-    const options = {
+export const release = async (options) => {
+    const plugins = [
+        '@semantic-release/commit-analyzer',
+        '@semantic-release/release-notes-generator',
+    ];
+    const opts = {
         dryRun: true,
-        plugins: [
-            '@semantic-release/commit-analyzer',
-            '@semantic-release/release-notes-generator',
-        ]
+        tagFormat: options.tagFormat,
+        plugins
     };
+    if (options.changelogPath) {
+        plugins.push('@semantic-release/changelog');
+        opts['changelogFile'] = options.changelogPath;
+    }
     let result;
     try {
-        result = await semanticRelease(options);
+        result = await semanticRelease(opts);
     }
     catch (e) {
         if (e.command.startsWith('git fetch --tags')) {
@@ -21,7 +27,7 @@ export const release = async () => {
         return false;
     }
     const nextRelease = result.nextRelease;
-    const version = nextRelease.version;
+    const version = nextRelease.gitTag;
     return {
         nextVersion: version,
         notes: nextRelease.notes || ''

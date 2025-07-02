@@ -13,19 +13,21 @@ const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod'
 })
 
 console.log(stdout)
-// when running locally in debug mode, the stderr is not empty even if the command succeeds
-if (stderr && !stderr.startsWith('Debugger listening on')) {
+if (stderr) {
   console.error('Error during npm ci - packages installed dynamically at runtime')
   console.error(stderr)
   process.exit(1)
 }
 
 const core = await import('@actions/core')
+const changelogPath: string = core.getInput('changelog-path', { required: false })
+const tagFormat: string = core.getInput('tag-format', { required: true })
+
 const { release } = await import('./release.js')
 
 let result: Release | false
 try {
-  result = await release()
+  result = await release({ changelogPath, tagFormat })
 } catch (e) {
   core.setFailed(e as Error)
   process.exit(1)

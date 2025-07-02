@@ -1,28 +1,35 @@
-import type { NextRelease, Result } from 'semantic-release'
+import type { NextRelease, Options, Result } from 'semantic-release'
 import semanticRelease from 'semantic-release'
+
+export type ReleaseOptions = {
+  changelogPath?: string
+  tagFormat: string
+}
 
 export type Release = {
   nextVersion: string
   notes: string
 }
 
-export const release = async (): Promise<Release | false> => {
-  const options = {
+export const release = async (options: ReleaseOptions): Promise<Release | false> => {
+  const plugins = [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+  ]
+  const opts: Options = {
     dryRun: true,
-    plugins: [
-      '@semantic-release/commit-analyzer',
-      '@semantic-release/release-notes-generator',
-      // [
-      //     '@semantic-release/changelog',
-      //     {
-      //         changelogFile: 'docs/CHANGELOG.md'
-      //     }
-      // ]
-    ]
+    tagFormat: options.tagFormat,
+    plugins
+  }
+  if (options.changelogPath) {
+    plugins.push(
+      '@semantic-release/changelog'
+    )
+    opts['changelogFile'] = options.changelogPath
   }
   let result: Result
   try {
-    result = await semanticRelease(options)
+    result = await semanticRelease(opts)
   } catch (e) {
     // @ts-expect-error do not know how to overcome this TS compilation error
     if (e.command.startsWith('git fetch --tags')) {
@@ -36,7 +43,7 @@ export const release = async (): Promise<Release | false> => {
   }
 
   const nextRelease: NextRelease = result.nextRelease
-  const version = nextRelease.version
+  const version = nextRelease.gitTag
   return {
     nextVersion: version,
     notes: nextRelease.notes || ''

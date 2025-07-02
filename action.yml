@@ -1,6 +1,16 @@
 name: Generate release
 description: 'Generate next release version and notes'
 author: Alexey Chekulaev
+inputs:
+  changelog-path:
+    description: 'CHANGELOG.md file path. Pass empty string to disable changelog generation'
+    default: CHANGELOG.md
+    required: false
+  tag-format:
+    description: 'Tag format. Default: v${version}'
+    default: v${version}
+    required: false
+
 runs:
   using: 'node20'
   main: 'dist/index.js'

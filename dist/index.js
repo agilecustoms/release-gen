@@ -10,16 +10,18 @@ const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod'
     cwd: packageJsonDir
 });
 console.log(stdout);
-if (stderr && !stderr.startsWith('Debugger listening on')) {
+if (stderr) {
     console.error('Error during npm ci - packages installed dynamically at runtime');
     console.error(stderr);
     process.exit(1);
 }
 const core = await import('@actions/core');
+const changelogPath = core.getInput('changelog-path', { required: false });
+const tagFormat = core.getInput('tag-format', { required: true });
 const { release } = await import('./release.js');
 let result;
 try {
-    result = await release();
+    result = await release({ changelogPath, tagFormat });
 }
 catch (e) {
     core.setFailed(e);
