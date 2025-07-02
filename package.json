@@ -1,11 +1,14 @@
 {
   "name": "relese-gen",
-  "version": "1.0.0",
   "description": "GitHub Action for Semantic Release",
-  "main": "src/index.js",
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
+    "lint": "eslint src/*.ts",
+    "lint:fix": "npm run lint -- --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test-it": "node src/index.js"
+    "build": "tsc",
+    "local": "node dist/local.js"
   },
   "repository": {
     "type": "git",
@@ -28,9 +31,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.0.0",
-    "@testcontainers/localstack": "^11.0.0",
     "@types/node": "^20.0.0",
-    "@vercel/ncc": "^0.38.3",
     "@vitest/coverage-v8": "^3.0.2",
     "eslint": "^9.9.0",
     "eslint-plugin-import": "^2.31.0",
