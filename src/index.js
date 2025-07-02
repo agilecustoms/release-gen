@@ -1,35 +1,21 @@
-const fs = require('fs');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+const path = require('path');
+const release = require('./release');
 
-const release = async () => {
-    const semanticRelease = await import('semantic-release');
-    const options = {
-        dryRun: true,
-        plugins: [
-            '@semantic-release/commit-analyzer',
-            '@semantic-release/release-notes-generator',
-            // [
-            //     '@semantic-release/changelog',
-            //     {
-            //         changelogFile: 'docs/CHANGELOG.md'
-            //     }
-            // ]
-        ]
-    }
-    let result;
-    try {
-        result = await semanticRelease.default(options);
-    } catch (e) {
-        if (e.command.startsWith('git fetch --tags')) {
-            throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e })
+const run = async () => {
+    // Install Dependencies
+    if (process.env.CI) {
+        const {stdout, stderr} = await exec('npm --loglevel error ci --only=prod', {
+            cwd: path.resolve(__dirname)
+        });
+        console.log(stdout);
+        if (stderr) {
+            return Promise.reject(stderr);
         }
-        throw e
     }
 
-    if (result) {
-        const nextRelease = result.nextRelease
-        const version = nextRelease.version
-        fs.writeFileSync('next_version', version, 'utf8');
-    }
+    release();
 };
 
-module.exports = release
+run().catch(console.error);
