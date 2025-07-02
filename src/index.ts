@@ -16,7 +16,7 @@ const run = async () => {
     }
   }
 
-  const { release } = await import('./release.js');
+  const { release } = await import('./release.js')
   await release()
 }
 
