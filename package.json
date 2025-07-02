@@ -8,7 +8,8 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "local": "node dist/local.js"
+    "run-ci": "node dist/index.js",
+    "run-local": "tsc && node dist/local.js"
   },
   "repository": {
     "type": "git",
