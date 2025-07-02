@@ -1,7 +1,6 @@
 import { exec } from 'node:child_process';
 import * as path from 'node:path';
 import * as util from 'node:util';
-import { release } from './release.js';
 import * as core from '@actions/core';
 const run = async () => {
     if (process.env.CI) {
@@ -14,6 +13,7 @@ const run = async () => {
             return Promise.reject(stderr);
         }
     }
+    const { release } = await import('./release.js');
     await release();
 };
 run().catch(core.setFailed);

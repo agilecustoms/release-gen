@@ -2,7 +2,6 @@ import { exec } from 'node:child_process'
 import * as path from 'node:path'
 import * as util from 'node:util'
 import * as core from '@actions/core'
-import { release } from './release.js'
 
 const run = async () => {
   // Install Dependencies
@@ -17,6 +16,7 @@ const run = async () => {
     }
   }
 
+  const { release } = await import('./release.js');
   await release()
 }
 
