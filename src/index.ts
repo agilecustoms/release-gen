@@ -10,10 +10,10 @@ if (process.env.CI) {
   console.log(stdout)
   if (stderr) {
     console.error(stderr)
-    process.exit(1);
+    process.exit(1)
   }
 }
 
-const core = await import('@actions/core');
+const core = await import('@actions/core')
 const { release } = await import('./release.js')
 await release().catch(core.setFailed)
