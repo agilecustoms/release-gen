@@ -1,4 +1,3 @@
-import fs from 'fs';
 export const release = async () => {
     const semanticRelease = await import('semantic-release');
     const options = {
@@ -18,9 +17,13 @@ export const release = async () => {
         }
         throw e;
     }
-    if (result) {
-        const nextRelease = result.nextRelease;
-        const version = nextRelease.version;
-        fs.writeFileSync('next_version', version, 'utf8');
+    if (!result) {
+        return false;
     }
+    const nextRelease = result.nextRelease;
+    const version = nextRelease.version;
+    return {
+        nextVersion: version,
+        notes: nextRelease.notes || ''
+    };
 };

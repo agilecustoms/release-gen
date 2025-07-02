@@ -1,7 +1,11 @@
-import fs from 'fs'
 import type { NextRelease, Result } from 'semantic-release'
 
-export const release = async () => {
+export type Release = {
+  nextVersion: string
+  notes: string
+}
+
+export const release = async (): Promise<Release | false> => {
   const semanticRelease = await import('semantic-release')
   const options = {
     dryRun: true,
@@ -27,9 +31,14 @@ export const release = async () => {
     throw e
   }
 
-  if (result) {
-    const nextRelease: NextRelease = result.nextRelease
-    const version = nextRelease.version
-    fs.writeFileSync('next_version', version, 'utf8')
+  if (!result) {
+    return false
+  }
+
+  const nextRelease: NextRelease = result.nextRelease
+  const version = nextRelease.version
+  return {
+    nextVersion: version,
+    notes: nextRelease.notes || ''
   }
 }
