@@ -1,4 +1,5 @@
 import { exec } from 'node:child_process'
+import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -38,5 +39,8 @@ if (!result) {
   process.exit(1)
 }
 
+const notesFilePath = '/tmp/release-gen-notes'
+await fs.writeFile(notesFilePath, result.notes, 'utf8')
+
 core.setOutput('next_version', result.nextVersion)
-core.setOutput('notes', result.notes)
+core.setOutput('notes_file', notesFilePath)
