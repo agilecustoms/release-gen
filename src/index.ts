@@ -21,14 +21,14 @@ if (stderr) {
 }
 
 const core = await import('@actions/core')
-const changelogPath: string = core.getInput('changelog-path', { required: false })
+const changelogFile: string = core.getInput('changelog-file', { required: false })
 const tagFormat: string = core.getInput('tag-format', { required: true })
 
 const { release } = await import('./release.js')
 
 let result: Release | false
 try {
-  result = await release({ changelogPath, tagFormat })
+  result = await release({ changelogFile, tagFormat })
 } catch (e) {
   core.setFailed(e as Error)
   process.exit(1)

@@ -1,8 +1,9 @@
+import fs from 'fs/promises'
 import type { NextRelease, Options, Result } from 'semantic-release'
 import semanticRelease from 'semantic-release'
 
 export type ReleaseOptions = {
-  changelogPath?: string
+  changelogFile?: string
   tagFormat: string
 }
 
@@ -31,12 +32,6 @@ export const release = async (options: ReleaseOptions): Promise<Release | false>
     tagFormat: options.tagFormat,
     plugins
   }
-  if (options.changelogPath) {
-    plugins.push(
-      '@semantic-release/changelog'
-    )
-    opts['changelogFile'] = options.changelogPath
-  }
   let result: Result
   try {
     result = await semanticRelease(opts)
@@ -54,8 +49,28 @@ export const release = async (options: ReleaseOptions): Promise<Release | false>
 
   const nextRelease: NextRelease = result.nextRelease
   const version = nextRelease.gitTag
+  if (!version) {
+    throw new Error('No version found in the next release. This is unexpected')
+  }
+
+  const notes = nextRelease.notes
+  if (!notes) {
+    throw new Error('No release notes found in the next release. This is unexpected')
+  }
+
+  if (options.changelogFile) {
+    let oldContent = ''
+    try {
+      oldContent = await fs.readFile(options.changelogFile, 'utf8')
+    } catch (err) {
+      // If a file does not exist, just use empty string
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err
+    }
+    await fs.writeFile(options.changelogFile, notes + '\n' + oldContent)
+  }
+
   return {
     nextVersion: version,
-    notes: nextRelease.notes || ''
+    notes
   }
 }

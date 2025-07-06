@@ -2,7 +2,7 @@ name: Generate release
 description: 'Generate next release version and notes'
 author: Alexey Chekulaev
 inputs:
-  changelog-path:
+  changelog-file:
     description: 'CHANGELOG.md file path. Pass empty string to disable changelog generation'
     default: CHANGELOG.md
     required: false
