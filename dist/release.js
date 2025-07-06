@@ -42,9 +42,11 @@ export const release = async (options) => {
             if (err.code !== 'ENOENT')
                 throw err;
         }
-        const changesStart = oldContent.indexOf('## [');
-        if (changesStart !== -1) {
-            oldContent = oldContent.substring(changesStart).trim();
+        const minorStart = oldContent.indexOf('\n\n# [');
+        const patchStart = oldContent.indexOf('\n\n## [');
+        const changesStart = [minorStart, patchStart].filter(index => index !== -1);
+        if (changesStart.length > 0) {
+            oldContent = oldContent.substring(Math.min(...changesStart)).trim();
         }
         await fs.writeFile(options.changelogFile, title + notes + oldContent);
     }
