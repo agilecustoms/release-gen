@@ -17,12 +17,12 @@ if (stderr) {
     process.exit(1);
 }
 const core = await import('@actions/core');
-const changelogPath = core.getInput('changelog-path', { required: false });
+const changelogFile = core.getInput('changelog-file', { required: false });
 const tagFormat = core.getInput('tag-format', { required: true });
 const { release } = await import('./release.js');
 let result;
 try {
-    result = await release({ changelogPath, tagFormat });
+    result = await release({ changelogFile, tagFormat });
 }
 catch (e) {
     core.setFailed(e);

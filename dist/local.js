@@ -1,6 +1,7 @@
 import { release } from './release.js';
 const options = {
-    changelogPath: 'CHANGELOG.md',
+    changelogFile: 'CHANGELOG.md',
+    changelogTitle: '# Changelog\n\nAll notable changes to this project will be documented in this file.',
     tagFormat: 'v${version}',
 };
 const res = await release(options);

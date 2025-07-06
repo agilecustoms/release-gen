@@ -1,19 +1,15 @@
+import fs from 'fs/promises';
 import semanticRelease from 'semantic-release';
+const plugins = [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+];
 export const release = async (options) => {
-    const plugins = [
-        '@semantic-release/commit-analyzer',
-        '@semantic-release/release-notes-generator',
-    ];
     const opts = {
-        dryRun: false,
-        ci: false,
+        dryRun: true,
         tagFormat: options.tagFormat,
         plugins
     };
-    if (options.changelogPath) {
-        plugins.push('@semantic-release/changelog');
-        opts['changelogFile'] = options.changelogPath;
-    }
     let result;
     try {
         result = await semanticRelease(opts);
@@ -29,8 +25,33 @@ export const release = async (options) => {
     }
     const nextRelease = result.nextRelease;
     const version = nextRelease.gitTag;
+    if (!version) {
+        throw new Error('No version found in the next release. This is unexpected');
+    }
+    let notes = nextRelease.notes;
+    if (!notes) {
+        throw new Error('No release notes found in the next release. This is unexpected');
+    }
+    if (options.changelogFile) {
+        let oldContent = '';
+        try {
+            oldContent = await fs.readFile(options.changelogFile, 'utf8');
+        }
+        catch (err) {
+            if (err.code !== 'ENOENT')
+                throw err;
+        }
+        if (options.changelogTitle) {
+            if (oldContent.startsWith(options.changelogTitle)) {
+                oldContent = oldContent.slice(options.changelogTitle.length).trim();
+                oldContent.substring(options.changelogTitle.length);
+            }
+            notes = `${options.changelogTitle}\n\n${notes}`;
+        }
+        await fs.writeFile(options.changelogFile, notes + oldContent);
+    }
     return {
         nextVersion: version,
-        notes: nextRelease.notes || ''
+        notes
     };
 };
