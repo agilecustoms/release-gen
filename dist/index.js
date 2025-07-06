@@ -18,11 +18,13 @@ if (stderr) {
 }
 const core = await import('@actions/core');
 const changelogFile = core.getInput('changelog-file', { required: false });
+const changelogTitle = core.getInput('changelog-title', { required: false });
 const tagFormat = core.getInput('tag-format', { required: true });
+const options = { changelogFile, changelogTitle, tagFormat };
 const { release } = await import('./release.js');
 let result;
 try {
-    result = await release({ changelogFile, tagFormat });
+    result = await release(options);
 }
 catch (e) {
     core.setFailed(e);
