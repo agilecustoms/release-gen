@@ -4,7 +4,7 @@ import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
-import type { Release } from './release.js'
+import type { Release, ReleaseOptions } from './release.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url))
 const packageJsonDir = path.dirname(distDir)
@@ -22,13 +22,15 @@ if (stderr) {
 
 const core = await import('@actions/core')
 const changelogFile: string = core.getInput('changelog-file', { required: false })
+const changelogTitle: string = core.getInput('changelog-title', { required: false })
 const tagFormat: string = core.getInput('tag-format', { required: true })
 
+const options: ReleaseOptions = { changelogFile, changelogTitle, tagFormat }
 const { release } = await import('./release.js')
 
 let result: Release | false
 try {
-  result = await release({ changelogFile, tagFormat })
+  result = await release(options)
 } catch (e) {
   core.setFailed(e as Error)
   process.exit(1)
