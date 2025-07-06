@@ -5,7 +5,8 @@ export const release = async (options) => {
         '@semantic-release/release-notes-generator',
     ];
     const opts = {
-        dryRun: true,
+        dryRun: false,
+        ci: false,
         tagFormat: options.tagFormat,
         plugins
     };

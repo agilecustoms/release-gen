@@ -11,11 +11,21 @@ export type Release = {
   notes: string
 }
 
+/**
+ * default plugins:
+ * "@semantic-release/commit-analyzer"
+ * "@semantic-release/release-notes-generator"
+ * "@semantic-release/npm"
+ * "@semantic-release/github" - creates a GitHub release
+ * <br>
+ * I need only first two, so specify them explicitly
+ */
+const plugins = [
+  '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
+  '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
+]
+
 export const release = async (options: ReleaseOptions): Promise<Release | false> => {
-  const plugins = [
-    '@semantic-release/commit-analyzer',
-    '@semantic-release/release-notes-generator',
-  ]
   const opts: Options = {
     dryRun: true,
     tagFormat: options.tagFormat,
