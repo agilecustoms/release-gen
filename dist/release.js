@@ -28,11 +28,12 @@ export const release = async (options) => {
     if (!version) {
         throw new Error('No version found in the next release. This is unexpected');
     }
-    let notes = nextRelease.notes;
+    const notes = nextRelease.notes;
     if (!notes) {
         throw new Error('No release notes found in the next release. This is unexpected');
     }
     if (options.changelogFile) {
+        const title = options.changelogTitle ? options.changelogTitle + '\n\n' : '';
         let oldContent = '';
         try {
             oldContent = await fs.readFile(options.changelogFile, 'utf8');
@@ -41,14 +42,11 @@ export const release = async (options) => {
             if (err.code !== 'ENOENT')
                 throw err;
         }
-        if (options.changelogTitle) {
-            if (oldContent.startsWith(options.changelogTitle)) {
-                oldContent = oldContent.slice(options.changelogTitle.length).trim();
-                oldContent.substring(options.changelogTitle.length);
-            }
-            notes = `${options.changelogTitle}\n\n${notes}`;
+        const changesStart = oldContent.indexOf('## [');
+        if (changesStart !== -1) {
+            oldContent = oldContent.substring(changesStart).trim();
         }
-        await fs.writeFile(options.changelogFile, notes + oldContent);
+        await fs.writeFile(options.changelogFile, title + notes + oldContent);
     }
     return {
         nextVersion: version,
