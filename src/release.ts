@@ -54,7 +54,7 @@ export const release = async (options: ReleaseOptions): Promise<Release | false>
     throw new Error('No version found in the next release. This is unexpected')
   }
 
-  let notes = nextRelease.notes
+  const notes = nextRelease.notes
   if (!notes) {
     throw new Error('No release notes found in the next release. This is unexpected')
   }
