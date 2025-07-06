@@ -2,6 +2,7 @@ import { release, type ReleaseOptions } from './release.js'
 
 const options: ReleaseOptions = {
   changelogFile: 'CHANGELOG.md',
+  changelogTitle: '# Changelog\n\nAll notable changes to this project will be documented in this file.',
   tagFormat: 'v${version}',
 }
 const res = await release(options)

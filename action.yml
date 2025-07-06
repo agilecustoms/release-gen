@@ -6,6 +6,9 @@ inputs:
     description: 'CHANGELOG.md file path. Pass empty string to disable changelog generation'
     default: CHANGELOG.md
     required: false
+  changelog-title:
+    description: 'Title of the changelog file (first line of the file)'
+    required: false
   tag-format:
     description: 'Tag format. Default: v${version}'
     default: v${version}

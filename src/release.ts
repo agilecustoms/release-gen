@@ -4,6 +4,7 @@ import semanticRelease from 'semantic-release'
 
 export type ReleaseOptions = {
   changelogFile?: string
+  changelogTitle?: string
   tagFormat: string
 }
 
@@ -53,7 +54,7 @@ export const release = async (options: ReleaseOptions): Promise<Release | false>
     throw new Error('No version found in the next release. This is unexpected')
   }
 
-  const notes = nextRelease.notes
+  let notes = nextRelease.notes
   if (!notes) {
     throw new Error('No release notes found in the next release. This is unexpected')
   }
@@ -66,7 +67,15 @@ export const release = async (options: ReleaseOptions): Promise<Release | false>
       // If a file does not exist, just use empty string
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err
     }
-    await fs.writeFile(options.changelogFile, notes + '\n' + oldContent)
+    if (options.changelogTitle) {
+      if (oldContent.startsWith(options.changelogTitle)) {
+        // If the file starts with the title, remove it
+        oldContent = oldContent.slice(options.changelogTitle.length).trim()
+        oldContent.substring(options.changelogTitle.length)
+      }
+      notes = `${options.changelogTitle}\n\n${notes}`
+    }
+    await fs.writeFile(options.changelogFile, notes + oldContent)
   }
 
   return {
