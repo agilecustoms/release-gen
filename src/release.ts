@@ -69,6 +69,7 @@ export const release = async (options: ReleaseOptions): Promise<Release | false>
       // If a file does not exist, just use empty string
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err
     }
+    oldContent = '\n\n' + oldContent // this is to make 'indexOf' work even file has no title yet
     const minorStart = oldContent.indexOf('\n\n# [')
     const patchStart = oldContent.indexOf('\n\n## [')
     const changesStart = [minorStart, patchStart].filter(index => index !== -1)
