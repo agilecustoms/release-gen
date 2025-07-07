@@ -2,8 +2,6 @@ import fs from 'fs/promises'
 
 export class ChangelogGenerator {
   public async generate(file: string, notes: string, title?: string): Promise<void> {
-    title = title ? title + '\n\n' : ''
-
     let oldContent = ''
     try {
       oldContent = await fs.readFile(file, 'utf8')
@@ -11,13 +9,23 @@ export class ChangelogGenerator {
       // If a file does not exist, just use empty string
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err
     }
-    const minorStart = oldContent.indexOf('\n\n# [')
-    const patchStart = oldContent.indexOf('\n\n## [')
-    const changesStart = [minorStart, patchStart].filter(index => index !== -1)
+    const minorStart = oldContent.search('(^|[^#])# \\[')
+    const patchStart = oldContent.indexOf('## [')
+    const changesStart = [minorStart, patchStart].filter(index => index > 0)
     if (changesStart.length > 0) {
       oldContent = oldContent.substring(Math.min(...changesStart)).trim()
     }
 
-    await fs.writeFile(file, title + notes + oldContent)
+    // write file effectively: write several strings, avoid concatenation
+    const stream = await fs.open(file, 'w')
+    if (title) {
+      await stream.write(title + '\n\n')
+    }
+    await stream.write(notes)
+    if (oldContent) {
+      await stream.write('\n\n')
+      await stream.write(oldContent)
+    }
+    await stream.close()
   }
 }

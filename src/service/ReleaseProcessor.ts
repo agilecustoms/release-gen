@@ -1,7 +1,7 @@
 import type { NextRelease, Options, Result } from 'semantic-release'
 import semanticRelease from 'semantic-release'
-import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { Release, ReleaseOptions } from '../model.js'
+import type { ChangelogGenerator } from './ChangelogGenerator.js'
 
 /**
  * default plugins:

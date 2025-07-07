@@ -16,5 +16,7 @@ Parameters are not documented: part of them are inputs in `publish` action, the 
   if: inputs.dev-release == 'false'
   uses: agilecustoms/release-gen@main
   with:
+    changelog-file: ${{ inputs.changelog-file }}
+    changelog-title: ${{ inputs.changelog-title }}
     tag-format: ${{ inputs.tag-format }}
 ```
