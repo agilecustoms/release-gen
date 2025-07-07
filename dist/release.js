@@ -42,6 +42,7 @@ export const release = async (options) => {
             if (err.code !== 'ENOENT')
                 throw err;
         }
+        oldContent = '\n\n' + oldContent;
         const minorStart = oldContent.indexOf('\n\n# [');
         const patchStart = oldContent.indexOf('\n\n## [');
         const changesStart = [minorStart, patchStart].filter(index => index !== -1);
