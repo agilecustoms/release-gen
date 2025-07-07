@@ -1,10 +1,13 @@
-import { release } from './release.js';
+import { ChangelogGenerator } from './service/ChangelogGenerator.js';
+import { ReleaseProcessor } from './service/ReleaseProcessor.js';
+const changelogGenerator = new ChangelogGenerator();
+const releaseProcessor = new ReleaseProcessor(changelogGenerator);
 const options = {
     changelogFile: 'CHANGELOG.md',
     changelogTitle: '# Changelog',
     tagFormat: 'v${version}',
 };
-const res = await release(options);
+const res = await releaseProcessor.process(options);
 if (!res) {
     console.log('No new release found');
     process.exit(0);

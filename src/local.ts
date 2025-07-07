@@ -1,11 +1,16 @@
-import { release, type ReleaseOptions } from './release.js'
+import type { Release, ReleaseOptions } from './model.js'
+import { ChangelogGenerator } from './service/ChangelogGenerator.js'
+import { ReleaseProcessor } from './service/ReleaseProcessor.js'
+
+const changelogGenerator = new ChangelogGenerator()
+const releaseProcessor = new ReleaseProcessor(changelogGenerator)
 
 const options: ReleaseOptions = {
   changelogFile: 'CHANGELOG.md',
   changelogTitle: '# Changelog',
   tagFormat: 'v${version}',
 }
-const res = await release(options)
+const res: Release | boolean = await releaseProcessor.process(options)
 
 if (!res) {
   console.log('No new release found')

@@ -13,6 +13,9 @@ app1-lint:
 app1-lint-fix:
 	@npm run lint:fix
 
+app2-test:
+	@npm run test
+
 app3-build:
 	@npm run build
 

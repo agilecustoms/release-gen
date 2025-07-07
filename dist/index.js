@@ -21,10 +21,13 @@ const changelogFile = core.getInput('changelog-file', { required: false });
 const changelogTitle = core.getInput('changelog-title', { required: false });
 const tagFormat = core.getInput('tag-format', { required: true });
 const options = { changelogFile, changelogTitle, tagFormat };
-const { release } = await import('./release.js');
+const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
+const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
+const changelogGenerator = new ChangelogGenerator();
+const releaseProcessor = new ReleaseProcessor(changelogGenerator);
 let result;
 try {
-    result = await release(options);
+    result = await releaseProcessor.process(options);
 }
 catch (e) {
     core.setFailed(e);

@@ -6,6 +6,8 @@ export default defineConfig({
     coverage: {
       exclude: [
         'src/index.ts',
+        'src/local.ts',
+        'src/model.ts',
         ...coverageConfigDefaults.exclude
       ],
       reporter: ['text'], // other: 'html', 'clover', 'json'
