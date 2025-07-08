@@ -16,7 +16,7 @@ export class ChangelogGenerator {
       await stream.write(title + '\n\n')
     }
 
-    await stream.write(notes.trimEnd()) // notes come with 3 trailing newlines
+    await stream.write(notes.trim()) // notes come with 3 trailing newlines
 
     if (oldContent) {
       const minorStart = oldContent.search('(^|\n\n)# \\[')

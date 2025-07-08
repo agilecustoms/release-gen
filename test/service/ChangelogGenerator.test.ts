@@ -5,11 +5,11 @@ import { ChangelogGenerator } from '../../src/service/ChangelogGenerator.js'
 const FILE = 'test/CHANGELOG.md'
 
 function minor(version: string): string {
-  return `# [${version}] Major`
+  return `# [${version}] Minor`
 }
 
 function patch(version: string): string {
-  return `## [${version}] Minor`
+  return `## [${version}] Patch`
 }
 
 function expectChangelog(content: string): void {
@@ -234,6 +234,25 @@ describe('ChangelogGenerator', () => {
       await changelogGenerator.generate(FILE, patch2)
 
       expectChangelog(`${patch2}\n\n${patch1}\n\n${minor1}`)
+    })
+  })
+
+  describe('whitespaces', () => {
+    it('should create and trim', async () => {
+      const minor1 = `\n# [0.1.0] Minor\n\n\n`
+
+      await generate(minor1)
+
+      expectChangelog(`# [0.1.0] Minor`)
+    })
+
+    it('should update and trim', async () => {
+      const minor1 = `\n\n# [0.1.0] Minor\n\n\n`
+      const minor2 = `\n\n# [0.2.0] Minor\n\n\n`
+
+      await generate(minor1, minor2)
+
+      expectChangelog(`# [0.2.0] Minor\n\n# [0.1.0] Minor`)
     })
   })
 
