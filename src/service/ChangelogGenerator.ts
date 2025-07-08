@@ -21,7 +21,7 @@ export class ChangelogGenerator {
     if (title) {
       await stream.write(title + '\n\n')
     }
-    await stream.write(notes)
+    await stream.write(notes.trimEnd()) // notes come with 3 trailing newlines
     if (oldContent) {
       await stream.write('\n\n')
       await stream.write(oldContent)
