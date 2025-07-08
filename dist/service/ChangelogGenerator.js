@@ -19,7 +19,7 @@ export class ChangelogGenerator {
         if (title) {
             await stream.write(title + '\n\n');
         }
-        await stream.write(notes);
+        await stream.write(notes.trimEnd());
         if (oldContent) {
             await stream.write('\n\n');
             await stream.write(oldContent);

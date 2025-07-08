@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.1](https://github.com/agilecustoms/release-gen/compare/v0.7.0...v0.7.1) (2025-07-08)
+
+
+### Bug Fixes
+
+* trim extra newlines at the end ([af36fc9](https://github.com/agilecustoms/release-gen/commit/af36fc942eb0e1fe81fe2afb851bef2626f36f5b))
+
+
+
+
+
 # [0.7.0](https://github.com/agilecustoms/release-gen/compare/v0.6.2...v0.7.0) (2025-07-08)
 
 
