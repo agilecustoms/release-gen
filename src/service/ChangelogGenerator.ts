@@ -16,6 +16,7 @@ export class ChangelogGenerator {
       await stream.write(title + '\n\n')
     }
 
+    notes = notes.replace(/\n{3,}/, '\n\n') // remove leading newlines
     await stream.write(notes.trim()) // notes come with 3 trailing newlines
 
     if (oldContent) {
@@ -25,7 +26,7 @@ export class ChangelogGenerator {
       if (changesStart.length > 0) {
         oldContent = oldContent.substring(Math.min(...changesStart))
       }
-      await stream.write('\n\n')
+      await stream.write('\n\n\n')
       await stream.write(oldContent)
     }
 

@@ -56,7 +56,7 @@ describe('ChangelogGenerator', () => {
 
       await generate(minor1, minor2)
 
-      expectChangelog(`${minor2}\n\n${minor1}`)
+      expectChangelog(`${minor2}\n\n\n${minor1}`)
     })
 
     it('should update minor to patch', async () => {
@@ -65,7 +65,7 @@ describe('ChangelogGenerator', () => {
 
       await generate(minor1, patch1)
 
-      expectChangelog(`${patch1}\n\n${minor1}`)
+      expectChangelog(`${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to minor', async () => {
@@ -75,7 +75,7 @@ describe('ChangelogGenerator', () => {
 
       await generate(minor1, patch1, minor2)
 
-      expectChangelog(`${minor2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${minor2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to patch', async () => {
@@ -85,7 +85,7 @@ describe('ChangelogGenerator', () => {
 
       await generate(minor1, patch1, patch2)
 
-      expectChangelog(`${patch2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${patch2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
   })
 
@@ -98,7 +98,7 @@ describe('ChangelogGenerator', () => {
       await generate(minor1)
       await changelogGenerator.generate(FILE, minor2, title)
 
-      expectChangelog(`${title}\n\n${minor2}\n\n${minor1}`)
+      expectChangelog(`${title}\n\n${minor2}\n\n\n${minor1}`)
     })
 
     it('should update minor to patch', async () => {
@@ -109,7 +109,7 @@ describe('ChangelogGenerator', () => {
       await generate(minor1)
       await changelogGenerator.generate(FILE, patch1, title)
 
-      expectChangelog(`${title}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${title}\n\n${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to minor', async () => {
@@ -121,7 +121,7 @@ describe('ChangelogGenerator', () => {
       await generate(minor1, patch1)
       await changelogGenerator.generate(FILE, minor2, title)
 
-      expectChangelog(`${title}\n\n${minor2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${title}\n\n${minor2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to patch', async () => {
@@ -133,7 +133,7 @@ describe('ChangelogGenerator', () => {
       await generate(minor1, patch1)
       await changelogGenerator.generate(FILE, patch2, title)
 
-      expectChangelog(`${title}\n\n${patch2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${title}\n\n${patch2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
   })
 
@@ -146,7 +146,7 @@ describe('ChangelogGenerator', () => {
       const title2 = 'Title2'
       await changelogGenerator.generate(FILE, minor2, title2)
 
-      expectChangelog(`${title2}\n\n${minor2}\n\n${minor1}`)
+      expectChangelog(`${title2}\n\n${minor2}\n\n\n${minor1}`)
     })
 
     it('should update minor to patch', async () => {
@@ -157,7 +157,7 @@ describe('ChangelogGenerator', () => {
       const title2 = 'Title2'
       await changelogGenerator.generate(FILE, patch1, title2)
 
-      expectChangelog(`${title2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${title2}\n\n${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to minor', async () => {
@@ -171,7 +171,7 @@ describe('ChangelogGenerator', () => {
       const title3 = 'Title3'
       await changelogGenerator.generate(FILE, minor2, title3)
 
-      expectChangelog(`${title3}\n\n${minor2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${title3}\n\n${minor2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to patch', async () => {
@@ -185,7 +185,7 @@ describe('ChangelogGenerator', () => {
       const title3 = 'Title3'
       await changelogGenerator.generate(FILE, patch2, title3)
 
-      expectChangelog(`${title3}\n\n${patch2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${title3}\n\n${patch2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
   })
 
@@ -197,7 +197,7 @@ describe('ChangelogGenerator', () => {
       const minor2 = minor('0.2.0')
       await changelogGenerator.generate(FILE, minor2)
 
-      expectChangelog(`${minor2}\n\n${minor1}`)
+      expectChangelog(`${minor2}\n\n\n${minor1}`)
     })
 
     it('should update minor to patch', async () => {
@@ -207,7 +207,7 @@ describe('ChangelogGenerator', () => {
       const patch1 = patch('0.1.1')
       await changelogGenerator.generate(FILE, patch1)
 
-      expectChangelog(`${patch1}\n\n${minor1}`)
+      expectChangelog(`${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to minor', async () => {
@@ -220,7 +220,7 @@ describe('ChangelogGenerator', () => {
       const minor2 = minor('0.2.0')
       await changelogGenerator.generate(FILE, minor2)
 
-      expectChangelog(`${minor2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${minor2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
 
     it('should update patch to patch', async () => {
@@ -233,7 +233,7 @@ describe('ChangelogGenerator', () => {
       const patch2 = patch('0.1.2')
       await changelogGenerator.generate(FILE, patch2)
 
-      expectChangelog(`${patch2}\n\n${patch1}\n\n${minor1}`)
+      expectChangelog(`${patch2}\n\n\n${patch1}\n\n\n${minor1}`)
     })
   })
 
@@ -252,7 +252,15 @@ describe('ChangelogGenerator', () => {
 
       await generate(minor1, minor2)
 
-      expectChangelog(`# [0.2.0] Minor\n\n# [0.1.0] Minor`)
+      expectChangelog(`# [0.2.0] Minor\n\n\n# [0.1.0] Minor`)
+    })
+
+    it('should replace 3 newlines with 2', async () => {
+      const minor1 = `# [0.1.0] Minor\n\n\nfooter`
+
+      await generate(minor1)
+
+      expectChangelog(`# [0.1.0] Minor\n\nfooter`)
     })
   })
 
