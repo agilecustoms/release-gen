@@ -11,7 +11,7 @@ export class ChangelogGenerator {
     }
     const minorStart = oldContent.search('(^|[^#])# \\[')
     const patchStart = oldContent.indexOf('## [')
-    const changesStart = [minorStart, patchStart].filter(index => index > 0)
+    const changesStart = [minorStart, patchStart].filter(index => index !== -1)
     if (changesStart.length > 0) {
       oldContent = oldContent.substring(Math.min(...changesStart)).trim()
     }
