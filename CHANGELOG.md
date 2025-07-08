@@ -1,11 +1,4 @@
-# Changelog## [0.6.2](https://github.com/agilecustoms/release-gen/compare/v0.6.1...v0.6.2) (2025-07-08)
-
-
-### Performance Improvements
-
-* write file effectively, avoid string concatenation ([644b1eb](https://github.com/agilecustoms/release-gen/commit/644b1ebe2be5ba533e7553cd54aa0e997fbd24c1))
-
-
+# Changelog
 
 ## [0.6.1](https://github.com/agilecustoms/release-gen/compare/v0.6.0...v0.6.1) (2025-07-07)
 
