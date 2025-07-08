@@ -1,5 +1,7 @@
 node_modules
 .idea
 
+dist/local.js
+
 # system files
 .DS_Store

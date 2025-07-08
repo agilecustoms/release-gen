@@ -5,7 +5,7 @@ Intended to be used only as part of GH action `agilecustoms/publish`
 ## relation to semantic-release
 This action is a wrapper for [semantic-release](https://github.com/semantic-release/semantic-release).
 Motivation: `semantic-release`, when used as CLI, does not provide `next_version` and `notes` as clear outputs, but rather print everything.
-The only way to get these values is to call `semantic-release` as Node.js module.
+The only way to get these values is to call `semantic-release` as Node.js module
 
 ## Usage
 Code below is not a real _usage_, but rather a block of code from `agilecustoms/publish` action.
