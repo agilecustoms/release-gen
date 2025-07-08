@@ -1,5 +1,16 @@
 # Changelog
 
+# [0.7.0](https://github.com/agilecustoms/release-gen/compare/v0.6.2...v0.7.0) (2025-07-08)
+
+
+### Features
+
+* release next minor version ([e678c6e](https://github.com/agilecustoms/release-gen/commit/e678c6e39d4cd3d01b69570a543aa02dd01348cd))
+
+
+
+
+
 ## [0.6.2](https://github.com/agilecustoms/release-gen/compare/v0.6.1...v0.6.2) (2025-07-08)
 
 
