@@ -13,6 +13,7 @@ export class ChangelogGenerator {
         if (title) {
             await stream.write(title + '\n\n');
         }
+        notes = notes.replace(/\n{3,}/, '\n\n');
         await stream.write(notes.trim());
         if (oldContent) {
             const minorStart = oldContent.search('(^|\n\n)# \\[');
@@ -21,7 +22,7 @@ export class ChangelogGenerator {
             if (changesStart.length > 0) {
                 oldContent = oldContent.substring(Math.min(...changesStart));
             }
-            await stream.write('\n\n');
+            await stream.write('\n\n\n');
             await stream.write(oldContent);
         }
         await stream.close();
