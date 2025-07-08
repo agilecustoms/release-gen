@@ -17,12 +17,12 @@ if (stderr) {
     process.exit(1);
 }
 const core = await import('@actions/core');
+const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
+const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
 const changelogFile = core.getInput('changelog-file', { required: false });
 const changelogTitle = core.getInput('changelog-title', { required: false });
 const tagFormat = core.getInput('tag-format', { required: true });
 const options = { changelogFile, changelogTitle, tagFormat };
-const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
-const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
 const changelogGenerator = new ChangelogGenerator();
 const releaseProcessor = new ReleaseProcessor(changelogGenerator);
 let result;
@@ -34,7 +34,7 @@ catch (e) {
     process.exit(1);
 }
 if (!result) {
-    console.log('No new release found');
+    core.setFailed('No new release found');
     process.exit(1);
 }
 const notesFilePath = '/tmp/release-gen-notes';

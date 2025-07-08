@@ -9,21 +9,7 @@ export class ReleaseProcessor {
         this.changelogGenerator = changelogGenerator;
     }
     async process(options) {
-        const opts = {
-            dryRun: true,
-            tagFormat: options.tagFormat,
-            plugins
-        };
-        let result;
-        try {
-            result = await semanticRelease(opts);
-        }
-        catch (e) {
-            if (e.command.startsWith('git fetch --tags')) {
-                throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e });
-            }
-            throw e;
-        }
+        const result = await this.semanticRelease(options.tagFormat);
         if (!result) {
             return false;
         }
@@ -43,5 +29,21 @@ export class ReleaseProcessor {
             nextVersion: version,
             notes
         };
+    }
+    async semanticRelease(tagFormat) {
+        const opts = {
+            dryRun: true,
+            tagFormat,
+            plugins
+        };
+        try {
+            return await semanticRelease(opts);
+        }
+        catch (e) {
+            if (e.command.startsWith('git fetch --tags')) {
+                throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e });
+            }
+            throw e;
+        }
     }
 }

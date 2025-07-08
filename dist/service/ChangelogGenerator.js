@@ -9,13 +9,21 @@ export class ChangelogGenerator {
             if (err.code !== 'ENOENT')
                 throw err;
         }
-        oldContent = '\n\n' + oldContent;
-        const minorStart = oldContent.indexOf('\n\n# [');
-        const patchStart = oldContent.indexOf('\n\n## [');
+        const minorStart = oldContent.search('(^|[^#])# \\[');
+        const patchStart = oldContent.indexOf('## [');
         const changesStart = [minorStart, patchStart].filter(index => index !== -1);
         if (changesStart.length > 0) {
             oldContent = oldContent.substring(Math.min(...changesStart)).trim();
         }
-        await fs.writeFile(file, title + notes + oldContent);
+        const stream = await fs.open(file, 'w');
+        if (title) {
+            await stream.write(title + '\n\n');
+        }
+        await stream.write(notes);
+        if (oldContent) {
+            await stream.write('\n\n');
+            await stream.write(oldContent);
+        }
+        await stream.close();
     }
 }
