@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/agilecustoms/release-gen/compare/v0.7.1...v0.7.2) (2025-07-08)
+
+
+### Bug Fixes
+
+* add trimming for better changelog layout ([54950d5](https://github.com/agilecustoms/release-gen/commit/54950d5e430497270469b66dc6c088c22f897803))
+
 ## [0.7.1](https://github.com/agilecustoms/release-gen/compare/v0.7.0...v0.7.1) (2025-07-08)
 
 
