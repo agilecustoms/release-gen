@@ -9,11 +9,11 @@ export class ChangelogGenerator {
             if (err.code !== 'ENOENT')
                 throw err;
         }
-        const minorStart = oldContent.search('(^|[^#])# \\[');
-        const patchStart = oldContent.indexOf('## [');
-        const changesStart = [minorStart, patchStart].filter(index => index !== -1);
+        const minorStart = oldContent.search('(^|\n\n)# \\[');
+        const patchStart = oldContent.search('(^|\n\n)## \\[');
+        const changesStart = [minorStart, patchStart].filter(index => index !== -1).map(index => index == 0 ? 0 : index + 2);
         if (changesStart.length > 0) {
-            oldContent = oldContent.substring(Math.min(...changesStart)).trim();
+            oldContent = oldContent.substring(Math.min(...changesStart));
         }
         const stream = await fs.open(file, 'w');
         if (title) {
