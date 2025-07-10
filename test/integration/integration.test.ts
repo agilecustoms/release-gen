@@ -42,7 +42,7 @@ describe('release-gen', () => {
     // must remove 'test' otherwise vitest recognize them as another set of tests
     // remove other dirs to have more neat test directory
     // (tried a more elegant solution with sparse checkout, but faced a problem that local copy is behind remote one)
-    ['.github', 'dist', 'src', 'test'].forEach(dir => {
+    ['.github', 'dist', 'src', 'test'].forEach((dir) => {
       const dirPath = path.join(testDir, dir)
       fs.rmSync(dirPath, { recursive: true, force: true })
     })
