@@ -37,8 +37,9 @@ export class ReleaseProcessor {
             PLUGINS
         };
         const config = {};
+        console.log('config:', config);
         try {
-            return await semanticRelease(opts, config);
+            return await semanticRelease(opts);
         }
         catch (e) {
             if (e.command.startsWith('git fetch --tags')) {
