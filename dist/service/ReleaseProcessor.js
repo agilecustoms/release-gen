@@ -1,9 +1,5 @@
 import process from 'node:process';
 import semanticRelease from 'semantic-release';
-const plugins = [
-    '@semantic-release/commit-analyzer',
-    '@semantic-release/release-notes-generator',
-];
 export class ReleaseProcessor {
     changelogGenerator;
     constructor(changelogGenerator) {
@@ -35,7 +31,6 @@ export class ReleaseProcessor {
         const opts = {
             dryRun: true,
             tagFormat,
-            plugins
         };
         const config = {
             cwd: process.env.GITHUB_WORKSPACE

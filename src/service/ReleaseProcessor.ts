@@ -13,10 +13,10 @@ import type { ChangelogGenerator } from './ChangelogGenerator.js'
  * <br>
  * Only the first two are needed, so specify them explicitly
  */
-const plugins = [
-  '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
-  '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
-]
+// const plugins = [
+//   '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
+//   '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
+// ]
 
 export class ReleaseProcessor {
   private changelogGenerator: ChangelogGenerator
@@ -56,7 +56,7 @@ export class ReleaseProcessor {
     const opts: Options = {
       dryRun: true,
       tagFormat,
-      plugins
+      // plugins
     }
 
     const config: Config = {
