@@ -1,5 +1,5 @@
-import semanticRelease from 'semantic-release';
 import process from 'node:process';
+import semanticRelease from 'semantic-release';
 const plugins = [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',

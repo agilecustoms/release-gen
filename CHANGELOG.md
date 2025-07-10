@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.6](https://github.com/agilecustoms/release-gen/compare/v0.7.5...v0.7.6) (2025-07-10)
+
+### Bug Fixes
+
+* log cwd ([771a248](https://github.com/agilecustoms/release-gen/commit/771a2480c7bb773768918459cd67a6932b454756))
+* manually commit dist/ files ([f09ce8e](https://github.com/agilecustoms/release-gen/commit/f09ce8ef97fce37f5d2a5de83e8f6ddeed17876b))
+* plugins lowercase, add cwd ([23f764a](https://github.com/agilecustoms/release-gen/commit/23f764a91fb8868536521ee75202d33790975fe5))
+* rollback config usage ([f1d5150](https://github.com/agilecustoms/release-gen/commit/f1d5150f984c3794b10f2a26764b67a52f6df40e))
+* test ([06053f7](https://github.com/agilecustoms/release-gen/commit/06053f7371bedc698d5108088abea5fda044f5d7))
+
+
 ## [0.7.5](https://github.com/agilecustoms/release-gen/compare/v0.7.4...v0.7.5) (2025-07-10)
 
 ### Bug Fixes
