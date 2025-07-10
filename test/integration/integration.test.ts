@@ -43,7 +43,7 @@ describe('release-gen', () => {
       if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
       console.log(githubToken.length)
       console.log(githubToken.substring(1))
-      auth = `x-access-token:${githubToken}`
+      auth = `x-access-token:${githubToken}@`
     }
     // clone remote repo into the test directory
     execSync(`git clone https://${auth}github.com/agilecustoms/release-gen.git .`, { cwd: testDir, stdio: 'inherit' })
