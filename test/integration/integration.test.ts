@@ -40,7 +40,7 @@ describe('release-gen', () => {
     let auth = ''
     console.log(process.env.CI)
     if (process.env.CI) {
-      const githubToken = process.env.GITHUB_TOKEN;
+      const githubToken = process.env.GITHUB_TOKEN
       if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
       auth = `x-access-token:${githubToken}`
     }
