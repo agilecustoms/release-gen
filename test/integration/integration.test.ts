@@ -37,8 +37,11 @@ describe('release-gen', () => {
     fs.mkdirSync(testDir, { recursive: true })
     // process.chdir(testDir)
 
-    // clone the remote repo into the test directory
+    // clone the remote repo into the test directory and setup user name and email
     execSync('git clone https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
+    execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
+    // Make simple change and commit
     fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
     execSync('git add .', { cwd: testDir, stdio: 'inherit' })
     execSync('git commit -m "fix: add test file"', { cwd: testDir, stdio: 'inherit' })
