@@ -64,10 +64,9 @@ export class ReleaseProcessor {
       // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/publish/publish'
       cwd: process.env.GITHUB_WORKSPACE
     }
-    console.log('config:', config)
 
     try {
-      return await semanticRelease(opts)// , config)
+      return await semanticRelease(opts, config)
     } catch (e) {
       // @ts-expect-error do not know how to overcome this TS compilation error
       if (e.command.startsWith('git fetch --tags')) {
