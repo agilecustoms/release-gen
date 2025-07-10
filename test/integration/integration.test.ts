@@ -37,8 +37,10 @@ describe('release-gen', () => {
     fs.mkdirSync(testDir, { recursive: true })
     // process.chdir(testDir)
 
-    // clone the remote repo into the test directory and setup user name and email
-    execSync('git clone https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    // clone remote repo into the test directory (w/o checkout), do sparse checkout (just files at root) and setup user name and email
+    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
+    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
     execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
     execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
     // Make simple change and commit
@@ -51,8 +53,8 @@ describe('release-gen', () => {
     execSync(`node ${indexJs}`, {
       stdio: 'inherit',
       env: { ...process.env,
-        INPUT_TAG_FORMAT: 'v${version}',
-        GITHUB_WORKSPACE: testDir
+        'INPUT_TAG-FORMAT': 'v${version}',
+        'GITHUB_WORKSPACE': testDir
       }
     })
   })
