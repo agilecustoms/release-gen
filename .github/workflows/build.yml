@@ -32,7 +32,7 @@ jobs:
       - name: Test
         run: npm run test
         env:
-          INPUT_TAG-FORMAT: 'v${version}'
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Build
         run: npm run build

@@ -37,8 +37,15 @@ describe('release-gen', () => {
     fs.mkdirSync(testDir, { recursive: true })
     // process.chdir(testDir)
 
+    let auth = ''
+    console.log(process.env.CI)
+    if (process.env.CI) {
+      const githubToken = process.env.GITHUB_TOKEN;
+      if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
+      auth = `x-access-token:${githubToken}`
+    }
     // clone remote repo into the test directory
-    execSync('git clone https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    execSync(`git clone https://${auth}github.com/agilecustoms/release-gen.git .`, { cwd: testDir, stdio: 'inherit' })
     execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
     execSync('git pull', { cwd: testDir, stdio: 'inherit' });
     // must remove 'test' otherwise vitest recognize them as another set of tests
