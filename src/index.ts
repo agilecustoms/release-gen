@@ -6,13 +6,13 @@ import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
 import type { Release, ReleaseOptions } from './model.js'
 
-const distDir = path.dirname(fileURLToPath(import.meta.url))
+const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
 const execAsync = util.promisify(exec)
 const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
   cwd: packageJsonDir
 })
-console.log(`packageJsonDir: ${packageJsonDir}`)
+console.log(`GITHUB_WORKSPACE: ${process.env.GITHUB_WORKSPACE}`)
 
 console.log(stdout)
 if (stderr) {
