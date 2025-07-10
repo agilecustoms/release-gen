@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.7](https://github.com/agilecustoms/release-gen/compare/v0.7.6...v0.7.7) (2025-07-10)
+
+### Bug Fixes
+
+* pass config in semantic release ([f15dcb5](https://github.com/agilecustoms/release-gen/commit/f15dcb5445ae4ada1163982e3c3f59d2fe6f39c7))
+
+
 ## [0.7.6](https://github.com/agilecustoms/release-gen/compare/v0.7.5...v0.7.6) (2025-07-10)
 
 ### Bug Fixes

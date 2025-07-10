@@ -40,9 +40,8 @@ export class ReleaseProcessor {
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };
-        console.log('config:', config);
         try {
-            return await semanticRelease(opts);
+            return await semanticRelease(opts, config);
         }
         catch (e) {
             if (e.command.startsWith('git fetch --tags')) {
