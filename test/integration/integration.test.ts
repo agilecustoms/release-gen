@@ -54,7 +54,7 @@ describe('release-gen', () => {
       stdio: 'inherit',
       env: { ...process.env,
         // 'INPUT_TAG-FORMAT': 'v${version}',
-        'GITHUB_WORKSPACE': testDir
+        GITHUB_WORKSPACE: testDir
       }
     })
   })
