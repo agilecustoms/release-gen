@@ -1,5 +1,9 @@
 import process from 'node:process';
 import semanticRelease from 'semantic-release';
+const plugins = [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+];
 export class ReleaseProcessor {
     changelogGenerator;
     constructor(changelogGenerator) {
@@ -29,20 +33,14 @@ export class ReleaseProcessor {
     }
     async semanticRelease(tagFormat) {
         const opts = {
+            branches: ['main', 'master'],
             dryRun: true,
             tagFormat,
+            plugins
         };
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };
-        try {
-            return await semanticRelease(opts, config);
-        }
-        catch (e) {
-            if (e.command.startsWith('git fetch --tags')) {
-                throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e });
-            }
-            throw e;
-        }
+        return await semanticRelease(opts, config);
     }
 }

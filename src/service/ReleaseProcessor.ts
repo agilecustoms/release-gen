@@ -13,10 +13,10 @@ import type { ChangelogGenerator } from './ChangelogGenerator.js'
  * <br>
  * Only the first two are needed, so specify them explicitly
  */
-// const plugins = [
-//   '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
-//   '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
-// ]
+const plugins = [
+  '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
+  '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
+]
 
 export class ReleaseProcessor {
   private changelogGenerator: ChangelogGenerator
@@ -54,9 +54,10 @@ export class ReleaseProcessor {
 
   private async semanticRelease(tagFormat: string): Promise<Result> {
     const opts: Options = {
+      branches: ['main', 'master'],
       dryRun: true,
       tagFormat,
-      // plugins
+      plugins
     }
 
     const config: Config = {
@@ -65,14 +66,6 @@ export class ReleaseProcessor {
       cwd: process.env.GITHUB_WORKSPACE
     }
 
-    try {
-      return await semanticRelease(opts, config)
-    } catch (e) {
-      // @ts-expect-error do not know how to overcome this TS compilation error
-      if (e.command.startsWith('git fetch --tags')) {
-        throw new Error('git fetch --tags failed. Run `git fetch --tags --force` manually to update the tags.', { cause: e })
-      }
-      throw e
-    }
+    return await semanticRelease(opts, config)
   }
 }
