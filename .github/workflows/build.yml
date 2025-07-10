@@ -31,6 +31,8 @@ jobs:
 
       - name: Test
         run: npm run test
+        env:
+          INPUT_TAG-FORMAT: 'v${version}'
 
       - name: Build
         run: npm run build
