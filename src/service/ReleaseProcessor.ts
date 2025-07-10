@@ -1,4 +1,4 @@
-import type { NextRelease, Options, Result } from 'semantic-release'
+import type { Config, NextRelease, Options, Result } from 'semantic-release'
 import semanticRelease from 'semantic-release'
 import type { Release, ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
@@ -12,7 +12,7 @@ import type { ChangelogGenerator } from './ChangelogGenerator.js'
  * <br>
  * Only the first two are needed, so specify them explicitly
  */
-const plugins = [
+const PLUGINS = [
   '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
   '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
 ]
@@ -55,11 +55,13 @@ export class ReleaseProcessor {
     const opts: Options = {
       dryRun: true,
       tagFormat,
-      plugins
+      PLUGINS
     }
 
+    const config: Config = {}
+
     try {
-      return await semanticRelease(opts)
+      return await semanticRelease(opts, config)
     } catch (e) {
       // @ts-expect-error do not know how to overcome this TS compilation error
       if (e.command.startsWith('git fetch --tags')) {
