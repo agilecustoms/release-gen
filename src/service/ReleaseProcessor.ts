@@ -1,8 +1,8 @@
+import process from 'node:process'
 import type { Config, NextRelease, Options, Result } from 'semantic-release'
 import semanticRelease from 'semantic-release'
 import type { Release, ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
-import process from 'node:process'
 
 /**
  * default plugins:
