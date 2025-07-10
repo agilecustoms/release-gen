@@ -53,7 +53,7 @@ describe('release-gen', () => {
     execSync(`node ${indexJs}`, {
       stdio: 'inherit',
       env: { ...process.env,
-        'INPUT_TAG-FORMAT': 'v${version}',
+        // 'INPUT_TAG-FORMAT': 'v${version}',
         'GITHUB_WORKSPACE': testDir
       }
     })

@@ -26,7 +26,7 @@ const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js')
 
 const changelogFile: string = core.getInput('changelog-file', { required: false })
 const changelogTitle: string = core.getInput('changelog-title', { required: false })
-const tagFormat: string = core.getInput('tag-format', { required: true })
+const tagFormat: string = core.getInput('tag-format', { required: false }) || 'v${version}'
 
 const options: ReleaseOptions = { changelogFile, changelogTitle, tagFormat }
 
