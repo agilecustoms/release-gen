@@ -37,16 +37,22 @@ describe('release-gen', () => {
     fs.mkdirSync(testDir, { recursive: true })
     // process.chdir(testDir)
 
-    // clone remote repo into the test directory (w/o checkout), do sparse checkout (just files at root) and setup user name and email
-    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
-    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
-    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
+    // clone remote repo into the test directory
+    execSync('git clone https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' });
+    // must remove 'test' otherwise vitest recognize them as another set of tests
+    // remove other dirs to have more neat test directory
+    // (tried a more elegant solution with sparse checkout, but faced a problem that local copy is behind remote one)
+    ['.github', 'dist', 'src', 'test'].forEach(dir => {
+      const dirPath = path.join(testDir, dir)
+      fs.rmSync(dirPath, { recursive: true, force: true })
+    })
+    // w/o user.name and user.email git will fail to commit on CI
     execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
     execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
     // Make simple change and commit
-    fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
+    // fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
     execSync('git add .', { cwd: testDir, stdio: 'inherit' })
-    execSync('git commit -m "fix: add test file"', { cwd: testDir, stdio: 'inherit' })
+    execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
 
     // launch release-gen/test/integration/gh-action/dist/index.js with env variable for tag-format
     const indexJs = path.join(ghActionDistDir, 'index.js')
