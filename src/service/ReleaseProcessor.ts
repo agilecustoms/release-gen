@@ -2,6 +2,7 @@ import type { Config, NextRelease, Options, Result } from 'semantic-release'
 import semanticRelease from 'semantic-release'
 import type { Release, ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
+import process from 'node:process'
 
 /**
  * default plugins:
@@ -12,7 +13,7 @@ import type { ChangelogGenerator } from './ChangelogGenerator.js'
  * <br>
  * Only the first two are needed, so specify them explicitly
  */
-const PLUGINS = [
+const plugins = [
   '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
   '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
 ]
@@ -55,12 +56,13 @@ export class ReleaseProcessor {
     const opts: Options = {
       dryRun: true,
       tagFormat,
-      PLUGINS
+      plugins
     }
 
     const config: Config = {
       // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
-      // need to '/home/runner/work/publish/publish'
+      // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/publish/publish'
+      cwd: process.env.GITHUB_WORKSPACE
     }
     console.log('config:', config)
 

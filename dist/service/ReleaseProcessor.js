@@ -1,5 +1,6 @@
 import semanticRelease from 'semantic-release';
-const PLUGINS = [
+import process from 'node:process';
+const plugins = [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
 ];
@@ -34,9 +35,11 @@ export class ReleaseProcessor {
         const opts = {
             dryRun: true,
             tagFormat,
-            PLUGINS
+            plugins
         };
-        const config = {};
+        const config = {
+            cwd: process.env.GITHUB_WORKSPACE
+        };
         console.log('config:', config);
         try {
             return await semanticRelease(opts);

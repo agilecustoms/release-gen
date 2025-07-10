@@ -12,7 +12,6 @@ const execAsync = util.promisify(exec)
 const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
   cwd: packageJsonDir
 })
-console.log(`GITHUB_WORKSPACE: ${process.env.GITHUB_WORKSPACE}`)
 
 console.log(stdout)
 if (stderr) {
