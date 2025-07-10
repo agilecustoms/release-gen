@@ -23,3 +23,4 @@ Parameters are not documented: part of them are inputs in `publish` action, the 
     changelog-title: ${{ inputs.changelog-title }}
     tag-format: ${{ inputs.tag-format }}
 ```
+
