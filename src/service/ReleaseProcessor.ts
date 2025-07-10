@@ -58,10 +58,14 @@ export class ReleaseProcessor {
       PLUGINS
     }
 
-    const config: Config = {}
+    const config: Config = {
+      // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
+      // need to '/home/runner/work/publish/publish'
+    }
+    console.log('config:', config)
 
     try {
-      return await semanticRelease(opts, config)
+      return await semanticRelease(opts)// , config)
     } catch (e) {
       // @ts-expect-error do not know how to overcome this TS compilation error
       if (e.command.startsWith('git fetch --tags')) {
