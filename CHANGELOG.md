@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.5](https://github.com/agilecustoms/release-gen/compare/v0.7.4...v0.7.5) (2025-07-10)
+
+### Bug Fixes
+
+* log packageJsonDir ([ab20fda](https://github.com/agilecustoms/release-gen/commit/ab20fda76c2a320e60c6792c61240cda23334649))
+
+
 ## [0.7.4](https://github.com/agilecustoms/release-gen/compare/v0.7.3...v0.7.4) (2025-07-08)
 
 ### Bug Fixes

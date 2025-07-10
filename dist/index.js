@@ -10,6 +10,7 @@ const execAsync = util.promisify(exec);
 const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
     cwd: packageJsonDir
 });
+console.log(`packageJsonDir: ${packageJsonDir}`);
 console.log(stdout);
 if (stderr) {
     console.error('Error during npm ci - packages installed dynamically at runtime');

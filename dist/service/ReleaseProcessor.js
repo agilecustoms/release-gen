@@ -1,5 +1,5 @@
 import semanticRelease from 'semantic-release';
-const plugins = [
+const PLUGINS = [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
 ];
@@ -34,10 +34,11 @@ export class ReleaseProcessor {
         const opts = {
             dryRun: true,
             tagFormat,
-            plugins
+            PLUGINS
         };
+        const config = {};
         try {
-            return await semanticRelease(opts);
+            return await semanticRelease(opts, config);
         }
         catch (e) {
             if (e.command.startsWith('git fetch --tags')) {
