@@ -36,21 +36,17 @@ describe('release-gen', () => {
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
 
-    function exec(command: string) {
-      execSync(command, { cwd: testDir, stdio: 'inherit' })
-    }
-
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    exec('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .')
-    exec('git sparse-checkout init --cone')
-    exec('git checkout')
+    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
+    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
     // w/o user.name and user.email git will fail to commit on CI
-    exec('git config user.name "CI User"')
-    exec('git config user.email "ci@example.com"')
+    execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
+    execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
     // simple change and commit
     fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
-    exec('git add .')
-    exec('git commit -m "fix: delete all dirs"')
+    execSync('git add .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
