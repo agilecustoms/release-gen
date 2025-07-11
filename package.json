@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
-    "test": "vitest run --coverage",
+    "test": "MY_TOKEN=$MY_TOKEN vitest run --coverage",
     "build": "tsc",
     "run-local": "tsc && node dist/local.js"
   },
