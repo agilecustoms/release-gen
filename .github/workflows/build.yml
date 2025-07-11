@@ -13,6 +13,8 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,10 +32,10 @@ jobs:
 #        run: npm run lint
 
       - name: Test
-        env:
-          MY_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
         run: npm run test
-#          GITHUB_TOKEN: ${{ github.token }}
+        env:
+#          MY_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
+          MY_TOKEN: ${{ github.token }}
 
       - name: Build
         run: npm run build
