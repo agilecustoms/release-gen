@@ -38,44 +38,40 @@ describe('release-gen', () => {
     // process.chdir(testDir)
 
     let auth = ''
-    console.log(process.env)
-    console.log('CI: ' + process.env.CI)
     if (process.env.CI) {
       const githubToken = process.env.MY_TOKEN
-      console.log('githubToken: ', githubToken)
       if (!githubToken) throw new Error('MY_TOKEN is not set')
       console.log(githubToken.length)
-      console.log(githubToken.substring(1))
       // auth = `x-access-token:${githubToken}@`
       auth = `${githubToken}:x-oauth-basic@`
     }
     // clone remote repo into the test directory
-    // execSync(`git clone https://${auth}github.com/agilecustoms/release-gen.git .`, { cwd: testDir, stdio: 'inherit' })
-    // execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
-    // execSync('git pull', { cwd: testDir, stdio: 'inherit' });
-    // // must remove 'test' otherwise vitest recognize them as another set of tests
-    // // remove other dirs to have more neat test directory
-    // // (tried a more elegant solution with sparse checkout, but faced a problem that local copy is behind remote one)
-    // ['.github', 'dist', 'src', 'test'].forEach((dir) => {
-    //   const dirPath = path.join(testDir, dir)
-    //   fs.rmSync(dirPath, { recursive: true, force: true })
-    // })
-    // // w/o user.name and user.email git will fail to commit on CI
-    // execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
-    // execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
-    // // Make simple change and commit
-    // // fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
-    // execSync('git add .', { cwd: testDir, stdio: 'inherit' })
-    // execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
-    //
-    // // launch release-gen/test/integration/gh-action/dist/index.js with env variable for tag-format
-    // const indexJs = path.join(ghActionDistDir, 'index.js')
-    // execSync(`node ${indexJs}`, {
-    //   stdio: 'inherit',
-    //   env: { ...process.env,
-    //     // 'INPUT_TAG-FORMAT': 'v${version}',
-    //     GITHUB_WORKSPACE: testDir
-    //   }
-    // })
+    execSync(`git clone https://${auth}github.com/agilecustoms/release-gen.git .`, { cwd: testDir, stdio: 'inherit' })
+    execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
+    execSync('git pull', { cwd: testDir, stdio: 'inherit' });
+    // must remove 'test' otherwise vitest recognize them as another set of tests
+    // remove other dirs to have more neat test directory
+    // (tried a more elegant solution with sparse checkout, but faced a problem that local copy is behind remote one)
+    ['.github', 'dist', 'src', 'test'].forEach((dir) => {
+      const dirPath = path.join(testDir, dir)
+      fs.rmSync(dirPath, { recursive: true, force: true })
+    })
+    // w/o user.name and user.email git will fail to commit on CI
+    execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
+    execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
+    // Make simple change and commit
+    // fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
+    execSync('git add .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
+
+    // launch release-gen/test/integration/gh-action/dist/index.js with env variable for tag-format
+    const indexJs = path.join(ghActionDistDir, 'index.js')
+    execSync(`node ${indexJs}`, {
+      stdio: 'inherit',
+      env: { ...process.env,
+        // 'INPUT_TAG-FORMAT': 'v${version}',
+        GITHUB_WORKSPACE: testDir
+      }
+    })
   })
 })

@@ -35,7 +35,6 @@ jobs:
         run: npm run test
         env:
           MY_TOKEN: ${{ github.token }}
-#          MY_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
 
       - name: Build
         run: npm run build
