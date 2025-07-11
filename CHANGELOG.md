@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.9](https://github.com/agilecustoms/release-gen/compare/v0.7.8...v0.7.9) (2025-07-11)
+
+### Bug Fixes
+
+* manually index.js ([220dec2](https://github.com/agilecustoms/release-gen/commit/220dec29e3e79505aa8c3a15fece1f7597a65667))
+* start code cleanup ([539771a](https://github.com/agilecustoms/release-gen/commit/539771a049fc247fb6fb5bf983979bfd4b5106fb))
+
+
 ## [0.7.8](https://github.com/agilecustoms/release-gen/compare/v0.7.7...v0.7.8) (2025-07-11)
 
 ### Bug Fixes
