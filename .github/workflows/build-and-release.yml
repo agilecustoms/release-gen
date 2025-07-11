@@ -11,6 +11,8 @@ jobs:
     with:
       artifacts: true
     secrets: inherit
+    permissions:
+      contents: write
 
   Release:
     needs: Build
