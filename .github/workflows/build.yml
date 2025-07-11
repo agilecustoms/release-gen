@@ -32,7 +32,7 @@ jobs:
       - name: Test
         run: npm run test
         env:
-          GITHUB_TOKEN: ${{ secrets.TMP_TOKEN }}
+          MY_TOKEN: ${{ secrets.TMP_TOKEN }}
 #          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Build
