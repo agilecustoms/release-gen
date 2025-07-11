@@ -13,8 +13,6 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,8 +33,6 @@ jobs:
         run: npm run test
         env:
           GITHUB_TOKEN: ${{ github.token }}
-#          MY_TOKEN: ${{ secrets.TMP_TOKEN }}
-#          MY_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
 
       - name: Build
         run: npm run build
