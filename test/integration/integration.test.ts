@@ -3,6 +3,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { beforeAll, beforeEach, describe, it } from 'vitest'
 
+const repoUrl = 'github.com/agilecustoms/release-gen.git'
+
 const rootDir = path.resolve(__dirname, '../..')
 const distDir = path.join(rootDir, 'dist')
 const gitDir = path.join(__dirname, 'git')
@@ -42,7 +44,7 @@ describe('release-gen', () => {
     }
 
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    exec('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .')
+    exec(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`)
     exec('git sparse-checkout init --cone')
     exec(`git checkout ${branch}`)
     // w/o user.name and user.email git will fail to commit on CI
@@ -55,6 +57,8 @@ describe('release-gen', () => {
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
+      // release-gen action is run from completely different directory, so it uses GITHUB_WORKSPACE to find actual repo that needs to be released
+      // in our case the repo lays deep inside, so need to nudge release-gen to it
       GITHUB_WORKSPACE: testDir,
       // semantic-release doesn't look into current checked out branch, it stiffs for current CI tool by various env vars
       // then for each CI tool it has separate logic how to determine current branch, env.GITHUB_REF for GH Actions
@@ -64,7 +68,7 @@ describe('release-gen', () => {
     if (process.env.CI) {
       const githubToken = process.env.GITHUB_TOKEN
       if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@github.com/agilecustoms/release-gen.git`
+      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
     }
 
     // launch release-gen/test/integration/gh-action/dist/index.js
