@@ -37,17 +37,16 @@ describe('release-gen', () => {
     fs.mkdirSync(testDir, { recursive: true })
     // process.chdir(testDir)
 
-    let auth = ''
-    console.log('process.env.CI: ' + process.env.CI)
+    let auth = '' // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
     if (process.env.CI) {
       const githubToken = process.env.MY_TOKEN
       if (!githubToken) throw new Error('MY_TOKEN is not set')
-      console.log('length: ' + githubToken.length)
-      // auth = `x-access-token:${githubToken}@`
+      // auth = `x-access-token:${githubToken}@` TODO: remove
       auth = `${githubToken}:x-oauth-basic@`
     }
+    const repoUrl = `https://${auth}github.com/agilecustoms/release-gen.git`
     // clone remote repo into the test directory
-    execSync(`git clone https://${auth}github.com/agilecustoms/release-gen.git .`, { cwd: testDir, stdio: 'inherit' })
+    execSync(`git clone ${repoUrl} .`, { cwd: testDir, stdio: 'inherit' })
     execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
     execSync('git pull', { cwd: testDir, stdio: 'inherit' });
     // must remove 'test' otherwise vitest recognize them as another set of tests
@@ -70,8 +69,8 @@ describe('release-gen', () => {
     execSync(`node ${indexJs}`, {
       stdio: 'inherit',
       env: { ...process.env,
-        // 'INPUT_TAG-FORMAT': 'v${version}',
-        GITHUB_WORKSPACE: testDir
+        GITHUB_WORKSPACE: testDir,
+        REPOSITORY_URL: repoUrl,
       }
     })
   })

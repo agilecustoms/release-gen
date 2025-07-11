@@ -38,6 +38,9 @@ export class ReleaseProcessor {
             tagFormat,
             plugins
         };
+        if (process.env.REPOSITORY_URL) {
+            opts.repositoryUrl = process.env.REPOSITORY_URL;
+        }
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };

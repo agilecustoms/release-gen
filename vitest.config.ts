@@ -2,7 +2,7 @@ import {coverageConfigDefaults, defineConfig} from 'vitest/config';
 
 export default defineConfig({
   test: {
-    testTimeout: process.env.CI ? undefined : 0, // 0 locally, default on CI
+    testTimeout: process.env.CI ? 30000 : 0, // 0 locally (no timeout)
     coverage: {
       exclude: [
         'src/index.ts',

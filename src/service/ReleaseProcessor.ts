@@ -60,6 +60,15 @@ export class ReleaseProcessor {
       plugins
     }
 
+    // `repositoryUrl` is used in command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
+    // it has to have a token in it, otherwise `git push --dry-run` will fail
+    // it works fine when `release-gen` is used as part of `agilecustoms/publish` action
+    // add this tweak to support integration test in `release-gen` itself
+    if (process.env.REPOSITORY_URL) {
+      // if repositoryUrl is set, use it
+      opts.repositoryUrl = process.env.REPOSITORY_URL
+    }
+
     const config: Config = {
       // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
       // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/publish/publish'

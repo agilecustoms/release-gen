@@ -7,15 +7,6 @@ import * as util from 'node:util';
 const distDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJsonDir = path.dirname(distDir);
 const execAsync = util.promisify(exec);
-const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
-    cwd: packageJsonDir
-});
-console.log(stdout);
-if (stderr) {
-    console.error('Error during npm ci - packages installed dynamically at runtime');
-    console.error(stderr);
-    process.exit(1);
-}
 const core = await import('@actions/core');
 const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
 const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
