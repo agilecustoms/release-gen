@@ -41,6 +41,7 @@ export class ReleaseProcessor {
         if (process.env.REPOSITORY_URL) {
             opts.repositoryUrl = process.env.REPOSITORY_URL;
         }
+        console.log('process.env.GITHUB_WORKSPACE: ' + process.env.GITHUB_WORKSPACE);
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };

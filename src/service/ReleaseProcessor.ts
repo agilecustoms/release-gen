@@ -69,6 +69,7 @@ export class ReleaseProcessor {
       opts.repositoryUrl = process.env.REPOSITORY_URL
     }
 
+    console.log('process.env.GITHUB_WORKSPACE: ' + process.env.GITHUB_WORKSPACE)
     const config: Config = {
       // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
       // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/publish/publish'
