@@ -32,7 +32,7 @@ describe('release-gen', () => {
   })
 
   it('minor', async (ctx) => {
-    // create a directory for this test and cd into it
+    // create a directory for this test
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
 
@@ -43,7 +43,7 @@ describe('release-gen', () => {
     // w/o user.name and user.email git will fail to commit on CI
     execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
     execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
-    // Make simple change and commit
+    // simple change and commit
     fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
     execSync('git add .', { cwd: testDir, stdio: 'inherit' })
     execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
@@ -56,8 +56,7 @@ describe('release-gen', () => {
     if (process.env.CI) {
       const githubToken = process.env.GITHUB_TOKEN
       if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-      // auth = `x-access-token:${githubToken}@` TODO: remove
-      env['REPOSITORY_URL'] = `https://${githubToken}:x-oauth-basic@github.com/agilecustoms/release-gen.git`
+      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@github.com/agilecustoms/release-gen.git`
     }
 
     // launch release-gen/test/integration/gh-action/dist/index.js
