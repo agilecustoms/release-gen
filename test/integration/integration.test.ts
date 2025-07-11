@@ -36,41 +36,32 @@ describe('release-gen', () => {
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
 
-    let auth = '' // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
-    if (process.env.CI) {
-      const githubToken = process.env.GITHUB_TOKEN
-      if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-      // auth = `x-access-token:${githubToken}@` TODO: remove
-      auth = `${githubToken}:x-oauth-basic@`
-    }
-    const repoUrl = `https://${auth}github.com/agilecustoms/release-gen.git`
-    // clone remote repo into the test directory
-    execSync(`git clone ${repoUrl} .`, { cwd: testDir, stdio: 'inherit' })
-    execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
-    execSync('git pull', { cwd: testDir, stdio: 'inherit' });
-    // must remove 'test' otherwise vitest recognize them as another set of tests
-    // remove other dirs to have more neat test directory
-    // (tried a more elegant solution with sparse checkout, but faced a problem that local copy is behind remote one)
-    ['.github', 'dist', 'src', 'test'].forEach((dir) => {
-      const dirPath = path.join(testDir, dir)
-      fs.rmSync(dirPath, { recursive: true, force: true })
-    })
+    // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
+    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
+    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
     // w/o user.name and user.email git will fail to commit on CI
     execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
     execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
     // Make simple change and commit
-    // fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
+    fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
     execSync('git add .', { cwd: testDir, stdio: 'inherit' })
     execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
 
-    // launch release-gen/test/integration/gh-action/dist/index.js with env variable for tag-format
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      GITHUB_WORKSPACE: testDir
+    }
+    // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
+    if (process.env.CI) {
+      const githubToken = process.env.GITHUB_TOKEN
+      if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
+      // auth = `x-access-token:${githubToken}@` TODO: remove
+      env['REPOSITORY_URL'] = `https://${githubToken}:x-oauth-basic@github.com/agilecustoms/release-gen.git`
+    }
+
+    // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    execSync(`node ${indexJs}`, {
-      stdio: 'inherit',
-      env: { ...process.env,
-        GITHUB_WORKSPACE: testDir,
-        REPOSITORY_URL: repoUrl,
-      }
-    })
+    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env })
   })
 })
