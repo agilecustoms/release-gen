@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.8](https://github.com/agilecustoms/release-gen/compare/v0.7.7...v0.7.8) (2025-07-11)
+
+### Bug Fixes
+
+* remove unnecessary ex handling - now it will be tested by integration tests ([5b265d3](https://github.com/agilecustoms/release-gen/commit/5b265d30a8f4e8cc3a2e3db6ad561126eb8a28ae))
+* use sparse checkout ([60aca49](https://github.com/agilecustoms/release-gen/commit/60aca49e3e2306bcb0810b2864120865bcf94502))
+
+
 ## [0.7.7](https://github.com/agilecustoms/release-gen/compare/v0.7.6...v0.7.7) (2025-07-10)
 
 ### Bug Fixes
