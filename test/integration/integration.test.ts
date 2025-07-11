@@ -80,7 +80,8 @@ describe('release-gen', () => {
       // release-gen action is run from completely different directory, so it uses GITHUB_WORKSPACE to find actual repo that needs to be released
       // in our case the repo lays deep inside, so need to nudge release-gen to it
       GITHUB_WORKSPACE: testDir,
-      GITHUB_REF: branch // see a DISCLAIMER above
+      GITHUB_REF: branch, // see a DISCLAIMER above
+      GITHUB_OUTPUT: ''
     }
 
     if (process.env.CI) { // see a DISCLAIMER above
