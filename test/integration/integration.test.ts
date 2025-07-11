@@ -1,7 +1,10 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { beforeAll, beforeEach, describe, it } from 'vitest'
+import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import type { Release } from '../../src/model.js'
+
+const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
 const rootDir = path.resolve(__dirname, '../..')
 const distDir = path.join(rootDir, 'dist')
@@ -9,6 +12,25 @@ const gitDir = path.join(__dirname, 'git')
 const ghActionDir = path.join(__dirname, 'gh-action')
 const ghActionDistDir = path.join(ghActionDir, 'dist')
 
+/**
+ * DISCLAIMER about semantic-release
+ * During dry run it invokes command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
+ * I just want to generate version and release notes, but still have to play this game
+ * This command brings a lot of issues:
+ * 1. If it fails - you get misleading error "The local branch main is behind the remote one, therefore, a new version won't be published"
+ * 2. Even though this repo is public and I can easily clone it via https, still semantic-release requires a token for `git push --dry-run`.
+ *    Moreover: default ${{github.token}} with `permissions: write` is not enough,
+ *    I have to use PAT and don't forget to set `secrets: inherit` in build-and-release.yml workflow
+ * 3. I tried to use this token when cloning the repo (thus the token stays at .git/config file) - but it is ignored.
+ *    semantic-release needs token to be present as a parameter `repositoryUrl`.
+ *    Since this parameter is not normally set, I had to augment release-gen code to set it if env variable `REPOSITORY_URL` is passed
+ * 4. semantic-release doesn't look into current (checked-out) branch, it stiffs for current CI tool by various env vars,
+ *    and then for each CI tool it has separate logic how to determine current branch, env.GITHUB_REF for GH Actions.
+ *    If not passed, semantic-release uses the current feature branch name, not a branch from integration test
+ *    This fix with env variable 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
+ *
+ * Note: normally on CI (and also in local setup) the auth token is auto attached via "insteadOf" rule in .gitconfig
+ */
 describe('release-gen', () => {
   beforeAll(() => {
     // rebuild source code to reflect any changes while work on tests
@@ -35,32 +57,57 @@ describe('release-gen', () => {
     // create a directory for this test
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
+    const branch = 'main'
+
+    function exec(command: string) {
+      execSync(command, { cwd: testDir, stdio: 'inherit' })
+    }
 
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
-    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
-    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
+    exec(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`)
+    exec('git sparse-checkout init --cone')
+    exec(`git checkout ${branch}`)
     // w/o user.name and user.email git will fail to commit on CI
-    execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
-    execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
+    exec('git config user.name "CI User"')
+    exec('git config user.email "ci@example.com"')
     // simple change and commit
     fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
-    execSync('git add .', { cwd: testDir, stdio: 'inherit' })
-    execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
+    exec('git add .')
+    exec('git commit -m "fix: test"')
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      GITHUB_WORKSPACE: testDir
+      // release-gen action is run from completely different directory, so it uses GITHUB_WORKSPACE to find actual repo that needs to be released
+      // in our case the repo lays deep inside, so need to nudge release-gen to it
+      GITHUB_WORKSPACE: testDir,
+      GITHUB_REF: branch, // see a DISCLAIMER above
+      GITHUB_OUTPUT: ''
     }
-    // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
-    if (process.env.CI) {
+
+    if (process.env.CI) { // see a DISCLAIMER above
       const githubToken = process.env.GITHUB_TOKEN
       if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@github.com/agilecustoms/release-gen.git`
+      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
     }
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env })
+    const buffer = execSync(`node ${indexJs}`, { env: env })
+    const output = buffer.toString()
+    console.log(output)
+    // Parse "::set-output" lines into a map
+    const outputMap: Record<string, string> = {}
+    const regex = /::set-output name=([^:]+)::([^\n]+)/g
+    let match
+    while ((match = regex.exec(output)) !== null) {
+      outputMap[match[1]!] = match[2]!
+    }
+    console.log('Output Map:', outputMap)
+    // outputMap now contains all set-output key-value pairs
+    const release: Release = {
+      nextVersion: outputMap['next_version']!,
+      notes: fs.readFileSync(outputMap['notes_file']!, 'utf8')
+    }
+    expect(release.nextVersion).not.toMatch(/0$/)
   })
 })

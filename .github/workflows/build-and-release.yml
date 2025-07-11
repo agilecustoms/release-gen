@@ -10,8 +10,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       artifacts: true
-    permissions:
-      contents: write
+    secrets: inherit
 
   Release:
     needs: Build
