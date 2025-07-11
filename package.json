@@ -15,6 +15,7 @@
     "url": "git+https://github.com/agilecustoms/release-gen.git"
   },
   "keywords": [
+    "publish",
     "release",
     "action"
   ],
