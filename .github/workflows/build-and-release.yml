@@ -11,7 +11,7 @@ jobs:
     with:
       artifacts: true
     permissions:
-      contents: read
+      contents: write
 
   Release:
     needs: Build
