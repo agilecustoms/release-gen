@@ -35,23 +35,30 @@ describe('release-gen', () => {
     // create a directory for this test
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
+    const branch = 'main'
+
+    function exec(command: string) {
+      execSync(command, { cwd: testDir, stdio: 'inherit' })
+    }
 
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
-    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
-    execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
+    exec('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .')
+    exec('git sparse-checkout init --cone')
+    exec(`git checkout ${branch}`)
     // w/o user.name and user.email git will fail to commit on CI
-    execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
-    execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
+    exec('git config user.name "CI User"')
+    exec('git config user.email "ci@example.com"')
     // simple change and commit
     fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
-    execSync('git add .', { cwd: testDir, stdio: 'inherit' })
-    execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
+    exec('git add .')
+    exec('git commit -m "fix: delete all dirs"')
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      GITHUB_REF: 'main',
-      GITHUB_WORKSPACE: testDir
+      GITHUB_WORKSPACE: testDir,
+      // semantic-release doesn't look into current checked out branch, it stiffs for current CI tool by various env vars
+      // then for each CI tool it has separate logic how to determine current branch, env.GITHUB_REF for GH Actions
+      GITHUB_REF: branch
     }
     // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
     if (process.env.CI) {
