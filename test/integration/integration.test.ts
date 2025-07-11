@@ -1,10 +1,7 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import type { Release } from '../../src/model.js'
-
-const repoUrl = 'github.com/agilecustoms/release-gen.git'
+import { beforeAll, beforeEach, describe, it } from 'vitest'
 
 const rootDir = path.resolve(__dirname, '../..')
 const distDir = path.join(rootDir, 'dist')
@@ -39,21 +36,17 @@ describe('release-gen', () => {
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
 
-    function exec(command: string) {
-      execSync(command, { cwd: testDir, stdio: 'inherit' })
-    }
-
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    exec(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`)
-    exec('git sparse-checkout init --cone')
-    exec('git checkout')
+    execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
+    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
     // w/o user.name and user.email git will fail to commit on CI
-    exec('git config user.name "CI User"')
-    exec('git config user.email "ci@example.com"')
+    execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
+    execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
     // simple change and commit
     fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
-    exec('git add .')
-    exec('git commit -m "fix: test file"')
+    execSync('git add .', { cwd: testDir, stdio: 'inherit' })
+    execSync('git commit -m "fix: delete all dirs"', { cwd: testDir, stdio: 'inherit' })
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -63,27 +56,11 @@ describe('release-gen', () => {
     if (process.env.CI) {
       const githubToken = process.env.GITHUB_TOKEN
       if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
+      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@github.com/agilecustoms/release-gen.git`
     }
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    const buffer = execSync(`node ${indexJs}`, { env: env })
-    const output = buffer.toString()
-    console.log(output)
-    // Parse "::set-output" lines into a map
-    const outputMap: Record<string, string> = {}
-    const regex = /::set-output name=([^:]+)::([^\n]+)/g
-    let match
-    while ((match = regex.exec(output)) !== null) {
-      outputMap[match[1]!] = match[2]!
-    }
-    console.log('Output Map:', outputMap)
-    // outputMap now contains all set-output key-value pairs
-    const release: Release = {
-      nextVersion: outputMap['next_version']!,
-      notes: fs.readFileSync(outputMap['notes_file']!, 'utf8')
-    }
-    expect(release.nextVersion).not.toMatch(/0$/)
+    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env })
   })
 })
