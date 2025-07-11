@@ -62,6 +62,6 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env, cwd: testDir })
+    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env })
   })
 })
