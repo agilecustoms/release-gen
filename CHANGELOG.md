@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.11](https://github.com/agilecustoms/release-gen/compare/v0.7.10...v0.7.11) (2025-07-11)
+
+### Bug Fixes
+
+* use newer url format for authorization ([2ba6f54](https://github.com/agilecustoms/release-gen/commit/2ba6f540916e19f0d47080bedb316d5813ca1805))
+
+
 ## [0.7.10](https://github.com/agilecustoms/release-gen/compare/v0.7.9...v0.7.10) (2025-07-11)
 
 ### Bug Fixes
