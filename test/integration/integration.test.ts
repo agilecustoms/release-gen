@@ -39,7 +39,7 @@ describe('release-gen', () => {
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
     execSync('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .', { cwd: testDir, stdio: 'inherit' })
     execSync('git sparse-checkout init --cone', { cwd: testDir, stdio: 'inherit' })
-    execSync('git checkout', { cwd: testDir, stdio: 'inherit' })
+    execSync('git checkout main', { cwd: testDir, stdio: 'inherit' })
     // w/o user.name and user.email git will fail to commit on CI
     execSync('git config user.name "CI User"', { cwd: testDir, stdio: 'inherit' })
     execSync('git config user.email "ci@example.com"', { cwd: testDir, stdio: 'inherit' })
@@ -50,6 +50,7 @@ describe('release-gen', () => {
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
+      GITHUB_REF: 'main',
       GITHUB_WORKSPACE: testDir
     }
     // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
