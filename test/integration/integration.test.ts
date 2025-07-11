@@ -35,12 +35,11 @@ describe('release-gen', () => {
     // create a directory for this test and cd into it
     const testDir = path.join(gitDir, ctx.task.name)
     fs.mkdirSync(testDir, { recursive: true })
-    // process.chdir(testDir)
 
     let auth = '' // when running locally, auth token is auto attached via "insteadOf" rule in .gitconfig
     if (process.env.CI) {
-      const githubToken = process.env.MY_TOKEN
-      if (!githubToken) throw new Error('MY_TOKEN is not set')
+      const githubToken = process.env.GITHUB_TOKEN
+      if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
       // auth = `x-access-token:${githubToken}@` TODO: remove
       auth = `${githubToken}:x-oauth-basic@`
     }
