@@ -30,9 +30,9 @@ jobs:
 #        run: npm run lint
 
       - name: Test
-        run: npm run test
         env:
           MY_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
+        run: npm run test
 #          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Build
