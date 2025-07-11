@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.14](https://github.com/agilecustoms/release-gen/compare/v0.7.13...v0.7.14) (2025-07-11)
+
+### Bug Fixes
+
+* test ([6136145](https://github.com/agilecustoms/release-gen/commit/6136145628eac98ad52cc88075c10a5293351da3))
+
+
 ## [0.7.13](https://github.com/agilecustoms/release-gen/compare/v0.7.12...v0.7.13) (2025-07-11)
 
 ### Bug Fixes
