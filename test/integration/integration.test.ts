@@ -1,7 +1,8 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { beforeAll, beforeEach, describe, it } from 'vitest'
+import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import type { Release } from '../../src/model.js'
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
@@ -90,6 +91,22 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    execSync(`node ${indexJs}`, { stdio: 'inherit', env })
+    const buffer = execSync(`node ${indexJs}`, { env: env })
+    const output = buffer.toString()
+    console.log(output)
+    // Parse "::set-output" lines into a map
+    const outputMap: Record<string, string> = {}
+    const regex = /::set-output name=([^:]+)::([^\n]+)/g
+    let match
+    while ((match = regex.exec(output)) !== null) {
+      outputMap[match[1]!] = match[2]!
+    }
+    console.log('Output Map:', outputMap)
+    // outputMap now contains all set-output key-value pairs
+    const release: Release = {
+      nextVersion: outputMap['next_version']!,
+      notes: fs.readFileSync(outputMap['notes_file']!, 'utf8')
+    }
+    expect(release.nextVersion).not.toMatch(/0$/)
   })
 })
