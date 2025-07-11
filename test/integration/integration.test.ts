@@ -43,7 +43,7 @@ describe('release-gen', () => {
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
     exec('git clone --no-checkout --filter=blob:none https://github.com/agilecustoms/release-gen.git .')
     exec('git sparse-checkout init --cone')
-    exec('git checkout')
+    exec('git checkout main')
     // w/o user.name and user.email git will fail to commit on CI
     exec('git config user.name "CI User"')
     exec('git config user.email "ci@example.com"')
