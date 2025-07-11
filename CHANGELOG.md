@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.12](https://github.com/agilecustoms/release-gen/compare/v0.7.11...v0.7.12) (2025-07-11)
+
+### Bug Fixes
+
+* remove secrets ([b8f2a83](https://github.com/agilecustoms/release-gen/commit/b8f2a8339a3c91bb6887d0345841f5b17b4df9ac))
+
+
 ## [0.7.11](https://github.com/agilecustoms/release-gen/compare/v0.7.10...v0.7.11) (2025-07-11)
 
 ### Bug Fixes
