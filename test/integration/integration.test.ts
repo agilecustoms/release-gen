@@ -59,8 +59,9 @@ describe('release-gen', () => {
       env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@github.com/agilecustoms/release-gen.git`
     }
 
+
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env })
+    execSync(`node ${indexJs}`, { stdio: 'inherit', env: env, cwd: testDir })
   })
 })
