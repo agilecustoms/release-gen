@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.13](https://github.com/agilecustoms/release-gen/compare/v0.7.12...v0.7.13) (2025-07-11)
+
+### Bug Fixes
+
+* remove permissions ([9155929](https://github.com/agilecustoms/release-gen/commit/915592963b755dcfe4244a2236b6358c9fef502a))
+* restore write permissions ([879183d](https://github.com/agilecustoms/release-gen/commit/879183d81db291afa1520191cd0b64a51f88b54f))
+* try read permission ([a2b947b](https://github.com/agilecustoms/release-gen/commit/a2b947ba76dec15073d8074e44f00d3ef55f2dc3))
+
+
 ## [0.7.12](https://github.com/agilecustoms/release-gen/compare/v0.7.11...v0.7.12) (2025-07-11)
 
 ### Bug Fixes
