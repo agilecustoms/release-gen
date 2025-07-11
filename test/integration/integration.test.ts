@@ -38,6 +38,7 @@ describe('release-gen', () => {
     // process.chdir(testDir)
 
     let auth = ''
+    console.log('process.env.CI: ' + process.env.CI)
     if (process.env.CI) {
       const githubToken = process.env.MY_TOKEN
       if (!githubToken) throw new Error('MY_TOKEN is not set')
