@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.10](https://github.com/agilecustoms/release-gen/compare/v0.7.9...v0.7.10) (2025-07-11)
+
+### Bug Fixes
+
+* simplify int test ([292f6e7](https://github.com/agilecustoms/release-gen/commit/292f6e707d7dd24dad3e490674b4843108b58ff0))
+
+
 ## [0.7.9](https://github.com/agilecustoms/release-gen/compare/v0.7.8...v0.7.9) (2025-07-11)
 
 ### Bug Fixes
