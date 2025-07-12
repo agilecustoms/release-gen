@@ -1,9 +1,9 @@
+import type { ExecSyncOptions } from 'child_process'
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import type { Release } from '../../src/model.js'
-import type {ExecSyncOptions} from "child_process";
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
@@ -74,18 +74,12 @@ describe('release-gen', () => {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  it('minor', async (ctx) => {
-    const testDir = path.join(gitDir, ctx.task.name)
-    const branch = 'main'
-
-    checkout(testDir, branch)
-    commit(testDir, 'fix: test')
-
+  function runReleaseGen(cwd: string, branch: string): Release {
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       // release-gen action is run from completely different directory, so it uses GITHUB_WORKSPACE to find actual repo that needs to be released
       // in our case the repo lays deep inside, so need to nudge release-gen to it
-      GITHUB_WORKSPACE: testDir,
+      GITHUB_WORKSPACE: cwd,
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '' // this makes `core.setOutput` to print to stdout instead of file
     }
@@ -110,10 +104,20 @@ describe('release-gen', () => {
     }
     console.log('Output Map:', outputMap)
     // outputMap now contains all set-output key-value pairs
-    const release: Release = {
+    return {
       nextVersion: outputMap['next_version']!,
       notes: fs.readFileSync(outputMap['notes_file']!, 'utf8')
     }
+  }
+
+  it('minor', async (ctx) => {
+    const testDir = path.join(gitDir, ctx.task.name)
+    const branch = 'main'
+    checkout(testDir, branch)
+    commit(testDir, 'fix: test')
+
+    const release = runReleaseGen(testDir, branch)
+
     expect(release.nextVersion).not.toMatch(/0$/)
   })
 })
