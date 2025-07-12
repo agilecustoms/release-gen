@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import type { Release } from '../../src/model.js'
+import type {ExecSyncOptions} from "child_process";
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
@@ -50,30 +51,35 @@ describe('release-gen', () => {
 
   beforeEach((ctx) => {
     const testDir = path.join(gitDir, ctx.task.name)
+    // delete (if any) and create a directory for this test
     fs.rmSync(testDir, { recursive: true, force: true })
+    fs.mkdirSync(testDir)
   })
 
+  function checkout(cwd: string, branch: string): void {
+    const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
+    // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
+    execSync(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
+    execSync('git sparse-checkout init --cone', options)
+    execSync(`git checkout ${branch}`, options)
+    // w/o user.name and user.email git will fail to commit on CI
+    execSync('git config user.name "CI User"', options)
+    execSync('git config user.email "ci@example.com"', options)
+  }
+
+  function commit(cwd: string, msg: string) {
+    const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
+    fs.writeFileSync(`${cwd}/test.txt`, 'test content', 'utf8')
+    execSync('git add .', options)
+    execSync(`git commit -m "${msg}"`, options)
+  }
+
   it('minor', async (ctx) => {
-    // create a directory for this test
     const testDir = path.join(gitDir, ctx.task.name)
-    fs.mkdirSync(testDir, { recursive: true })
     const branch = 'main'
 
-    function exec(command: string) {
-      execSync(command, { cwd: testDir, stdio: 'inherit' })
-    }
-
-    // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    exec(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`)
-    exec('git sparse-checkout init --cone')
-    exec(`git checkout ${branch}`)
-    // w/o user.name and user.email git will fail to commit on CI
-    exec('git config user.name "CI User"')
-    exec('git config user.email "ci@example.com"')
-    // simple change and commit
-    fs.writeFileSync(`${testDir}/test.txt`, 'test content', 'utf8')
-    exec('git add .')
-    exec('git commit -m "fix: test"')
+    checkout(testDir, branch)
+    commit(testDir, 'fix: test')
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -81,7 +87,7 @@ describe('release-gen', () => {
       // in our case the repo lays deep inside, so need to nudge release-gen to it
       GITHUB_WORKSPACE: testDir,
       GITHUB_REF: branch, // see a DISCLAIMER above
-      GITHUB_OUTPUT: ''
+      GITHUB_OUTPUT: '' // this makes `core.setOutput` to print to stdout instead of file
     }
 
     if (process.env.CI) { // see a DISCLAIMER above
