@@ -39,7 +39,7 @@ describe('release-gen', () => {
 
     // copy entire release-gen/dist dir into test/integration/gh-action
     fs.rmSync(ghActionDir, { recursive: true, force: true }) // clean before copy
-    fs.mkdirSync(ghActionDir, { recursive: true })
+    fs.mkdirSync(ghActionDir)
     execSync(`cp -R "${distDir}" "${ghActionDir}"`)
     // copy root package.json and package-lock.json into test/integration/gh-action
     execSync(`cp "${path.join(rootDir, 'package.json')}" "${ghActionDir}"`)
@@ -110,7 +110,7 @@ describe('release-gen', () => {
     }
   }
 
-  it('minor', async (ctx) => {
+  it('patch', async (ctx) => {
     const testDir = path.join(gitDir, ctx.task.name)
     const branch = 'main'
     checkout(testDir, branch)
@@ -119,5 +119,16 @@ describe('release-gen', () => {
     const release = runReleaseGen(testDir, branch)
 
     expect(release.nextVersion).not.toMatch(/0$/)
+  })
+
+  it('minor', async (ctx) => {
+    const testDir = path.join(gitDir, ctx.task.name)
+    const branch = 'main'
+    checkout(testDir, branch)
+    commit(testDir, 'feat: test')
+
+    const release = runReleaseGen(testDir, branch)
+
+    expect(release.nextVersion).toMatch(/0$/)
   })
 })
