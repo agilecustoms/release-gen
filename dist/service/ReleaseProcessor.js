@@ -1,6 +1,6 @@
 import process from 'node:process';
-import esmock from "esmock";
-const plugins = [
+import esmock from 'esmock';
+const allowedPlugins = [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
 ];
@@ -33,10 +33,8 @@ export class ReleaseProcessor {
     }
     async semanticRelease(tagFormat) {
         const opts = {
-            branches: ['main', 'master'],
             dryRun: true,
-            tagFormat,
-            plugins
+            tagFormat
         };
         if (process.env.REPOSITORY_URL) {
             opts.repositoryUrl = process.env.REPOSITORY_URL;
@@ -44,17 +42,35 @@ export class ReleaseProcessor {
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };
-        const real = (await import('semantic-release/lib/get-config.js')).default;
-        console.log('typeof real:', typeof real);
+        const pluginsPath = 'semantic-release/lib/plugins/index.js';
+        const getConfigPath = 'semantic-release/lib/get-config.js';
+        const originalPluginsFunc = (await import(pluginsPath)).default;
+        const getConfig = await esmock(getConfigPath, {
+            [pluginsPath]: {
+                default: async (context, pluginsPath) => {
+                    context.options.plugins = this.fixPlugins(context.options.plugins);
+                    console.log('Using plugins: ' + JSON.stringify(context.options.plugins));
+                    return await originalPluginsFunc(context, pluginsPath);
+                }
+            }
+        });
         const semanticRelease = await esmock('semantic-release', {
-            'semantic-release/lib/get-config.js': {
+            [getConfigPath]: {
                 default: async (context, cliOptions) => {
-                    console.log('Victory4');
-                    const config = await real(context, cliOptions);
-                    return config;
+                    const config = await getConfig(context, cliOptions);
+                    return this.fixConfig(config);
                 },
             },
         });
         return await semanticRelease(opts, config);
+    }
+    fixPlugins(plugins) {
+        return plugins.filter((plugin) => {
+            const name = typeof plugin === 'string' ? plugin : plugin[0];
+            return allowedPlugins.includes(name);
+        });
+    }
+    fixConfig(config) {
+        return config;
     }
 }

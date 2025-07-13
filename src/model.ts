@@ -1,3 +1,5 @@
+import type { Options } from 'semantic-release'
+
 export type ReleaseOptions = {
   changelogFile?: string
   changelogTitle?: string
@@ -7,4 +9,9 @@ export type ReleaseOptions = {
 export type Release = {
   nextVersion: string
   notes: string
+}
+
+export type GetConfigResult = {
+  options: Options
+  plugins: object
 }

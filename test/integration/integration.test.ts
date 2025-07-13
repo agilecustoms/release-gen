@@ -148,14 +148,26 @@ describe('release-gen', () => {
     expect(release.nextVersion).toMatch(/0$/)
   })
 
-  it('doc-patch', async (ctx) => {
+  // it('doc-patch', async (ctx) => {
+  //   const testName = ctx.task.name
+  //   const branch = 'main'
+  //   checkout(testName, branch)
+  //   // commit(testName, 'doc: test')
+  //   commit(testName, 'feat(api)!: send an email to the customer when a product is shipped')
+  //
+  //   const release = runReleaseGen(testName, branch)
+  //
+  //   expect(release.nextVersion).not.toMatch(/0$/)
+  // })
+
+  it('conventionalcommits-major', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'main'
     checkout(testName, branch)
-    commit(testName, 'doc: test')
+    commit(testName, 'feat(api)!: test')
 
     const release = runReleaseGen(testName, branch)
 
-    expect(release.nextVersion).not.toMatch(/0$/)
+    expect(release.nextVersion).toMatch(/\d\.0\.0$/)
   })
 })

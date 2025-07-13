@@ -5,3 +5,10 @@ declare module 'semantic-release/lib/get-config.js' {
     cliOptions: any
   ): Promise<any>
 }
+
+declare module 'semantic-release/lib/plugins/index.js' {
+  export default function plugins(
+    context: any,
+    pluginsPath: any
+  ): Promise<any>
+}

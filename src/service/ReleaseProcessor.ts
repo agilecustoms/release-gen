@@ -1,7 +1,7 @@
 import process from 'node:process'
 import esmock from 'esmock'
-import type { Config, NextRelease, Options, Result } from 'semantic-release'
-import type { Release, ReleaseOptions } from '../model.js'
+import type { Config, NextRelease, Options, PluginSpec, Result } from 'semantic-release'
+import type { GetConfigResult, Release, ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 
 /**
@@ -13,7 +13,7 @@ import type { ChangelogGenerator } from './ChangelogGenerator.js'
  * <br>
  * Only the first two are needed, so specify them explicitly
  */
-const plugins = [
+const allowedPlugins = [
   '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
   '@semantic-release/release-notes-generator', // https://github.com/semantic-release/release-notes-generator
 ]
@@ -54,10 +54,8 @@ export class ReleaseProcessor {
 
   private async semanticRelease(tagFormat: string): Promise<Result> {
     const opts: Options = {
-      branches: ['main', 'master'],
       dryRun: true,
-      tagFormat,
-      plugins
+      tagFormat
     }
 
     // `repositoryUrl` is used in command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
@@ -74,21 +72,46 @@ export class ReleaseProcessor {
       cwd: process.env.GITHUB_WORKSPACE
     }
 
+    const pluginsPath = 'semantic-release/lib/plugins/index.js'
     const getConfigPath = 'semantic-release/lib/get-config.js'
-    const getConfig = (await import(getConfigPath)).default
+
+    const originalPluginsFunc = (await import(pluginsPath)).default
+    const getConfig: (context: Config, cliOptions?: Options) => Promise<GetConfigResult> = await esmock(
+      getConfigPath,
+      {
+        [pluginsPath]: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          default: async (context: any, pluginsPath: Record<string, string>) => {
+            context.options.plugins = this.fixPlugins(context.options.plugins)
+            console.log('Using plugins: ' + JSON.stringify(context.options.plugins))
+            return await originalPluginsFunc(context, pluginsPath)
+          }
+        }
+      }
+    )
+
     const semanticRelease: (options: Options, environment?: Config) => Promise<Result> = await esmock(
       'semantic-release',
       {
         [getConfigPath]: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          default: async (context: any, cliOptions: any) => {
-            const config = await getConfig(context, cliOptions)
-            console.log('Victory: ' + JSON.stringify(config, null, 2))
-            return config
+          default: async (context: Config, cliOptions?: Options) => {
+            const config: GetConfigResult = await getConfig(context, cliOptions)
+            return this.fixConfig(config)
           },
         },
       }
     )
     return await semanticRelease(opts, config)
+  }
+
+  public fixPlugins(plugins: ReadonlyArray<PluginSpec>): ReadonlyArray<PluginSpec> {
+    return plugins.filter((plugin) => {
+      const name = typeof plugin === 'string' ? plugin : plugin[0]
+      return allowedPlugins.includes(name)
+    })
+  }
+
+  public fixConfig(config: GetConfigResult): GetConfigResult {
+    return config
   }
 }
