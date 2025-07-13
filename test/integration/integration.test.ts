@@ -176,7 +176,7 @@ describe('release-gen', () => {
     checkout(testName, branch)
     commit(testName, 'feat(api)!: test')
 
-    const release = runReleaseGen(testName, branch, {npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'})
+    const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
 
     expect(release.nextVersion).toMatch(/\d\.0\.0$/)
   })
