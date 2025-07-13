@@ -19,9 +19,9 @@ Parameters are not documented: part of them are inputs in `publish` action, the 
   if: inputs.dev-release == 'false'
   uses: agilecustoms/release-gen@main
   with:
-    changelog-file: ${{ inputs.changelog-file }}
-    changelog-title: ${{ inputs.changelog-title }}
-    tag-format: ${{ inputs.tag-format }}
-    npm-extra-deps: ${{ inputs.npm-extra-deps }}
+    changelog_file: ${{ inputs.changelog-file }}
+    changelog_title: ${{ inputs.changelog-title }}
+    npm_extra_deps: ${{ inputs.npm-extra-deps }}
+    release_branches: ${{ inputs.release-branches }}
+    tag_format: ${{ inputs.tag-format }}
 ```
-

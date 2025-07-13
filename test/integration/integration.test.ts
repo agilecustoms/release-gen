@@ -14,6 +14,10 @@ const gitDir = path.join(__dirname, 'git')
 const ghActionDir = path.join(__dirname, 'gh-action')
 const ghActionDistDir = path.join(ghActionDir, 'dist')
 
+type TestOptions = {
+  npmExtraDeps?: string
+}
+
 /**
  * DISCLAIMER about semantic-release
  * During dry run it invokes command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
@@ -82,7 +86,7 @@ describe('release-gen', () => {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  function runReleaseGen(testName: string, branch: string): Release {
+  function runReleaseGen(testName: string, branch: string, opts: TestOptions = {}): Release {
     const cwd = path.join(gitDir, testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -90,7 +94,13 @@ describe('release-gen', () => {
       // in our case the repo lays deep inside, so need to nudge release-gen to it
       GITHUB_WORKSPACE: cwd,
       GITHUB_REF: branch, // see a DISCLAIMER above
-      GITHUB_OUTPUT: '' // this makes `core.setOutput` to print to stdout instead of file
+      GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
+
+      // feed GH actions core.getInput with env vars
+      INPUT_RELEASE_BRANCHES: JSON.stringify([branch]),
+    }
+    if (opts.npmExtraDeps) {
+      env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
     }
 
     if (process.env.CI) { // see a DISCLAIMER above
@@ -128,7 +138,7 @@ describe('release-gen', () => {
 
   it('patch', (ctx) => {
     const testName = ctx.task.name
-    const branch = 'main'
+    const branch = 'int-test050'
     checkout(testName, branch)
     commit(testName, 'fix: test')
 
@@ -139,7 +149,7 @@ describe('release-gen', () => {
 
   it('minor', (ctx) => {
     const testName = ctx.task.name
-    const branch = 'main'
+    const branch = 'int-test050'
     checkout(testName, branch)
     commit(testName, 'feat: test')
 
@@ -165,9 +175,8 @@ describe('release-gen', () => {
     const branch = 'main'
     checkout(testName, branch)
     commit(testName, 'feat(api)!: test')
-    process.env['INPUT_NPM_EXTRA_DEPS'] = 'conventional-changelog-conventionalcommits@9.1.0'
 
-    const release = runReleaseGen(testName, branch)
+    const release = runReleaseGen(testName, branch, {npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'})
 
     expect(release.nextVersion).toMatch(/\d\.0\.0$/)
   })

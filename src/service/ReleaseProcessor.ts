@@ -26,7 +26,7 @@ export class ReleaseProcessor {
   }
 
   public async process(options: ReleaseOptions): Promise<Release | false> {
-    const result: Result = await this.semanticRelease(options.tagFormat)
+    const result: Result = await this.semanticRelease(options)
     if (!result) {
       return false
     }
@@ -52,10 +52,13 @@ export class ReleaseProcessor {
     }
   }
 
-  private async semanticRelease(tagFormat: string): Promise<Result> {
+  private async semanticRelease(options: ReleaseOptions): Promise<Result> {
     const opts: Options = {
       dryRun: true,
-      tagFormat
+      tagFormat: options.tagFormat
+    }
+    if (options.releaseBranches) {
+      opts.branches = options.releaseBranches
     }
 
     // `repositoryUrl` is used in command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`

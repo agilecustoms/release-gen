@@ -3,6 +3,7 @@ import type { Options } from 'semantic-release'
 export type ReleaseOptions = {
   changelogFile?: string
   changelogTitle?: string
+  releaseBranches?: string
   tagFormat: string
 }
 

@@ -2,18 +2,20 @@ name: Generate release
 description: 'Generate next release version and notes'
 author: Alexey Chekulaev
 inputs:
-  changelog-file:
+  changelog_file:
     description: 'CHANGELOG.md file path. Pass empty string to disable changelog generation'
     default: CHANGELOG.md
     required: false
-  changelog-title:
+  changelog_title:
     description: 'Title of the changelog file (first line of the file)'
     required: false
   npm_extra_deps: # if use hyphens, then can't mock in integration tests
     description: 'Additional npm dependencies, used to install non-default commit parsers such as conventional-changelog-conventionalcommits@9.1.0'
-    default: ''
     required: false
-  tag-format:
+  release_branches:
+    required: false
+    description: 'The branches on which releases should happen. It will override the branches attribute in your configuration file'
+  tag_format:
     description: 'Tag format. Default: v${version}'
     default: v${version}
     required: false
