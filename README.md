@@ -22,4 +22,5 @@ Parameters are not documented: part of them are inputs in `publish` action, the 
     changelog-file: ${{ inputs.changelog-file }}
     changelog-title: ${{ inputs.changelog-title }}
     tag-format: ${{ inputs.tag-format }}
+    npm-extra-deps: ${{ inputs.npm-extra-deps }}
 ```

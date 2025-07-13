@@ -9,7 +9,7 @@ import type { Release, ReleaseOptions } from './model.js'
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
 const execAsync = util.promisify(exec)
-const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
+let { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
   cwd: packageJsonDir
 })
 
@@ -21,15 +21,28 @@ if (stderr) {
 }
 
 const core = await import('@actions/core')
-const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js')
-const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js')
-
 const changelogFile: string = core.getInput('changelog-file', { required: false })
 const changelogTitle: string = core.getInput('changelog-title', { required: false })
 const tagFormat: string = core.getInput('tag-format', { required: false }) || 'v${version}'
 
+const npmExtraDeps: string = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true })
+if (npmExtraDeps) {
+  const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
+  ({ stdout, stderr } = await execAsync(`npm install ${extras}`, {
+    cwd: packageJsonDir
+  }))
+  console.log(stdout)
+  if (stderr) {
+    console.error(`Error during installing extra npm dependencies ${extras}`)
+    console.error(stderr)
+    process.exit(1)
+  }
+}
+
 const options: ReleaseOptions = { changelogFile, changelogTitle, tagFormat }
 
+const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js')
+const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js')
 const changelogGenerator = new ChangelogGenerator()
 const releaseProcessor = new ReleaseProcessor(changelogGenerator)
 
