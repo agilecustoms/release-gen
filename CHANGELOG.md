@@ -1,4 +1,9 @@
-# Changelog
+# [0.8.0](https://github.com/agilecustoms/release-gen/compare/v0.7.14...v0.8.0) (2025-07-13)
+
+### Features
+
+* support 'npm-extra-deps' ([a70ca86](https://github.com/agilecustoms/release-gen/commit/a70ca86d663b75e19222705623be2cf686da3e3c))
+
 
 ## [0.7.14](https://github.com/agilecustoms/release-gen/compare/v0.7.13...v0.7.14) (2025-07-11)
 
