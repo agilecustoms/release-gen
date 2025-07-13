@@ -17,9 +17,10 @@ if (stderr) {
     process.exit(1);
 }
 const core = await import('@actions/core');
-const changelogFile = core.getInput('changelog-file', { required: false });
-const changelogTitle = core.getInput('changelog-title', { required: false });
-const tagFormat = core.getInput('tag-format', { required: false }) || 'v${version}';
+const changelogFile = core.getInput('changelog_file', { required: false });
+const changelogTitle = core.getInput('changelog_title', { required: false });
+const releaseBranches = core.getInput('release_branches', { required: false, trimWhitespace: true });
+const tagFormat = core.getInput('tag_format', { required: false }) || 'v${version}';
 const npmExtraDeps = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true });
 if (npmExtraDeps) {
     const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
@@ -33,7 +34,12 @@ if (npmExtraDeps) {
         process.exit(1);
     }
 }
-const options = { changelogFile, changelogTitle, tagFormat };
+const options = {
+    changelogFile,
+    changelogTitle,
+    releaseBranches: releaseBranches ? JSON.parse(releaseBranches) : null,
+    tagFormat
+};
 const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
 const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
 const changelogGenerator = new ChangelogGenerator();

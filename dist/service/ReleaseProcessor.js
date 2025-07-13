@@ -10,7 +10,7 @@ export class ReleaseProcessor {
         this.changelogGenerator = changelogGenerator;
     }
     async process(options) {
-        const result = await this.semanticRelease(options.tagFormat);
+        const result = await this.semanticRelease(options);
         if (!result) {
             return false;
         }
@@ -31,11 +31,14 @@ export class ReleaseProcessor {
             notes
         };
     }
-    async semanticRelease(tagFormat) {
+    async semanticRelease(options) {
         const opts = {
             dryRun: true,
-            tagFormat
+            tagFormat: options.tagFormat
         };
+        if (options.releaseBranches) {
+            opts.branches = options.releaseBranches;
+        }
         if (process.env.REPOSITORY_URL) {
             opts.repositoryUrl = process.env.REPOSITORY_URL;
         }
