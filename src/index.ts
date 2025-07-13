@@ -47,10 +47,13 @@ const options: ReleaseOptions = {
   tagFormat
 }
 
+const { SemanticReleaseAdapter } = await import('./service/SemanticReleaseAdapter.js')
 const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js')
 const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js')
+
+const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
-const releaseProcessor = new ReleaseProcessor(changelogGenerator)
+const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
 let result: Release | false
 try {
