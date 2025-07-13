@@ -60,8 +60,7 @@ export class ReleaseProcessor {
         const semanticRelease = await esmock('semantic-release', {
             [getConfigPath]: {
                 default: async (context, cliOptions) => {
-                    const config = await getConfig(context, cliOptions);
-                    return this.fixConfig(config);
+                    return await getConfig(context, cliOptions);
                 },
             },
         });
@@ -72,8 +71,5 @@ export class ReleaseProcessor {
             const name = typeof plugin === 'string' ? plugin : plugin[0];
             return allowedPlugins.includes(name);
         });
-    }
-    fixConfig(config) {
-        return config;
     }
 }
