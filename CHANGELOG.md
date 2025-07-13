@@ -1,3 +1,10 @@
+## [0.8.1](https://github.com/agilecustoms/release-gen/compare/v0.8.0...v0.8.1) (2025-07-13)
+
+### Bug Fixes
+
+* remove extra code ([633bc0e](https://github.com/agilecustoms/release-gen/commit/633bc0efac152d8378c89a6dbf1e18fb8e1c5b0e))
+
+
 # [0.8.0](https://github.com/agilecustoms/release-gen/compare/v0.7.14...v0.8.0) (2025-07-13)
 
 ### Features
