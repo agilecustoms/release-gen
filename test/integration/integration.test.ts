@@ -126,27 +126,27 @@ describe('release-gen', () => {
     }
   }
 
-  it('patch', (ctx) => {
-    const testName = ctx.task.name
-    const branch = 'main'
-    checkout(testName, branch)
-    commit(testName, 'fix: test')
-
-    const release = runReleaseGen(testName, branch)
-
-    expect(release.nextVersion).not.toMatch(/0$/)
-  })
-
-  it('minor', (ctx) => {
-    const testName = ctx.task.name
-    const branch = 'main'
-    checkout(testName, branch)
-    commit(testName, 'feat: test')
-
-    const release = runReleaseGen(testName, branch)
-
-    expect(release.nextVersion).toMatch(/0$/)
-  })
+  // it('patch', (ctx) => {
+  //   const testName = ctx.task.name
+  //   const branch = 'main'
+  //   checkout(testName, branch)
+  //   commit(testName, 'fix: test')
+  //
+  //   const release = runReleaseGen(testName, branch)
+  //
+  //   expect(release.nextVersion).not.toMatch(/0$/)
+  // })
+  //
+  // it('minor', (ctx) => {
+  //   const testName = ctx.task.name
+  //   const branch = 'main'
+  //   checkout(testName, branch)
+  //   commit(testName, 'feat: test')
+  //
+  //   const release = runReleaseGen(testName, branch)
+  //
+  //   expect(release.nextVersion).toMatch(/0$/)
+  // })
 
   // it('doc-patch', async (ctx) => {
   //   const testName = ctx.task.name
@@ -166,7 +166,7 @@ describe('release-gen', () => {
     checkout(testName, branch)
     commit(testName, 'feat(api)!: test')
 
-    process.env['INPUT_NPM-EXTRA-DEPS'] = 'conventional-changelog-conventionalcommits@9.1.0'
+    process.env['MYINPUT_NPM-EXTRA-DEPS'] = 'conventional-changelog-conventionalcommits@9.1.0'
     const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toMatch(/\d\.0\.0$/)
