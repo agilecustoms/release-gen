@@ -1,6 +1,7 @@
 import process from 'node:process'
+import esmock from 'esmock'
 import type { Config, NextRelease, Options, Result } from 'semantic-release'
-import semanticRelease from 'semantic-release'
+// import semanticRelease from 'semantic-release'
 import type { Release, ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 
@@ -74,6 +75,22 @@ export class ReleaseProcessor {
       cwd: process.env.GITHUB_WORKSPACE
     }
 
+    // Mock get-config
+    const real = (await import('semantic-release/lib/get-config.js')).default
+    console.log('typeof real:', typeof real)
+    const semanticRelease = await esmock(
+      'semantic-release',
+      {
+        'semantic-release/lib/get-config.js': {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          default: async (context: any, cliOptions: any) => {
+            console.log('Victory4')
+            const config = await real(context, cliOptions)
+            return config
+          },
+        },
+      }
+    )
     return await semanticRelease(opts, config)
   }
 }

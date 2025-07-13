@@ -1,5 +1,5 @@
 import process from 'node:process';
-import semanticRelease from 'semantic-release';
+import esmock from "esmock";
 const plugins = [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
@@ -44,6 +44,17 @@ export class ReleaseProcessor {
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };
+        const real = (await import('semantic-release/lib/get-config.js')).default;
+        console.log('typeof real:', typeof real);
+        const semanticRelease = await esmock('semantic-release', {
+            'semantic-release/lib/get-config.js': {
+                default: async (context, cliOptions) => {
+                    console.log('Victory4');
+                    const config = await real(context, cliOptions);
+                    return config;
+                },
+            },
+        });
         return await semanticRelease(opts, config);
     }
 }
