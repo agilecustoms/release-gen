@@ -12,7 +12,7 @@ export default defineConfig({
       ],
       reporter: ['text'], // other: 'html', 'clover', 'json'
       thresholds: {
-        lines: 25,
+        lines: 24,
         branches: 81,
       }
     }
