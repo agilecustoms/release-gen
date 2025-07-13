@@ -20,7 +20,7 @@ const core = await import('@actions/core');
 const changelogFile = core.getInput('changelog-file', { required: false });
 const changelogTitle = core.getInput('changelog-title', { required: false });
 const tagFormat = core.getInput('tag-format', { required: false }) || 'v${version}';
-const npmExtraDeps = core.getInput('npm-extra-deps', { required: false, trimWhitespace: true });
+const npmExtraDeps = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true });
 if (npmExtraDeps) {
     const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
     ({ stdout, stderr } = await execAsync(`npm install ${extras}`, {

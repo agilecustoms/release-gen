@@ -25,9 +25,6 @@ const changelogFile: string = core.getInput('changelog-file', { required: false 
 const changelogTitle: string = core.getInput('changelog-title', { required: false })
 const tagFormat: string = core.getInput('tag-format', { required: false }) || 'v${version}'
 
-console.log('Print env variables:')
-console.log(process.env)
-
 const npmExtraDeps: string = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true })
 if (npmExtraDeps) {
   const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
