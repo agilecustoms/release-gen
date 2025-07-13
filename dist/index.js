@@ -7,7 +7,7 @@ import * as util from 'node:util';
 const distDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJsonDir = path.dirname(distDir);
 const execAsync = util.promisify(exec);
-const { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
+let { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
     cwd: packageJsonDir
 });
 console.log(stdout);
@@ -17,12 +17,25 @@ if (stderr) {
     process.exit(1);
 }
 const core = await import('@actions/core');
-const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
-const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
 const changelogFile = core.getInput('changelog-file', { required: false });
 const changelogTitle = core.getInput('changelog-title', { required: false });
 const tagFormat = core.getInput('tag-format', { required: false }) || 'v${version}';
+const npmExtraDeps = core.getInput('npm-extra-deps', { required: false, trimWhitespace: true });
+if (npmExtraDeps) {
+    const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
+    ({ stdout, stderr } = await execAsync(`npm install ${extras}`, {
+        cwd: packageJsonDir
+    }));
+    console.log(stdout);
+    if (stderr) {
+        console.error(`Error during installing extra npm dependencies ${extras}`);
+        console.error(stderr);
+        process.exit(1);
+    }
+}
 const options = { changelogFile, changelogTitle, tagFormat };
+const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
+const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js');
 const changelogGenerator = new ChangelogGenerator();
 const releaseProcessor = new ReleaseProcessor(changelogGenerator);
 let result;
