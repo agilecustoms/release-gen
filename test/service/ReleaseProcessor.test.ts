@@ -16,7 +16,7 @@ describe('ReleaseProcessor', () => {
   const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
   beforeEach(() => {
-
+    vi.clearAllMocks()
   })
 
   it('should call semantic-release adapter', async () => {
