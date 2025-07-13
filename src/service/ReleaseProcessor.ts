@@ -1,7 +1,7 @@
 import process from 'node:process'
 import esmock from 'esmock'
 import type { Config, NextRelease, Options, PluginSpec, Result } from 'semantic-release'
-import type { GetConfigResult, Release, ReleaseOptions } from '../model.js'
+import type { Release, ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 
 /**
@@ -79,7 +79,7 @@ export class ReleaseProcessor {
     const getConfigPath = 'semantic-release/lib/get-config.js'
 
     const originalPluginsFunc = (await import(pluginsPath)).default
-    const getConfig: (context: Config, cliOptions?: Options) => Promise<GetConfigResult> = await esmock(
+    const getConfig: (context: Config, cliOptions?: Options) => Promise<object> = await esmock(
       getConfigPath,
       {
         [pluginsPath]: {
@@ -98,8 +98,7 @@ export class ReleaseProcessor {
       {
         [getConfigPath]: {
           default: async (context: Config, cliOptions?: Options) => {
-            const config: GetConfigResult = await getConfig(context, cliOptions)
-            return this.fixConfig(config)
+            return await getConfig(context, cliOptions)
           },
         },
       }
@@ -112,9 +111,5 @@ export class ReleaseProcessor {
       const name = typeof plugin === 'string' ? plugin : plugin[0]
       return allowedPlugins.includes(name)
     })
-  }
-
-  public fixConfig(config: GetConfigResult): GetConfigResult {
-    return config
   }
 }
