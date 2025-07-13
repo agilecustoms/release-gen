@@ -65,7 +65,6 @@ export class ReleaseProcessor {
     // it works fine when `release-gen` is used as part of `agilecustoms/publish` action
     // add this tweak to support integration test in `release-gen` itself
     if (process.env.REPOSITORY_URL) {
-      // if repositoryUrl is set, use it
       opts.repositoryUrl = process.env.REPOSITORY_URL
     }
 

@@ -2,12 +2,13 @@ import type { ExecSyncOptions } from 'child_process'
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import {beforeAll, beforeEach, expect, describe, it} from 'vitest'
 import type { Release } from '../../src/model.js'
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
 const rootDir = path.resolve(__dirname, '../..')
+const assetsDir = path.resolve(__dirname, 'assets')
 const distDir = path.join(rootDir, 'dist')
 const gitDir = path.join(__dirname, 'git')
 const ghActionDir = path.join(__dirname, 'gh-action')
@@ -56,7 +57,8 @@ describe('release-gen', () => {
     fs.mkdirSync(testDir)
   })
 
-  function checkout(cwd: string, branch: string): void {
+  function checkout(testName: string, branch: string): void {
+    const cwd = path.join(gitDir, testName)
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
     execSync(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
@@ -65,16 +67,23 @@ describe('release-gen', () => {
     // w/o user.name and user.email git will fail to commit on CI
     execSync('git config user.name "CI User"', options)
     execSync('git config user.email "ci@example.com"', options)
+    // copy assets/{testName}/* into test/integration/git/{testName}
+    const assetsSrc = path.join(assetsDir, testName)
+    if (fs.existsSync(assetsSrc)) {
+      fs.cpSync(assetsSrc, cwd, { recursive: true })
+    }
   }
 
-  function commit(cwd: string, msg: string) {
+  function commit(testName: string, msg: string) {
+    const cwd = path.join(gitDir, testName)
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     fs.writeFileSync(`${cwd}/test.txt`, 'test content', 'utf8')
     execSync('git add .', options)
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  function runReleaseGen(cwd: string, branch: string): Release {
+  function runReleaseGen(testName: string, branch: string): Release {
+    const cwd = path.join(gitDir, testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       // release-gen action is run from completely different directory, so it uses GITHUB_WORKSPACE to find actual repo that needs to be released
@@ -92,7 +101,14 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    const buffer = execSync(`node ${indexJs}`, { env: env })
+    let buffer
+    try {
+      buffer = execSync(`node ${indexJs}`, { env })
+    } catch (err: any) {
+      if (err.stdout) console.error('stdout:', err.stdout.toString())
+      if (err.stderr) console.error('stderr:', err.stderr.toString())
+      throw err
+    }
     const output = buffer.toString()
     console.log(output)
     // Parse "::set-output" lines into a map
@@ -110,25 +126,36 @@ describe('release-gen', () => {
     }
   }
 
-  it('patch', async (ctx) => {
-    const testDir = path.join(gitDir, ctx.task.name)
+  it('patch', (ctx) => {
+    const testName = ctx.task.name
     const branch = 'main'
-    checkout(testDir, branch)
-    commit(testDir, 'fix: test')
+    checkout(testName, branch)
+    commit(testName, 'fix: test')
 
-    const release = runReleaseGen(testDir, branch)
+    const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).not.toMatch(/0$/)
   })
 
-  it('minor', async (ctx) => {
-    const testDir = path.join(gitDir, ctx.task.name)
+  it('minor', (ctx) => {
+    const testName = ctx.task.name
     const branch = 'main'
-    checkout(testDir, branch)
-    commit(testDir, 'feat: test')
+    checkout(testName, branch)
+    commit(testName, 'feat: test')
 
-    const release = runReleaseGen(testDir, branch)
+    const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toMatch(/0$/)
+  })
+
+  it('doc-patch', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'main'
+    checkout(testName, branch)
+    commit(testName, 'doc: test')
+
+    const release = runReleaseGen(testName, branch)
+
+    expect(release.nextVersion).not.toMatch(/0$/)
   })
 })
