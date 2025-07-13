@@ -166,7 +166,7 @@ describe('release-gen', () => {
     checkout(testName, branch)
     commit(testName, 'feat(api)!: test')
 
-    process.env['MYINPUT_NPM_EXTRA_DEPS'] = 'conventional-changelog-conventionalcommits@9.1.0'
+    process.env['INPUT_NPM_EXTRA_DEPS'] = 'conventional-changelog-conventionalcommits@9.1.0'
     const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toMatch(/\d\.0\.0$/)

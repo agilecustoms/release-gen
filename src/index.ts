@@ -28,7 +28,7 @@ const tagFormat: string = core.getInput('tag-format', { required: false }) || 'v
 console.log('Print env variables:')
 console.log(process.env)
 
-const npmExtraDeps: string = core.getInput('npm-extra-deps', { required: false, trimWhitespace: true })
+const npmExtraDeps: string = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true })
 if (npmExtraDeps) {
   const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
   ({ stdout, stderr } = await execAsync(`npm install ${extras}`, {
