@@ -2,7 +2,7 @@ import type { ExecSyncOptions } from 'child_process'
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import {beforeAll, beforeEach, expect, describe, it} from 'vitest'
+import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import type { Release } from '../../src/model.js'
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
@@ -104,7 +104,7 @@ describe('release-gen', () => {
     let buffer
     try {
       buffer = execSync(`node ${indexJs}`, { env })
-    } catch (err: any) {
+    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       if (err.stdout) console.error('stdout:', err.stdout.toString())
       if (err.stderr) console.error('stderr:', err.stderr.toString())
       throw err
