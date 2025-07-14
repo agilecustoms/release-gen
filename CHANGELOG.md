@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/agilecustoms/release-gen/compare/v0.8.2...v0.8.3) (2025-07-14)
+
+### Bug Fixes
+
+* remove extra lines from .releaserc.json ([d34f840](https://github.com/agilecustoms/release-gen/commit/d34f84095ceace30780b9af7c443f5c0c2b7eeca))
+
+
 ## [0.8.2](https://github.com/agilecustoms/release-gen/compare/v0.8.1...v0.8.2) (2025-07-14)
 
 ### Bug Fixes
