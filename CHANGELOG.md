@@ -1,3 +1,13 @@
+# Changelog
+
+## [0.8.2](https://github.com/agilecustoms/release-gen/compare/v0.8.1...v0.8.2) (2025-07-14)
+
+### Bug Fixes
+
+* add new file ([a4617b2](https://github.com/agilecustoms/release-gen/commit/a4617b2792d250d1c00ec3a9ce3440a6150677ee))
+* bump test coverage ([3463d76](https://github.com/agilecustoms/release-gen/commit/3463d76c508b794f4ece5138c290f62894239ce8))
+
+
 ## [0.8.1](https://github.com/agilecustoms/release-gen/compare/v0.8.0...v0.8.1) (2025-07-13)
 
 ### Bug Fixes
