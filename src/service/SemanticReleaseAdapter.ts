@@ -29,7 +29,6 @@ export class SemanticReleaseAdapter {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           default: async (context: any, pluginsPath: Record<string, string>) => {
             context.options.plugins = this.fixPlugins(context.options.plugins)
-            console.log('Using plugins: ' + JSON.stringify(context.options.plugins))
             return await originalPluginsFunc(context, pluginsPath)
           }
         }
