@@ -1,0 +1,88 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { Mock } from 'vitest'
+import { ChangelogGenerator } from '../../src/service/ChangelogGenerator.js'
+import { ReleaseProcessor } from '../../src/service/ReleaseProcessor.js'
+import { SemanticReleaseAdapter } from '../../src/service/SemanticReleaseAdapter.js'
+
+const semanticReleaseAdapter = {
+  run: vi.fn()
+} as SemanticReleaseAdapter & { run: Mock }
+
+const changelogGenerator = {
+  generate: vi.fn()
+} as ChangelogGenerator & { generate: Mock }
+
+const OPTIONS = {
+  tagFormat: 'v${version}'
+}
+
+describe('ReleaseProcessor', () => {
+  const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should call semantic-release adapter', async () => {
+    await processor.process(OPTIONS)
+
+    expect(semanticReleaseAdapter.run).toHaveBeenCalledOnce()
+  })
+
+  it('should pass release branches to semantic-release adapter', async () => {
+    const options = { ...OPTIONS, releaseBranches: '[\'main\']' }
+
+    await processor.process(options)
+
+    const args = semanticReleaseAdapter.run.mock.calls[0]
+    expect(args![0].branches).toEqual('[\'main\']')
+  })
+
+  it('should return false if semantic-release returns false', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue(false)
+
+    const result = await processor.process(OPTIONS)
+
+    expect(result).toBe(false)
+  })
+
+  it('should throw an error if next release has no version', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: '', notes: 'Release notes' }
+    })
+
+    await expect(processor.process(OPTIONS)).rejects.toThrow('No version found in the next release. This is unexpected')
+  })
+
+  it('should throw an error if next release has no notes', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: 'v1.0.0', notes: '' }
+    })
+
+    await expect(processor.process(OPTIONS)).rejects.toThrow('No release notes found in the next release. This is unexpected')
+  })
+
+  it('should generate changelog if changelogFile is provided', async () => {
+    const options = { ...OPTIONS, changelogFile: 'CHANGELOG.md', changelogTitle: 'Changelog' }
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' }
+    })
+
+    await processor.process(options)
+
+    expect(changelogGenerator.generate).toHaveBeenCalledWith('CHANGELOG.md', 'Release notes', 'Changelog')
+  })
+
+  it('should return release with nextVersion and notes', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' }
+    })
+
+    const result = await processor.process(OPTIONS)
+
+    expect(result).toEqual({
+      nextVersion: 'v1.0.0',
+      notes: 'Release notes'
+    })
+  })
+})

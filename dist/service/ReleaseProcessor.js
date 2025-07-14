@@ -1,12 +1,9 @@
 import process from 'node:process';
-import esmock from 'esmock';
-const allowedPlugins = [
-    '@semantic-release/commit-analyzer',
-    '@semantic-release/release-notes-generator',
-];
 export class ReleaseProcessor {
+    semanticReleaseAdapter;
     changelogGenerator;
-    constructor(changelogGenerator) {
+    constructor(semanticReleaseAdapter, changelogGenerator) {
+        this.semanticReleaseAdapter = semanticReleaseAdapter;
         this.changelogGenerator = changelogGenerator;
     }
     async process(options) {
@@ -45,31 +42,6 @@ export class ReleaseProcessor {
         const config = {
             cwd: process.env.GITHUB_WORKSPACE
         };
-        const pluginsPath = 'semantic-release/lib/plugins/index.js';
-        const getConfigPath = 'semantic-release/lib/get-config.js';
-        const originalPluginsFunc = (await import(pluginsPath)).default;
-        const getConfig = await esmock(getConfigPath, {
-            [pluginsPath]: {
-                default: async (context, pluginsPath) => {
-                    context.options.plugins = this.fixPlugins(context.options.plugins);
-                    console.log('Using plugins: ' + JSON.stringify(context.options.plugins));
-                    return await originalPluginsFunc(context, pluginsPath);
-                }
-            }
-        });
-        const semanticRelease = await esmock('semantic-release', {
-            [getConfigPath]: {
-                default: async (context, cliOptions) => {
-                    return await getConfig(context, cliOptions);
-                },
-            },
-        });
-        return await semanticRelease(opts, config);
-    }
-    fixPlugins(plugins) {
-        return plugins.filter((plugin) => {
-            const name = typeof plugin === 'string' ? plugin : plugin[0];
-            return allowedPlugins.includes(name);
-        });
+        return await this.semanticReleaseAdapter.run(opts, config);
     }
 }
