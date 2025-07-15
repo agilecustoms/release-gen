@@ -21,6 +21,11 @@
   ],
   "author": "Alexey Chekulaev <chekulaevalexey@gmail.com> (https://github.com/laxa1986)",
   "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.ts": "npm run lint:fix"
   },
