@@ -15,6 +15,9 @@ inputs:
   release_branches:
     required: false
     description: 'The branches on which releases should happen. It will override the branches attribute in your configuration file'
+  release_plugins:
+    description: 'Release plugins configuration'
+    required: false
   tag_format:
     description: 'Tag format. Default: v${version}'
     default: v${version}

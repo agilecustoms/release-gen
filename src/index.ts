@@ -24,6 +24,7 @@ const core = await import('@actions/core')
 const changelogFile: string = core.getInput('changelog_file', { required: false })
 const changelogTitle: string = core.getInput('changelog_title', { required: false })
 const releaseBranches: string = core.getInput('release_branches', { required: false, trimWhitespace: true })
+const releasePlugins: string = core.getInput('release_plugins', { required: false, trimWhitespace: true })
 const tagFormat: string = core.getInput('tag_format', { required: false }) || 'v${version}'
 
 const npmExtraDeps: string = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true })
@@ -43,7 +44,8 @@ if (npmExtraDeps) {
 const options: ReleaseOptions = {
   changelogFile,
   changelogTitle,
-  releaseBranches: releaseBranches ? JSON.parse(releaseBranches) : null,
+  releaseBranches,
+  releasePlugins,
   tagFormat
 }
 

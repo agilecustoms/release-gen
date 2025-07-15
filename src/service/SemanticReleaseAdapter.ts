@@ -2,7 +2,7 @@ import esmock from 'esmock'
 import type { Config, Options, PluginSpec, Result } from 'semantic-release'
 
 /**
- * There are 4 default plugins:
+ * There are 4 default plugins:<br>
  * First two are used by `release-gen`
  * Next two are discarded silently as they could come from default configuration
  * Any other plugin is shows warning

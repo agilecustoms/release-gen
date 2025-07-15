@@ -30,12 +30,33 @@ describe('ReleaseProcessor', () => {
   })
 
   it('should pass release branches to semantic-release adapter', async () => {
-    const options = { ...OPTIONS, releaseBranches: '[\'main\']' }
+    const options = { ...OPTIONS, releaseBranches: '["main"]' }
 
     await processor.process(options)
 
     const args = semanticReleaseAdapter.run.mock.calls[0]
-    expect(args![0].branches).toEqual('[\'main\']')
+    expect(args![0].branches).toEqual(['main'])
+  })
+
+  it('should throw an error if release branches cannot be parsed', async () => {
+    const options = { ...OPTIONS, releaseBranches: 'invalid-json' }
+
+    await expect(processor.process(options)).rejects.toThrow('Failed to parse releaseBranches: invalid-json')
+  })
+
+  it('should pass release plugins to semantic-release adapter', async () => {
+    const options = { ...OPTIONS, releasePlugins: '["@semantic-release/commit-analyzer"]' }
+
+    await processor.process(options)
+
+    const args = semanticReleaseAdapter.run.mock.calls[0]
+    expect(args![0].plugins).toEqual(['@semantic-release/commit-analyzer'])
+  })
+
+  it('should throw an error if release plugins cannot be parsed', async () => {
+    const options = { ...OPTIONS, releasePlugins: 'invalid-json' }
+
+    await expect(processor.process(options)).rejects.toThrow('Failed to parse releasePlugins: invalid-json')
   })
 
   it('should return false if semantic-release returns false', async () => {

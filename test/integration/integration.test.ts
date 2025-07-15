@@ -16,6 +16,7 @@ const ghActionDistDir = path.join(ghActionDir, 'dist')
 
 type TestOptions = {
   npmExtraDeps?: string
+  releasePlugins?: string
 }
 
 /**
@@ -102,6 +103,9 @@ describe('release-gen', () => {
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
     }
+    if (opts.releasePlugins) {
+      env['INPUT_RELEASE_PLUGINS'] = opts.releasePlugins
+    }
 
     if (process.env.CI) { // see a DISCLAIMER above
       const githubToken = process.env.GITHUB_TOKEN
@@ -163,8 +167,19 @@ describe('release-gen', () => {
     const branch = 'int-test050'
     checkout(testName, branch)
     commit(testName, 'docs: test')
+    const plugins = [
+      [
+        '@semantic-release/commit-analyzer',
+        {
+          releaseRules: [
+            { type: 'docs', release: 'patch' }
+          ]
+        }
+      ],
+      '@semantic-release/release-notes-generator'
+    ]
 
-    const release = runReleaseGen(testName, branch)
+    const release = runReleaseGen(testName, branch, { releasePlugins: JSON.stringify(plugins) })
 
     expect(release.nextVersion).toBe('v0.5.1')
   })

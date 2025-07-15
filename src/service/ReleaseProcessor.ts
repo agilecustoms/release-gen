@@ -46,7 +46,18 @@ export class ReleaseProcessor {
       tagFormat: options.tagFormat
     }
     if (options.releaseBranches) {
-      opts.branches = options.releaseBranches
+      try {
+        opts.branches = JSON.parse(options.releaseBranches)
+      } catch (cause) {
+        throw new Error(`Failed to parse releaseBranches: ${options.releaseBranches}`, { cause })
+      }
+    }
+    if (options.releasePlugins) {
+      try {
+        opts.plugins = JSON.parse(options.releasePlugins)
+      } catch (cause) {
+        throw new Error(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause })
+      }
     }
 
     // `repositoryUrl` is used in command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
