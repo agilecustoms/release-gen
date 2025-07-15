@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4](https://github.com/agilecustoms/release-gen/compare/v0.8.3...v0.8.4) (2025-07-15)
+
+### Bug Fixes
+
+* test custom rules ([23c33b1](https://github.com/agilecustoms/release-gen/commit/23c33b1817443897bd0daf30c64fed18d12d2484))
+
+
 ## [0.8.3](https://github.com/agilecustoms/release-gen/compare/v0.8.2...v0.8.3) (2025-07-14)
 
 ### Bug Fixes
