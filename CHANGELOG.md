@@ -1,5 +1,12 @@
 # Changelog
 
+# [0.9.0](https://github.com/agilecustoms/release-gen/compare/v0.8.4...v0.9.0) (2025-07-15)
+
+### Features
+
+* allow to specify plugins as input ([64045e3](https://github.com/agilecustoms/release-gen/commit/64045e3f083784f4dfb5c6e5b3da0ddc0bb57cff))
+
+
 ## [0.8.4](https://github.com/agilecustoms/release-gen/compare/v0.8.3...v0.8.4) (2025-07-15)
 
 ### Bug Fixes
