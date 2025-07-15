@@ -8,7 +8,8 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run --coverage",
     "build": "tsc",
-    "run-local": "tsc && node dist/local.js"
+    "run-local": "tsc && node dist/local.js",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -21,14 +22,6 @@
   ],
   "author": "Alexey Chekulaev <chekulaevalexey@gmail.com> (https://github.com/laxa1986)",
   "license": "MIT",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": "npm run lint:fix"
-  },
   "bugs": {
     "url": "https://github.com/agilecustoms/release-gen/issues"
   },
@@ -45,7 +38,6 @@
     "eslint": "^9.9.0",
     "eslint-plugin-import": "^2.31.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.2.0",
     "vitest": "^3.0.2"

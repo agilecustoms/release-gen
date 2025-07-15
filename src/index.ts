@@ -17,7 +17,7 @@ console.log(stdout)
 if (stderr) {
   console.error('Error during npm ci - packages installed dynamically at runtime');
   console.error(stderr);
-  process.exit(1);
+  process.exit(1)
 }
 
 const core = await import('@actions/core')
