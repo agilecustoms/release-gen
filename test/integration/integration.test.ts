@@ -144,7 +144,7 @@ describe('release-gen', () => {
 
     const release = runReleaseGen(testName, branch)
 
-    expect(release.nextVersion).not.toMatch(/0$/)
+    expect(release.nextVersion).toBe('v0.5.1')
   })
 
   it('minor', (ctx) => {
@@ -155,20 +155,19 @@ describe('release-gen', () => {
 
     const release = runReleaseGen(testName, branch)
 
-    expect(release.nextVersion).toMatch(/0$/)
+    expect(release.nextVersion).toBe('v0.6.0')
   })
 
-  // it('doc-patch', async (ctx) => {
-  //   const testName = ctx.task.name
-  //   const branch = 'main'
-  //   checkout(testName, branch)
-  //   // commit(testName, 'doc: test')
-  //   commit(testName, 'feat(api)!: send an email to the customer when a product is shipped')
-  //
-  //   const release = runReleaseGen(testName, branch)
-  //
-  //   expect(release.nextVersion).not.toMatch(/0$/)
-  // })
+  it('docs-patch', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'int-test050'
+    checkout(testName, branch)
+    commit(testName, 'docs: test')
+
+    const release = runReleaseGen(testName, branch)
+
+    expect(release.nextVersion).toBe('v0.5.1')
+  })
 
   it('conventionalcommits-major', async (ctx) => {
     const testName = ctx.task.name
@@ -178,6 +177,6 @@ describe('release-gen', () => {
 
     const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
 
-    expect(release.nextVersion).toMatch(/\d\.0\.0$/)
+    expect(release.nextVersion).toBe('v1.0.0')
   })
 })
