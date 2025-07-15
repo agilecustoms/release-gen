@@ -21,6 +21,9 @@
   ],
   "author": "Alexey Chekulaev <chekulaevalexey@gmail.com> (https://github.com/laxa1986)",
   "license": "MIT",
+  "lint-staged": {
+    "*.ts": "npm run lint:fix"
+  },
   "bugs": {
     "url": "https://github.com/agilecustoms/release-gen/issues"
   },
@@ -36,6 +39,8 @@
     "@vitest/coverage-v8": "^3.0.2",
     "eslint": "^9.9.0",
     "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.2.0",
     "vitest": "^3.0.2"
