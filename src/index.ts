@@ -15,7 +15,7 @@ let { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', 
 
 console.log(stdout)
 if (stderr) {
-  console.error('Error during npm ci - packages installed dynamically at runtime')
+  console.error('Error during npm ci - packages installed dynamically at runtime');
   console.error(stderr);
   process.exit(1);
 }
