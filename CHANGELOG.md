@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.1](https://github.com/agilecustoms/release-gen/compare/v0.9.0...v0.9.1) (2025-07-16)
+
+### Bug Fixes
+
+* do not run husky on CI ([c3999be](https://github.com/agilecustoms/release-gen/commit/c3999be8e3de442004be3f55521ee82d02120069))
+* do not run husky on CI ([ede9104](https://github.com/agilecustoms/release-gen/commit/ede910477c0007239db21324451f109d21e2a7c1))
+* pre-commit hooks ([f096d7c](https://github.com/agilecustoms/release-gen/commit/f096d7cb19c7377a42c40d35d1a0bf6528d79af5))
+
+
 # [0.9.0](https://github.com/agilecustoms/release-gen/compare/v0.8.4...v0.9.0) (2025-07-15)
 
 ### Features
