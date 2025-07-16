@@ -9,7 +9,7 @@
     "test": "vitest run --coverage",
     "build": "tsc",
     "run-local": "tsc && node dist/local.js",
-    "prepare": "husky"
+    "prepare": "[ -z \"$CI\" ] && husky"
   },
   "repository": {
     "type": "git",
