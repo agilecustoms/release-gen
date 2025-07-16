@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/agilecustoms/release-gen/compare/v0.9.1...v0.9.2) (2025-07-16)
+
+### Bug Fixes
+
+* pre-commit behavior ([8848eec](https://github.com/agilecustoms/release-gen/commit/8848eec0f4b8e31c6cdfdd6ba511db85721ac07e))
+
+
 ## [0.9.1](https://github.com/agilecustoms/release-gen/compare/v0.9.0...v0.9.1) (2025-07-16)
 
 ### Bug Fixes
