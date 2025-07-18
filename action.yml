@@ -20,7 +20,6 @@ inputs:
     required: false
   tag_format:
     description: 'Tag format. Default: v${version}'
-    default: v${version}
     required: false
 
 runs:

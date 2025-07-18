@@ -42,8 +42,10 @@ export class ReleaseProcessor {
 
   private async semanticRelease(options: ReleaseOptions): Promise<Result> {
     const opts: Options = {
-      dryRun: true,
-      tagFormat: options.tagFormat
+      dryRun: true
+    }
+    if (options.tagFormat) {
+      opts.tagFormat = options.tagFormat
     }
     if (options.releaseBranches) {
       try {
