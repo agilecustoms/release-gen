@@ -21,7 +21,7 @@ const changelogFile = core.getInput('changelog_file', { required: false });
 const changelogTitle = core.getInput('changelog_title', { required: false });
 const releaseBranches = core.getInput('release_branches', { required: false, trimWhitespace: true });
 const releasePlugins = core.getInput('release_plugins', { required: false, trimWhitespace: true });
-const tagFormat = core.getInput('tag_format', { required: false }) || 'v${version}';
+const tagFormat = core.getInput('tag_format', { required: false });
 const npmExtraDeps = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true });
 if (npmExtraDeps) {
     const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');

@@ -30,9 +30,11 @@ export class ReleaseProcessor {
     }
     async semanticRelease(options) {
         const opts = {
-            dryRun: true,
-            tagFormat: options.tagFormat
+            dryRun: true
         };
+        if (options.tagFormat) {
+            opts.tagFormat = options.tagFormat;
+        }
         if (options.releaseBranches) {
             try {
                 opts.branches = JSON.parse(options.releaseBranches);

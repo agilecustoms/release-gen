@@ -192,6 +192,7 @@ describe('release-gen', () => {
 
     const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
 
-    expect(release.nextVersion).toBe('v1.0.0')
+    // besides major release, this test also checks non-default tagFormat "${version}"
+    expect(release.nextVersion).toBe('1.0.0')
   })
 })

@@ -3,7 +3,7 @@ export type ReleaseOptions = {
   changelogTitle?: string
   releaseBranches?: string
   releasePlugins?: string
-  tagFormat: string
+  tagFormat?: string
 }
 
 export type Release = {
