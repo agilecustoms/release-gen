@@ -17,12 +17,15 @@ if (stderr) {
     process.exit(1);
 }
 const core = await import('@actions/core');
-const changelogFile = core.getInput('changelog_file', { required: false });
-const changelogTitle = core.getInput('changelog_title', { required: false });
-const releaseBranches = core.getInput('release_branches', { required: false, trimWhitespace: true });
-const releasePlugins = core.getInput('release_plugins', { required: false, trimWhitespace: true });
-const tagFormat = core.getInput('tag_format', { required: false });
-const npmExtraDeps = core.getInput('npm_extra_deps', { required: false, trimWhitespace: true });
+function getInput(name) {
+    return core.getInput(name, { required: false, trimWhitespace: true });
+}
+const changelogFile = getInput('changelog_file');
+const changelogTitle = getInput('changelog_title');
+const npmExtraDeps = getInput('npm_extra_deps');
+const releaseBranches = getInput('release_branches');
+const releasePlugins = getInput('release_plugins');
+const tagFormat = getInput('tag_format');
 if (npmExtraDeps) {
     const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
     ({ stdout, stderr } = await execAsync(`npm install ${extras}`, {

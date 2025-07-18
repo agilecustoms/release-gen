@@ -1,5 +1,12 @@
 # Changelog
 
+# [0.10.0](https://github.com/agilecustoms/release-gen/compare/v0.9.2...v0.10.0) (2025-07-18)
+
+### Features
+
+* allow to take tagFormat from config file ([#9](https://github.com/agilecustoms/release-gen/issues/9)) ([6001e1f](https://github.com/agilecustoms/release-gen/commit/6001e1ff58c74f98b1bba416d63743b80eec8899))
+
+
 ## [0.9.2](https://github.com/agilecustoms/release-gen/compare/v0.9.1...v0.9.2) (2025-07-16)
 
 ### Bug Fixes
