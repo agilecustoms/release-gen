@@ -4,7 +4,7 @@ import importPlugin from 'eslint-plugin-import';
 
 export default [
     ...tseslint.configs.recommended,
-    plugin.configs['recommended-flat'],
+    plugin.configs['recommended'],
     {
         plugins: {
             import: importPlugin,
