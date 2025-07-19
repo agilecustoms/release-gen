@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/agilecustoms/release-gen/compare/v0.10.1...v0.10.2) (2025-07-19)
+
+### Bug Fixes
+
+* remove experimental parameter ([9606a54](https://github.com/agilecustoms/release-gen/commit/9606a541cfe6455a07f4657e1de81e2a5ece1ded))
+
+
 ## [0.10.1](https://github.com/agilecustoms/release-gen/compare/v0.10.0...v0.10.1) (2025-07-19)
 
 ### Bug Fixes
