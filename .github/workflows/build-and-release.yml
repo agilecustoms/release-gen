@@ -26,9 +26,6 @@ jobs:
         # after this we have changes in file dist/index.js
 
       - name: Release
-        id: release
-        uses: agilecustoms/publish@summary
-        with:
-          summary: ''
+        uses: agilecustoms/publish@main
         env:
           GH_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
