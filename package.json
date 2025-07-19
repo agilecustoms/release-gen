@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "lint": "eslint src/*.ts src/**/*.ts test/**/*.ts",
+    "lint": "eslint *.{ts,mjs} src/*.ts src/**/*.ts test/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run --coverage",
     "build": "tsc",
