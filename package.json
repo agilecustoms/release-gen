@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "prepare": "if [ \"$CI\" != \"true\" ]; then husky; fi",
     "lint": "eslint *.{ts,mjs} src/*.ts src/**/*.ts test/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run --coverage",
     "build": "tsc",
-    "run-local": "tsc && node dist/local.js",
-    "prepare": "if [ \"$CI\" != \"true\" ]; then husky; fi"
+    "run-local": "tsc && node dist/local.js"
   },
   "repository": {
     "type": "git",
