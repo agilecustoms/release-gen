@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/agilecustoms/release-gen/compare/v0.10.0...v0.10.1) (2025-07-19)
+
+### Bug Fixes
+
+* try do not print summary ([7e588e4](https://github.com/agilecustoms/release-gen/commit/7e588e40d595a6cb0656fcdff9d363b79935c395))
+
+
 # [0.10.0](https://github.com/agilecustoms/release-gen/compare/v0.9.2...v0.10.0) (2025-07-18)
 
 ### Features
