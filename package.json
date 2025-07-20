@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "prepare": "if [ \"$CI\" != \"true\" ]; then husky; fi",
-    "lint": "eslint *.{ts,mjs} src/*.ts src/**/*.ts test/**/*.ts",
+    "lint": "eslint *.{ts,mjs} \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run --coverage",
     "build": "tsc",
