@@ -5,13 +5,10 @@ import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 
 export class ReleaseProcessor {
-  private semanticReleaseAdapter: SemanticReleaseAdapter
-  private changelogGenerator: ChangelogGenerator
-
-  constructor(semanticReleaseAdapter: SemanticReleaseAdapter, changelogGenerator: ChangelogGenerator) {
-    this.semanticReleaseAdapter = semanticReleaseAdapter
-    this.changelogGenerator = changelogGenerator
-  }
+  constructor(
+    private readonly semanticReleaseAdapter: SemanticReleaseAdapter,
+    private readonly changelogGenerator: ChangelogGenerator
+  ) {}
 
   public async process(options: ReleaseOptions): Promise<Release | false> {
     const result: Result = await this.semanticRelease(options)
