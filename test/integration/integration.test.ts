@@ -21,29 +21,29 @@ type TestOptions = {
 
 /**
  * DISCLAIMER about semantic-release
- * During dry run it invokes command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
+ * During dry run it invokes the command ` git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
  * I just want to generate version and release notes, but still have to play this game
  * This command brings a lot of issues:
- * 1. If it fails - you get misleading error "The local branch main is behind the remote one, therefore, a new version won't be published"
+ * 1. If it fails - you get the misleading error "The local main branch is behind the remote one, therefore, a new version won't be published"
  * 2. Even though this repo is public and I can easily clone it via https, still semantic-release requires a token for `git push --dry-run`.
  *    Moreover: default ${{github.token}} with `permissions: write` is not enough,
  *    I have to use PAT and don't forget to set `secrets: inherit` in build-and-release.yml workflow
  * 3. I tried to use this token when cloning the repo (thus the token stays at .git/config file) - but it is ignored.
  *    semantic-release needs token to be present as a parameter `repositoryUrl`.
  *    Since this parameter is not normally set, I had to augment release-gen code to set it if env variable `REPOSITORY_URL` is passed
- * 4. semantic-release doesn't look into current (checked-out) branch, it stiffs for current CI tool by various env vars,
- *    and then for each CI tool it has separate logic how to determine current branch, env.GITHUB_REF for GH Actions.
- *    If not passed, semantic-release uses the current feature branch name, not a branch from integration test
+ * 4. semantic-release doesn't look into the current (checked-out) branch, it stiffs for the current CI tool by various env vars,
+ *    and then for each CI tool it has separate logic how to determine the current branch, env.GITHUB_REF for GH Actions.
+ *    If not passed, semantic-release uses the current feature branch name, not a branch from the integration test
  *    This fix with env variable 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
  *
- * Note: normally on CI (and also in local setup) the auth token is auto attached via "insteadOf" rule in .gitconfig
+ * Note: normally on CI (and also in local setup) the auth token is auto-attached via "insteadOf" rule in .gitconfig
  */
 describe('release-gen', () => {
   beforeAll(() => {
     // rebuild source code to reflect any changes while work on tests
     execSync('npm run build', { cwd: rootDir, stdio: 'inherit' })
 
-    // copy entire release-gen/dist dir into test/integration/gh-action
+    // copy the entire release-gen / dist dir into test/integration/gh-action
     fs.rmSync(ghActionDir, { recursive: true, force: true }) // clean before copy
     fs.mkdirSync(ghActionDir)
     execSync(`cp -R "${distDir}" "${ghActionDir}"`)
@@ -51,7 +51,7 @@ describe('release-gen', () => {
     execSync(`cp "${path.join(rootDir, 'package.json')}" "${ghActionDir}"`)
     execSync(`cp "${path.join(rootDir, 'package-lock.json')}" "${ghActionDir}"`)
 
-    // create test/integration/git directory
+    // create 'test/integration/git' directory
     fs.mkdirSync(gitDir, { recursive: true })
   })
 
@@ -91,7 +91,7 @@ describe('release-gen', () => {
     const cwd = path.join(gitDir, testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      // release-gen action is run from completely different directory, so it uses GITHUB_WORKSPACE to find actual repo that needs to be released
+      // release-gen action is run from a completely different directory, so it uses GITHUB_WORKSPACE to find the actual repo that needs to be released
       // in our case the repo lays deep inside, so need to nudge release-gen to it
       GITHUB_WORKSPACE: cwd,
       GITHUB_REF: branch, // see a DISCLAIMER above
@@ -162,6 +162,7 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('v0.6.0')
   })
 
+  // scope of testing: ability to make a patch release with 'docs' in angular preset
   it('docs-patch', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
@@ -184,6 +185,7 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('v0.5.1')
   })
 
+  // scope of testing: major release, conventional commits, non-default tagFormat (specified in .releaserc.json)
   it('conventionalcommits-major', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'main'
@@ -192,7 +194,19 @@ describe('release-gen', () => {
 
     const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
 
-    // besides major release, this test also checks non-default tagFormat "${version}"
     expect(release.nextVersion).toBe('1.0.0')
+  })
+
+  // scope of testing: "docs:" commit -> "Documentation" section in release notes
+  it('conventionalcommits-custom', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'int-test050'
+    checkout(testName, branch)
+    commit(testName, 'docs: test')
+
+    const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
+
+    expect(release.nextVersion).toBe('v0.5.1')
+    expect(release.notes).toContain('### Documentation')
   })
 })
