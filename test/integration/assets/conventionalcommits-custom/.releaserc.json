@@ -5,7 +5,9 @@
       {
         "preset": "conventionalcommits",
         "releaseRules": [
-          { "type": "docs", "release": "patch" }
+          { "type": "perf", "release": false },
+          { "type": "docs", "release": "patch" },
+          { "type": "misc", "release": "patch" }
         ]
       }
     ],
@@ -28,20 +30,8 @@
               "section": "Documentation"
             },
             {
-              "type": "style",
-              "hidden": true
-            },
-            {
-              "type": "refactor",
-              "hidden": true
-            },
-            {
-              "type": "test",
-              "hidden": true
-            },
-            {
-              "type": "chore",
-              "hidden": true
+              "type": "misc",
+              "section": "Miscellaneous"
             }
           ]
         }

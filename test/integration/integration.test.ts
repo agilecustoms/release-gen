@@ -14,9 +14,15 @@ const gitDir = path.join(__dirname, 'git')
 const ghActionDir = path.join(__dirname, 'gh-action')
 const ghActionDistDir = path.join(ghActionDir, 'dist')
 
+let counter = 0
+
 type TestOptions = {
   npmExtraDeps?: string
   releasePlugins?: string
+}
+
+const CONVENTIONAL_OPTS = {
+  npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'
 }
 
 /**
@@ -82,7 +88,7 @@ describe('release-gen', () => {
   function commit(testName: string, msg: string) {
     const cwd = path.join(gitDir, testName)
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
-    fs.writeFileSync(`${cwd}/test.txt`, 'test content', 'utf8')
+    fs.writeFileSync(`${cwd}/test${++counter}.txt`, 'test content', 'utf8')
     execSync('git add .', options)
     execSync(`git commit -m "${msg}"`, options)
   }
@@ -192,21 +198,46 @@ describe('release-gen', () => {
     checkout(testName, branch)
     commit(testName, 'feat(api)!: test')
 
-    const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
+    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
 
     expect(release.nextVersion).toBe('1.0.0')
   })
 
-  // scope of testing: "docs:" commit -> "Documentation" section in release notes
+  // test my own convention settings I'm gonna use internally for agilecustoms projects:
+  // 1. disable 'perf:'
+  // 2. add "docs:" commit -> "Documentation" section in release notes
+  // 2. add "misc:" commit -> "Miscellaneous" section in release notes
   it('conventionalcommits-custom', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
-    commit(testName, 'docs: test')
 
-    const release = runReleaseGen(testName, branch, { npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0' })
+    // check some default types do not do version bump (and also perf is disabled)
+    commit(testName, 'style: test')
+    commit(testName, 'refactor: test')
+    commit(testName, 'test: test')
+    commit(testName, 'chore: test')
+    commit(testName, 'build: test')
+    commit(testName, 'ci: test')
+    commit(testName, 'perf: perf 1')
+    expect(() => {
+      runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    }).toThrow()
 
+    // check types that make minor bump, and also perf is disabled
+    commit(testName, 'perf: test perf')
+    commit(testName, 'misc: minor improvements')
+    commit(testName, 'fix: buf fix')
+    commit(testName, 'docs: test documentation')
+    let release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('v0.5.1')
+    expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
+    expect(release.notes).toContain('### Miscellaneous')
+
+    commit(testName, 'feat(api)!: new major release')
+    release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    expect(release.nextVersion).toBe('v1.0.0')
+    expect(release.notes).toContain('BREAKING CHANGES')
   })
 })
