@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.3](https://github.com/agilecustoms/release-gen/compare/v0.10.2...v0.10.3) (2025-07-23)
+
+### Bug Fixes
+
+* update tests ([d7a525d](https://github.com/agilecustoms/release-gen/commit/d7a525d52f95747a5fc892acbd46a1f3d4cd09d2))
+
+
 ## [0.10.2](https://github.com/agilecustoms/release-gen/compare/v0.10.1...v0.10.2) (2025-07-19)
 
 ### Bug Fixes
