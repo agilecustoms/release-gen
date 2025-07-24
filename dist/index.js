@@ -56,11 +56,21 @@ try {
     result = await releaseProcessor.process(options);
 }
 catch (e) {
-    core.setFailed(e);
+    if (e instanceof Error) {
+        if ('code' in e && e.code === 'MODULE_NOT_FOUND') {
+            core.setFailed(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`);
+        }
+        else {
+            core.setFailed(e);
+        }
+    }
+    else {
+        core.setFailed(String(e));
+    }
     process.exit(1);
 }
 if (!result) {
-    core.setFailed('No new release found');
+    core.setFailed('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)');
     process.exit(1);
 }
 const notesFilePath = '/tmp/release-gen-notes';

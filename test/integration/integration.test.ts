@@ -130,7 +130,6 @@ describe('release-gen', () => {
       throw err
     }
     const output = buffer.toString()
-    console.log(output)
     // Parse "::set-output" lines into a map
     const outputMap: Record<string, string> = {}
     const regex = /::set-output name=([^:]+)::([^\n]+)/g
@@ -138,7 +137,6 @@ describe('release-gen', () => {
     while ((match = regex.exec(output)) !== null) {
       outputMap[match[1]!] = match[2]!
     }
-    console.log('Output Map:', outputMap)
     // outputMap now contains all set-output key-value pairs
     return {
       nextVersion: outputMap['next_version']!,
@@ -220,9 +218,10 @@ describe('release-gen', () => {
     commit(testName, 'build: test')
     commit(testName, 'ci: test')
     commit(testName, 'perf: perf 1')
-    expect(() => {
+    const error = expectError(() => {
       runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
-    }).toThrow()
+    })
+    expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
 
     // check types that make minor bump, and also perf is disabled
     commit(testName, 'perf: test perf')
@@ -240,4 +239,33 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('v1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
   })
+
+  // scope of testing: use non-default preset but no npm-extra-dep, expect to have clear error
+  it('conventionalcommits-no-npm', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'main'
+    checkout(testName, branch)
+    commit(testName, 'fix: test')
+
+    const error = expectError(() => {
+      runReleaseGen(testName, branch)
+    })
+    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
+      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
+  })
+
+  function expectError(callable: () => void): string {
+    let error: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    try {
+      callable()
+    } catch (e) {
+      error = e
+    }
+    expect(error).toBeDefined()
+    const out = error.stdout.toString()
+    const iError = out.indexOf('::error::')
+    expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
+    const nextLine = out.indexOf('\n', iError)
+    return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
+  }
 })
