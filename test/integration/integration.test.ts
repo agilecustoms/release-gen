@@ -121,14 +121,7 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    let buffer
-    try {
-      buffer = execSync(`node ${indexJs}`, { env })
-    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      if (err.stdout) console.error('stdout:', err.stdout.toString())
-      if (err.stderr) console.error('stderr:', err.stderr.toString())
-      throw err
-    }
+    const buffer = execSync(`node ${indexJs}`, { env })
     const output = buffer.toString()
     // Parse "::set-output" lines into a map
     const outputMap: Record<string, string> = {}
