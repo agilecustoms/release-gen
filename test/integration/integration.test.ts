@@ -255,10 +255,11 @@ describe('release-gen', () => {
     }
     console.log('err:', err)
 
-    // expect(err).toBeDefined()
-    // const out = err.stdout.toString()
-    // const iError = out.indexOf('::error::')
-    // expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
+    expect(err).toBeDefined()
+    const out = err.stdout.toString()
+    console.log('AlexC debug: ', out)
+    const iError = out.indexOf('::error::')
+    expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
     // const nextLine = out.indexOf('\n', iError)
     // const error = out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
     // expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
