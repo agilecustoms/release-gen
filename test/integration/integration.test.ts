@@ -265,8 +265,8 @@ describe('release-gen', () => {
     console.log('nextLine:', nextLine)
     const error = out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
     console.log('error:', error)
-    // expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
-    //   + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
+    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
+      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
   })
 
   function expectError(callable: () => void): string {
