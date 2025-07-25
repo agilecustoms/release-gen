@@ -4,7 +4,7 @@
 
 ### Bug Fixes
 
-* use new publish action version to update 'version' field in package.json ([abe5ad7](https://github.com/agilecustoms/release-gen/commit/abe5ad7312f2a6cfb26e80ceaf23d3d928f24f8d))
+* use new release action version to update 'version' field in package.json ([abe5ad7](https://github.com/agilecustoms/release-gen/commit/abe5ad7312f2a6cfb26e80ceaf23d3d928f24f8d))
 
 
 ## [0.11.2](https://github.com/agilecustoms/release-gen/compare/v0.11.1...v0.11.2) (2025-07-25)
