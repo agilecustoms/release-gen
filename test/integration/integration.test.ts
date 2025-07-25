@@ -62,6 +62,10 @@ describe('release-gen', () => {
   })
 
   beforeEach((ctx) => {
+    // some tests install extra dependency, need to remove it to avoid race conditions
+    const npmDynamicDep = path.join(ghActionDir, 'node_modules/conventional-changelog-conventionalcommits')
+    fs.rmSync(npmDynamicDep, { recursive: true, force: true })
+
     const testDir = path.join(gitDir, ctx.task.name)
     // delete (if any) and create a directory for this test
     fs.rmSync(testDir, { recursive: true, force: true })
@@ -194,6 +198,26 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('1.0.0')
   })
 
+  // if no conventional-changelog-conventionalcommits npm dep => clear error
+  // test custom tag format
+  // test major version bump with feat! tag
+  it('conventionalcommits', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'int-test050'
+    checkout(testName, branch)
+
+    const error = expectError(() => {
+      runReleaseGen(testName, branch)
+    })
+    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
+      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
+
+    commit(testName, 'feat(api)!: new major release')
+    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    expect(release.nextVersion).toBe('1.0.0')
+    expect(release.notes).toContain('BREAKING CHANGES')
+  }, 120_000) // 120 seconds for this test, it is long running
+
   // test my own convention settings I'm using internally for agilecustoms projects:
   // 1. disable 'perf:'
   // 2. add "docs:" commit -> "Documentation" section in release notes
@@ -203,12 +227,6 @@ describe('release-gen', () => {
     const branch = 'int-test050'
     checkout(testName, branch)
 
-    let error = expectError(() => {
-      runReleaseGen(testName, branch)
-    })
-    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
-      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
-
     // check some default types do not do version bump (and also perf is disabled)
     commit(testName, 'style: test')
     commit(testName, 'refactor: test')
@@ -217,7 +235,7 @@ describe('release-gen', () => {
     commit(testName, 'build: test')
     commit(testName, 'ci: test')
     commit(testName, 'perf: perf 1')
-    error = expectError(() => {
+    const error = expectError(() => {
       runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
@@ -227,16 +245,11 @@ describe('release-gen', () => {
     commit(testName, 'misc: minor improvements')
     commit(testName, 'fix: buf fix')
     commit(testName, 'docs: test documentation')
-    let release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
-
-    commit(testName, 'feat(api)!: new major release')
-    release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
-    expect(release.nextVersion).toBe('v1.0.0')
-    expect(release.notes).toContain('BREAKING CHANGES')
   }, 120_000) // 120 seconds for this test, it is long running
 
   function expectError(callable: () => void): string {
