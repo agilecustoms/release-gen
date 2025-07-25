@@ -1,5 +1,20 @@
 # Changelog
 
+# [0.11.0](https://github.com/agilecustoms/release-gen/compare/v0.10.3...v0.11.0) (2025-07-25)
+
+### Bug Fixes
+
+* split one big test in two ([cc23c96](https://github.com/agilecustoms/release-gen/commit/cc23c96704b584ed6fb8fafc2290c01a73f0c4b9))
+* test timeout ([8611f7a](https://github.com/agilecustoms/release-gen/commit/8611f7a458fafddd0d22913451379e6f5d038b4a))
+* test timeout2 ([3a2ff04](https://github.com/agilecustoms/release-gen/commit/3a2ff043caa7e5f037484a97f293b9face086cec))
+* tests ([2bf1ff9](https://github.com/agilecustoms/release-gen/commit/2bf1ff97c6c970a98913197ab2558fcb91ed3be8))
+
+
+### Features
+
+* handle errors gracefully ([e103be6](https://github.com/agilecustoms/release-gen/commit/e103be658b248902d53042c91b6d62a66c212dd9))
+
+
 ## [0.10.3](https://github.com/agilecustoms/release-gen/compare/v0.10.2...v0.10.3) (2025-07-23)
 
 ### Bug Fixes
