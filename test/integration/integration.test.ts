@@ -260,8 +260,11 @@ describe('release-gen', () => {
     console.log('AlexC debug: ', out)
     const iError = out.indexOf('::error::')
     expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
-    // const nextLine = out.indexOf('\n', iError)
-    // const error = out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
+    console.log('iError:', iError)
+    const nextLine = out.indexOf('\n', iError)
+    console.log('nextLine:', nextLine)
+    const error = out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
+    console.log('error:', error)
     // expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
     //   + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
   })
