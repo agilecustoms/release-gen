@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://github.com/agilecustoms/release-gen/compare/v0.11.1...v0.11.2) (2025-07-25)
+
+### Bug Fixes
+
+* reshuffle fields in package.json ([0927481](https://github.com/agilecustoms/release-gen/commit/0927481a29794dc55325ba01d8342dd0f47a9af3))
+
+
 ## [0.11.1](https://github.com/agilecustoms/release-gen/compare/v0.11.0...v0.11.1) (2025-07-25)
 
 ### Bug Fixes
