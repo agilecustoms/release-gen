@@ -1,8 +1,13 @@
 {
   "name": "release-gen",
-  "version": "1.0.0",
+  "version": "0.11.3",
   "description": "GitHub Action wrapper for Semantic Release",
-  "keywords": ["github-action", "publish", "release", "semantic-release"],
+  "keywords": [
+    "github-action",
+    "publish",
+    "release",
+    "semantic-release"
+  ],
   "homepage": "https://github.com/agilecustoms/release-gen",
   "bugs": {
     "url": "https://github.com/agilecustoms/release-gen/issues"
