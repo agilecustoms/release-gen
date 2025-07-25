@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/agilecustoms/release-gen/compare/v0.11.0...v0.11.1) (2025-07-25)
+
+### Bug Fixes
+
+* update documentation ([64fb091](https://github.com/agilecustoms/release-gen/commit/64fb0915f0795d45abf07b238d06b8a4c75a197f))
+
+
 # [0.11.0](https://github.com/agilecustoms/release-gen/compare/v0.10.3...v0.11.0) (2025-07-25)
 
 ### Bug Fixes
