@@ -121,14 +121,7 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    let buffer
-    try {
-      buffer = execSync(`node ${indexJs}`, { env })
-    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      if (err.stdout) console.error('stdout:', err.stdout.toString())
-      if (err.stderr) console.error('stderr:', err.stderr.toString())
-      throw err
-    }
+    const buffer = execSync(`node ${indexJs}`, { env })
     const output = buffer.toString()
     // Parse "::set-output" lines into a map
     const outputMap: Record<string, string> = {}
@@ -189,19 +182,19 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('v0.5.1')
   })
 
-  // scope of testing: major release, conventional commits, non-default tagFormat (specified in .releaserc.json)
-  it('conventionalcommits-major', async (ctx) => {
+  // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
+  it('major', async (ctx) => {
     const testName = ctx.task.name
-    const branch = 'main'
+    const branch = 'int-test050'
     checkout(testName, branch)
-    commit(testName, 'feat(api)!: test')
+    commit(testName, 'feat: test\n\nBREAKING CHANGE: test major release')
 
-    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('1.0.0')
   })
 
-  // test my own convention settings I'm gonna use internally for agilecustoms projects:
+  // test my own convention settings I'm using internally for agilecustoms projects:
   // 1. disable 'perf:'
   // 2. add "docs:" commit -> "Documentation" section in release notes
   // 2. add "misc:" commit -> "Miscellaneous" section in release notes
@@ -209,6 +202,12 @@ describe('release-gen', () => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
+
+    let error = expectError(() => {
+      runReleaseGen(testName, branch)
+    })
+    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
+      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
 
     // check some default types do not do version bump (and also perf is disabled)
     commit(testName, 'style: test')
@@ -218,7 +217,7 @@ describe('release-gen', () => {
     commit(testName, 'build: test')
     commit(testName, 'ci: test')
     commit(testName, 'perf: perf 1')
-    const error = expectError(() => {
+    error = expectError(() => {
       runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
@@ -238,20 +237,6 @@ describe('release-gen', () => {
     release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('v1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
-  })
-
-  // scope of testing: use non-default preset but no npm-extra-dep, expect to have clear error
-  it('conventionalcommits-no-npm', async (ctx) => {
-    const testName = ctx.task.name
-    const branch = 'main'
-    checkout(testName, branch)
-    commit(testName, 'fix: test')
-
-    const error = expectError(() => {
-      runReleaseGen(testName, branch)
-    })
-    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
-      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
   })
 
   function expectError(callable: () => void): string {
