@@ -137,7 +137,7 @@ describe('release-gen', () => {
     }
   }
 
-  it.skip('patch', (ctx) => {
+  it('patch', (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
@@ -148,7 +148,7 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('v0.5.1')
   })
 
-  it.skip('minor', (ctx) => {
+  it('minor', (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
@@ -160,7 +160,7 @@ describe('release-gen', () => {
   })
 
   // scope of testing: ability to make a patch release with 'docs' in angular preset
-  it.skip('docs-patch', async (ctx) => {
+  it('docs-patch', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
@@ -182,26 +182,32 @@ describe('release-gen', () => {
     expect(release.nextVersion).toBe('v0.5.1')
   })
 
-  // scope of testing: major release, conventional commits, non-default tagFormat (specified in .releaserc.json)
-  it.skip('conventionalcommits-major', async (ctx) => {
+  // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
+  it('major', async (ctx) => {
     const testName = ctx.task.name
-    const branch = 'main'
+    const branch = 'int-test050'
     checkout(testName, branch)
-    commit(testName, 'feat(api)!: test')
+    commit(testName, 'feat: test\n\nBREAKING CHANGE: test major release')
 
-    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('1.0.0')
   })
 
-  // test my own convention settings I'm gonna use internally for agilecustoms projects:
+  // test my own convention settings I'm using internally for agilecustoms projects:
   // 1. disable 'perf:'
   // 2. add "docs:" commit -> "Documentation" section in release notes
   // 2. add "misc:" commit -> "Miscellaneous" section in release notes
-  it.skip('conventionalcommits-custom', async (ctx) => {
+  it('conventionalcommits-custom', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
+
+    let error = expectError(() => {
+      runReleaseGen(testName, branch)
+    })
+    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
+      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
 
     // check some default types do not do version bump (and also perf is disabled)
     commit(testName, 'style: test')
@@ -211,7 +217,7 @@ describe('release-gen', () => {
     commit(testName, 'build: test')
     commit(testName, 'ci: test')
     commit(testName, 'perf: perf 1')
-    const error = expectError(() => {
+    error = expectError(() => {
       runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
@@ -231,42 +237,6 @@ describe('release-gen', () => {
     release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('v1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
-  })
-
-  // scope of testing: use non-default preset but no npm-extra-dep, expect to have clear error
-  it('conventionalcommits-no-npm', async (ctx) => {
-    const testName = ctx.task.name
-    const branch = 'main'
-    checkout(testName, branch)
-    commit(testName, 'feat(api)!: new major release')
-
-    // const error = expectError(() => {
-    //   runReleaseGen(testName, branch)
-    // })
-    // expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
-    //   + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
-    let err: any // eslint-disable-line @typescript-eslint/no-explicit-any
-    let release: Release
-    try {
-      release = runReleaseGen(testName, branch)
-      console.log('release:', release)
-    } catch (e) {
-      err = e
-    }
-    console.log('err:', err)
-
-    expect(err).toBeDefined()
-    const out = err.stdout.toString()
-    console.log('AlexC debug: ', out)
-    const iError = out.indexOf('::error::')
-    expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
-    console.log('iError:', iError)
-    const nextLine = out.indexOf('\n', iError)
-    console.log('nextLine:', nextLine)
-    const error = out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
-    console.log('error:', error)
-    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
-      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
   })
 
   function expectError(callable: () => void): string {
