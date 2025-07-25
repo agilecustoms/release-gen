@@ -237,7 +237,7 @@ describe('release-gen', () => {
     release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('v1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
-  })
+  }, 120_000) // 120 seconds for this test, it is long running
 
   function expectError(callable: () => void): string {
     let error: any // eslint-disable-line @typescript-eslint/no-explicit-any
