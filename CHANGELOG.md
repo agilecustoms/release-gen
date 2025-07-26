@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.4](https://github.com/agilecustoms/release-gen/compare/v0.11.3...v0.11.4) (2025-07-26)
+
+### Bug Fixes
+
+* rename agilecustoms/publish to agilecustoms/release ([537f45a](https://github.com/agilecustoms/release-gen/commit/537f45a0db2d578b64332f49fb2330ffa2065834))
+
+
 ## [0.11.3](https://github.com/agilecustoms/release-gen/compare/v0.11.2...v0.11.3) (2025-07-25)
 
 ### Bug Fixes
