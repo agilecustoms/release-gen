@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/agilecustoms/release-gen/compare/v1.1.0...v1.1.1) (2025-07-27)
+
+### Bug Fixes
+
+* get ready to support branch ([11fbb05](https://github.com/agilecustoms/release-gen/commit/11fbb05cc03920cbcd174e49f2af7c5c4783b2e9))
+
+
 # [1.1.0](https://github.com/agilecustoms/release-gen/compare/v1.0.0...v1.1.0) (2025-07-27)
 
 ### Features
