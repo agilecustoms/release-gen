@@ -1,5 +1,17 @@
 # Changelog
 
+# [1.0.0](https://github.com/agilecustoms/release-gen/compare/v0.12.0...v1.0.0) (2025-07-27)
+
+### Bug Fixes
+
+* rename build-and-release in just release ([ea946ed](https://github.com/agilecustoms/release-gen/commit/ea946ed10504e03e42a4a70af325e9e50e036b83))
+
+
+### BREAKING CHANGES
+
+* release v1.0.0
+
+
 # [0.12.0](https://github.com/agilecustoms/release-gen/compare/v0.11.4...v0.12.0) (2025-07-27)
 
 ### Features
