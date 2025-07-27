@@ -1,5 +1,12 @@
 # Changelog
 
+# [0.12.0](https://github.com/agilecustoms/release-gen/compare/v0.11.4...v0.12.0) (2025-07-27)
+
+### Features
+
+* update deps ([418b00c](https://github.com/agilecustoms/release-gen/commit/418b00cae12bdd42d085c880b484d32c043a2bad))
+
+
 ## [0.11.4](https://github.com/agilecustoms/release-gen/compare/v0.11.3...v0.11.4) (2025-07-26)
 
 ### Bug Fixes
