@@ -1,5 +1,17 @@
 # Changelog
 
+# [2.0.0](https://github.com/agilecustoms/release-gen/compare/v1.1.1...v2.0.0) (2025-07-27)
+
+### Bug Fixes
+
+* minor doc fix ([fd7a345](https://github.com/agilecustoms/release-gen/commit/fd7a345658362b1f9342171b7c14c1f5d27ea6cd))
+
+
+### BREAKING CHANGES
+
+* release version 2 to test support of 1.x.x
+
+
 ## [1.1.1](https://github.com/agilecustoms/release-gen/compare/v1.1.0...v1.1.1) (2025-07-27)
 
 ### Bug Fixes
