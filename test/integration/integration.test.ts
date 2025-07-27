@@ -2,6 +2,7 @@ import type { ExecSyncOptions } from 'child_process'
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import type { BranchSpec } from 'semantic-release'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import type { Release } from '../../src/model.js'
 
@@ -18,7 +19,8 @@ let counter = 0
 
 type TestOptions = {
   npmExtraDeps?: string
-  releasePlugins?: string
+  releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec
+  releasePlugins?: object
 }
 
 const CONVENTIONAL_OPTS = {
@@ -113,8 +115,11 @@ describe('release-gen', () => {
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
     }
+    if (opts.releaseBranches) {
+      env['INPUT_RELEASE_BRANCHES'] = JSON.stringify(opts.releaseBranches)
+    }
     if (opts.releasePlugins) {
-      env['INPUT_RELEASE_PLUGINS'] = opts.releasePlugins
+      env['INPUT_RELEASE_PLUGINS'] = JSON.stringify(opts.releasePlugins)
     }
 
     if (process.env.CI) { // see a DISCLAIMER above
@@ -181,7 +186,7 @@ describe('release-gen', () => {
       '@semantic-release/release-notes-generator'
     ]
 
-    const release = runReleaseGen(testName, branch, { releasePlugins: JSON.stringify(plugins) })
+    const release = runReleaseGen(testName, branch, { releasePlugins: plugins })
 
     expect(release.nextVersion).toBe('v0.5.1')
   })
@@ -266,4 +271,61 @@ describe('release-gen', () => {
     const nextLine = out.indexOf('\n', iError)
     return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
   }
+
+  it('maintenance-patch', (ctx) => {
+    const testName = ctx.task.name
+    const branch = '0.10.x' // latest tag v0.10.3
+    checkout(testName, branch)
+    commit(testName, 'fix: test')
+    const releaseBranches = [
+      'main',
+      // can be just `branch`, put object with an explicit range for education
+      {
+        name: branch,
+        range: '0.10.x' // range: '>=0.10.3 <0.11.0' (not >0.10.3 as I would expect)
+      },
+    ]
+
+    const release = runReleaseGen(testName, branch, { releaseBranches })
+
+    expect(release.nextVersion).toBe('v0.10.4')
+  })
+
+  // it('maintenance-fix', (ctx) => {
+  //   const testName = ctx.task.name
+  //   const branch = '0.x.x' // latest tag v0.12.2
+  //   checkout(testName, branch)
+  //   commit(testName, 'fix: test')
+  //   const releaseBranches = [
+  //     'main',
+  //     {
+  //       name: '0.x.x',
+  //       range: '0.12.x'
+  //     }
+  //   ]
+  //
+  //   const release = runReleaseGen(testName, branch, { releaseBranches })
+  //
+  //   expect(release.nextVersion).toBe('v0.12.3')
+  // })
+
+  // it('maintenance-fix2', (ctx) => {
+  //   const testName = ctx.task.name
+  //   const branch = '0.x.x' // latest tag v0.12.2
+  //   checkout(testName, branch)
+  //   commit(testName, 'fix: test')
+  //   const releaseBranches = [
+  //     {
+  //       name: 'main'
+  //     },
+  //     {
+  //       name: '0.x.x',
+  //       range: '0.x.x'
+  //     }
+  //   ]
+  //
+  //   const release = runReleaseGen(testName, branch, { releaseBranches })
+  //
+  //   expect(release.nextVersion).toBe('v0.12.3')
+  // })
 })

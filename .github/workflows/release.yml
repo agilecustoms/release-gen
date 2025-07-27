@@ -1,9 +1,10 @@
-name: Build and Release
+name: Release
 
 on:
   push:
     branches:
       - main
+      - 0.x.x
 
 jobs:
   Build:
