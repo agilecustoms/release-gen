@@ -4,7 +4,7 @@ on:
   push:
     branches-ignore:
       - main
-      - 0.x.x
+      - 1.x.x
   workflow_call:
     inputs:
       artifacts:
