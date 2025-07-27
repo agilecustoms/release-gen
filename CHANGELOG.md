@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.1.0](https://github.com/agilecustoms/release-gen/compare/v1.0.0...v1.1.0) (2025-07-27)
+
+### Features
+
+* simple change to release v1.1.0 ([40238ea](https://github.com/agilecustoms/release-gen/commit/40238ea4d3e24574d19e09e2049e1521040baba9))
+
+
 # [1.0.0](https://github.com/agilecustoms/release-gen/compare/v0.12.0...v1.0.0) (2025-07-27)
 
 ### Bug Fixes
