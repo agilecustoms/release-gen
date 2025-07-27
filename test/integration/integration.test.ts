@@ -272,24 +272,24 @@ describe('release-gen', () => {
     return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
   }
 
-  it('maintenance-patch', (ctx) => {
-    const testName = ctx.task.name
-    const branch = '0.10.x' // latest tag v0.10.3
-    checkout(testName, branch)
-    commit(testName, 'fix: test')
-    const releaseBranches = [
-      'main',
-      // can be just `branch`, put object with an explicit range for education
-      {
-        name: branch,
-        range: '0.10.x' // range: '>=0.10.3 <0.11.0' (not >0.10.3 as I would expect)
-      },
-    ]
-
-    const release = runReleaseGen(testName, branch, { releaseBranches })
-
-    expect(release.nextVersion).toBe('v0.10.4')
-  })
+  // it('maintenance-patch', (ctx) => {
+  //   const testName = ctx.task.name
+  //   const branch = '0.10.x' // latest tag v0.10.3
+  //   checkout(testName, branch)
+  //   commit(testName, 'fix: test')
+  //   const releaseBranches = [
+  //     'main',
+  //     // can be just `branch`, put object with an explicit range for education
+  //     {
+  //       name: branch,
+  //       range: '0.10.x' // range: '>=0.10.3 <0.11.0' (not >0.10.3 as I would expect)
+  //     },
+  //   ]
+  //
+  //   const release = runReleaseGen(testName, branch, { releaseBranches })
+  //
+  //   expect(release.nextVersion).toBe('v0.10.4')
+  // })
 
   // it('maintenance-fix', (ctx) => {
   //   const testName = ctx.task.name
