@@ -1,5 +1,13 @@
 # Changelog
 
+# [1.2.0](https://github.com/agilecustoms/release-gen/compare/v1.1.1...v1.2.0) (2025-07-27)
+
+### Features
+
+* add .releaserc.json to release versions in this support branch ([2a0a381](https://github.com/agilecustoms/release-gen/commit/2a0a381fa21226fd7ca51f27d1411bba1b5d6f53))
+* remove integration tests to speedup builds ([d3a9332](https://github.com/agilecustoms/release-gen/commit/d3a93321f2a2469ea2cc7b2d1a8bb33c38aef666))
+
+
 ## [1.1.1](https://github.com/agilecustoms/release-gen/compare/v1.1.0...v1.1.1) (2025-07-27)
 
 ### Bug Fixes
