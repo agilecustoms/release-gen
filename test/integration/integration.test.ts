@@ -272,60 +272,36 @@ describe('release-gen', () => {
     return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
   }
 
-  // it('maintenance-patch', (ctx) => {
-  //   const testName = ctx.task.name
-  //   const branch = '0.10.x' // latest tag v0.10.3
-  //   checkout(testName, branch)
-  //   commit(testName, 'fix: test')
-  //   const releaseBranches = [
-  //     'main',
-  //     // can be just `branch`, put object with an explicit range for education
-  //     {
-  //       name: branch,
-  //       range: '0.10.x' // range: '>=0.10.3 <0.11.0' (not >0.10.3 as I would expect)
-  //     },
-  //   ]
-  //
-  //   const release = runReleaseGen(testName, branch, { releaseBranches })
-  //
-  //   expect(release.nextVersion).toBe('v0.10.4')
-  // })
+  it('maintenance-patch', (ctx) => {
+    const testName = ctx.task.name
+    const branch = '1.x.x' // latest tag v1.2.0
+    checkout(testName, branch)
+    commit(testName, 'fix: test')
+    const releaseBranches = [
+      'main',
+      branch
+    ]
 
-  // it('maintenance-fix', (ctx) => {
-  //   const testName = ctx.task.name
-  //   const branch = '0.x.x' // latest tag v0.12.2
-  //   checkout(testName, branch)
-  //   commit(testName, 'fix: test')
-  //   const releaseBranches = [
-  //     'main',
-  //     {
-  //       name: '0.x.x',
-  //       range: '0.12.x'
-  //     }
-  //   ]
-  //
-  //   const release = runReleaseGen(testName, branch, { releaseBranches })
-  //
-  //   expect(release.nextVersion).toBe('v0.12.3')
-  // })
+    const release = runReleaseGen(testName, branch, { releaseBranches })
 
-  // it('maintenance-fix2', (ctx) => {
-  //   const testName = ctx.task.name
-  //   const branch = '0.x.x' // latest tag v0.12.2
-  //   checkout(testName, branch)
-  //   commit(testName, 'fix: test')
-  //   const releaseBranches = [
-  //     {
-  //       name: 'main'
-  //     },
-  //     {
-  //       name: '0.x.x',
-  //       range: '0.x.x'
-  //     }
-  //   ]
-  //
-  //   const release = runReleaseGen(testName, branch, { releaseBranches })
-  //
-  //   expect(release.nextVersion).toBe('v0.12.3')
-  // })
+    expect(release.nextVersion).toBe('v1.2.1')
+  })
+
+  it('maintenance-minor', (ctx) => {
+    const testName = ctx.task.name
+    const branch = '1.x.x' // latest tag v1.2.0
+    checkout(testName, branch)
+    commit(testName, 'feat: test')
+    const releaseBranches = [
+      'main',
+      {
+        name: '1.x.x', // if `name` was say "legacy", then `range` would matter
+        range: '1.x.x'
+      }
+    ]
+
+    const release = runReleaseGen(testName, branch, { releaseBranches })
+
+    expect(release.nextVersion).toBe('v1.3.0')
+  })
 })
