@@ -323,19 +323,19 @@ describe('release-gen', () => {
 
   it('prerelease', async (ctx) => {
     const testName = ctx.task.name
-    const branch = 'next' // latest tag v2.0.0
+    const branch = 'next' // latest tag v3.0.0-beta.1
     checkout(testName, branch)
     commit(testName, 'fix: test')
     const releaseBranches: BranchSpec[] = [
       'main',
       {
-        name: branch, // if `name` was say "legacy", then `range` would matter
-        prerelease: `my-\${name}`
+        name: branch,
+        prerelease: 'beta'
       }
     ]
 
     const release = await runReleaseGen(testName, branch, { releaseBranches })
 
-    expect(release.nextVersion).toBe('v2.0.1-next.1')
+    expect(release.nextVersion).toBe('v3.0.1-beta.2')
   }, TIMEOUT)
 })
