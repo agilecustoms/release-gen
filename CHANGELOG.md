@@ -1,5 +1,12 @@
 # Changelog
 
+# [2.1.0](https://github.com/agilecustoms/release-gen/compare/v2.0.1...v2.1.0) (2025-07-28)
+
+### Features
+
+* add new outputs, rename 'next_version' -> 'git_tag' ([ce8af45](https://github.com/agilecustoms/release-gen/commit/ce8af456b4288519fb91879eca105687628021c5))
+
+
 ## [2.0.1](https://github.com/agilecustoms/release-gen/compare/v2.0.0...v2.0.1) (2025-07-28)
 
 ### Bug Fixes
