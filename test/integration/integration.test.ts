@@ -1,10 +1,13 @@
 import type { ExecSyncOptions } from 'child_process'
-import { execSync } from 'node:child_process'
+import { execSync, exec as execCallback } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import { promisify } from 'node:util'
 import type { BranchSpec } from 'semantic-release'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import type { Release } from '../../src/model.js'
+
+const exec = promisify(execCallback)
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
@@ -15,6 +18,7 @@ const gitDir = path.join(__dirname, 'git')
 const ghActionDir = path.join(__dirname, 'gh-action')
 const ghActionDistDir = path.join(ghActionDir, 'dist')
 
+const TIMEOUT = 120_000 // 2 min
 let counter = 0
 
 type TestOptions = {
@@ -99,7 +103,7 @@ describe('release-gen', () => {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  function runReleaseGen(testName: string, branch: string, opts: TestOptions = {}): Release {
+  async function runReleaseGen(testName: string, branch: string, opts: TestOptions = {}): Promise<Release> {
     const cwd = path.join(gitDir, testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -130,15 +134,27 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    const buffer = execSync(`node ${indexJs}`, { env })
-    const output = buffer.toString()
+
+    const { stdout, stderr } = await exec(`node ${indexJs}`, {
+      env,
+      cwd,
+      timeout: TIMEOUT,
+      maxBuffer: 1024 * 1024 // 1MB buffer size
+    })
+
+    // Log stderr if there's any (but don't throw)
+    if (stderr) {
+      console.warn('stderr output:', stderr)
+    }
+
     // Parse "::set-output" lines into a map
     const outputMap: Record<string, string> = {}
     const regex = /::set-output name=([^:]+)::([^\n]+)/g
     let match
-    while ((match = regex.exec(output)) !== null) {
+    while ((match = regex.exec(stdout)) !== null) {
       outputMap[match[1]!] = match[2]!
     }
+
     // outputMap now contains all set-output key-value pairs
     return {
       nextVersion: outputMap['next_version']!,
@@ -146,27 +162,27 @@ describe('release-gen', () => {
     }
   }
 
-  it('patch', (ctx) => {
+  it('patch', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
     commit(testName, 'fix: test')
 
-    const release = runReleaseGen(testName, branch)
+    const release = await runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('v0.5.1')
-  })
+  }, TIMEOUT)
 
-  it('minor', (ctx) => {
+  it('minor', async (ctx) => {
     const testName = ctx.task.name
     const branch = 'int-test050'
     checkout(testName, branch)
     commit(testName, 'feat: test')
 
-    const release = runReleaseGen(testName, branch)
+    const release = await runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('v0.6.0')
-  })
+  }, TIMEOUT)
 
   // scope of testing: ability to make a patch release with 'docs' in angular preset
   it('docs-patch', async (ctx) => {
@@ -186,10 +202,10 @@ describe('release-gen', () => {
       '@semantic-release/release-notes-generator'
     ]
 
-    const release = runReleaseGen(testName, branch, { releasePlugins: plugins })
+    const release = await runReleaseGen(testName, branch, { releasePlugins: plugins })
 
     expect(release.nextVersion).toBe('v0.5.1')
-  })
+  }, TIMEOUT)
 
   // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
   it('major', async (ctx) => {
@@ -198,10 +214,10 @@ describe('release-gen', () => {
     checkout(testName, branch)
     commit(testName, 'feat: test\n\nBREAKING CHANGE: test major release')
 
-    const release = runReleaseGen(testName, branch)
+    const release = await runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('1.0.0')
-  })
+  }, TIMEOUT)
 
   // if no conventional-changelog-conventionalcommits npm dep => clear error
   // test custom tag format
@@ -211,17 +227,17 @@ describe('release-gen', () => {
     const branch = 'int-test050'
     checkout(testName, branch)
 
-    const error = expectError(() => {
-      runReleaseGen(testName, branch)
+    const error = await expectError(async () => {
+      await runReleaseGen(testName, branch)
     })
     expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
       + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
 
     commit(testName, 'feat(api)!: new major release')
-    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    const release = await runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
-  }, 120_000) // 120 seconds for this test, it is long running
+  }, TIMEOUT)
 
   // test my own convention settings I'm using internally for agilecustoms projects:
   // 1. disable 'perf:'
@@ -240,8 +256,8 @@ describe('release-gen', () => {
     commit(testName, 'build: test')
     commit(testName, 'ci: test')
     commit(testName, 'perf: perf 1')
-    const error = expectError(() => {
-      runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    const error = await expectError(async () => {
+      await runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
 
@@ -250,17 +266,17 @@ describe('release-gen', () => {
     commit(testName, 'misc: minor improvements')
     commit(testName, 'fix: buf fix')
     commit(testName, 'docs: test documentation')
-    const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
+    const release = await runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
-  }, 120_000) // 120 seconds for this test, it is long running
+  }, TIMEOUT)
 
-  function expectError(callable: () => void): string {
+  async function expectError(callable: () => Promise<void>): Promise<string> {
     let error: any // eslint-disable-line @typescript-eslint/no-explicit-any
     try {
-      callable()
+      await callable()
     } catch (e) {
       error = e
     }
@@ -272,7 +288,7 @@ describe('release-gen', () => {
     return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
   }
 
-  it('maintenance-patch', (ctx) => {
+  it('maintenance-patch', async (ctx) => {
     const testName = ctx.task.name
     const branch = '1.x.x' // latest tag v1.2.0
     checkout(testName, branch)
@@ -282,12 +298,12 @@ describe('release-gen', () => {
       branch
     ]
 
-    const release = runReleaseGen(testName, branch, { releaseBranches })
+    const release = await runReleaseGen(testName, branch, { releaseBranches })
 
     expect(release.nextVersion).toBe('v1.2.1')
-  })
+  }, TIMEOUT)
 
-  it('maintenance-minor', (ctx) => {
+  it('maintenance-minor', async (ctx) => {
     const testName = ctx.task.name
     const branch = '1.x.x' // latest tag v1.2.0
     checkout(testName, branch)
@@ -300,8 +316,8 @@ describe('release-gen', () => {
       }
     ]
 
-    const release = runReleaseGen(testName, branch, { releaseBranches })
+    const release = await runReleaseGen(testName, branch, { releaseBranches })
 
     expect(release.nextVersion).toBe('v1.3.0')
-  })
+  }, TIMEOUT)
 })
