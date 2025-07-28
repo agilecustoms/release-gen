@@ -130,7 +130,7 @@ describe('release-gen', () => {
 
     // launch release-gen/test/integration/gh-action/dist/index.js
     const indexJs = path.join(ghActionDistDir, 'index.js')
-    const buffer = execSync(`node ${indexJs}`, { env })
+    const buffer = execSync(`node ${indexJs}`, { env, timeout: 120_000 })
     const output = buffer.toString()
     // Parse "::set-output" lines into a map
     const outputMap: Record<string, string> = {}
