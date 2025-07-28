@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/agilecustoms/release-gen/compare/v2.0.0...v2.0.1) (2025-07-28)
+
+### Bug Fixes
+
+* add tests describing 'maintenance' release ([a0dcddc](https://github.com/agilecustoms/release-gen/commit/a0dcddcd40ec857d82263dc9a4ff7834218c108e))
+* make tests async, add timeouts ([fef44f0](https://github.com/agilecustoms/release-gen/commit/fef44f0e498e61edb0a775acac12b509163aa967))
+
+
 # [2.0.0](https://github.com/agilecustoms/release-gen/compare/v1.1.1...v2.0.0) (2025-07-27)
 
 ### Bug Fixes
