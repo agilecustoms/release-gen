@@ -320,4 +320,22 @@ describe('release-gen', () => {
 
     expect(release.nextVersion).toBe('v1.3.0')
   }, TIMEOUT)
+
+  it('prerelease', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'next' // latest tag v2.0.0
+    checkout(testName, branch)
+    commit(testName, 'fix: test')
+    const releaseBranches: BranchSpec[] = [
+      'main',
+      {
+        name: branch, // if `name` was say "legacy", then `range` would matter
+        prerelease: `my-\${name}`
+      }
+    ]
+
+    const release = await runReleaseGen(testName, branch, { releaseBranches })
+
+    expect(release.nextVersion).toBe('v2.0.1-next.1')
+  }, TIMEOUT)
 })
