@@ -3,9 +3,8 @@ import { execSync, exec as execCallback } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { promisify } from 'node:util'
-import type { BranchSpec } from 'semantic-release'
+import type { BranchSpec, NextRelease, ReleaseType } from 'semantic-release'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import type { Release } from '../../src/model.js'
 
 const exec = promisify(execCallback)
 
@@ -23,7 +22,8 @@ let counter = 0
 
 type TestOptions = {
   npmExtraDeps?: string
-  releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec
+  // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
+  releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
   releasePlugins?: object
 }
 
@@ -103,7 +103,7 @@ describe('release-gen', () => {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  async function runReleaseGen(testName: string, branch: string, opts: TestOptions = {}): Promise<Release> {
+  async function runReleaseGen(testName: string, branch: string, opts: TestOptions = {}): Promise<NextRelease> {
     const cwd = path.join(gitDir, testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -112,12 +112,12 @@ describe('release-gen', () => {
       GITHUB_WORKSPACE: cwd,
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
-
-      // feed GH actions core.getInput with env vars
-      INPUT_RELEASE_BRANCHES: JSON.stringify([branch]),
     }
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
+    }
+    if (!('releaseBranches' in opts)) {
+      opts.releaseBranches = [branch]
     }
     if (opts.releaseBranches) {
       env['INPUT_RELEASE_BRANCHES'] = JSON.stringify(opts.releaseBranches)
@@ -157,9 +157,11 @@ describe('release-gen', () => {
 
     // outputMap now contains all set-output key-value pairs
     return {
-      nextVersion: outputMap['next_version']!,
-      notes: fs.readFileSync(outputMap['notes_file']!, 'utf8')
-    }
+      gitTag: outputMap['git_tag']!,
+      notes: fs.readFileSync(outputMap['notes_file']!, 'utf8'),
+      type: outputMap['type'] as ReleaseType,
+      channel: outputMap['channel']!
+    } as NextRelease
   }
 
   it('patch', async (ctx) => {
@@ -170,7 +172,11 @@ describe('release-gen', () => {
 
     const release = await runReleaseGen(testName, branch)
 
-    expect(release.nextVersion).toBe('v0.5.1')
+    expect(release.gitTag).toBe('v0.5.1')
+    expect(release.channel).toBeUndefined() // double-checked
+    // maintenance release and prerelease have channel,
+    // main release branch has no default channel at release-gen phase, it is undefined
+    // but then in 'git', 'github' plugins of semantic-release it is set to 'latest'
   }, TIMEOUT)
 
   it('minor', async (ctx) => {
@@ -181,7 +187,7 @@ describe('release-gen', () => {
 
     const release = await runReleaseGen(testName, branch)
 
-    expect(release.nextVersion).toBe('v0.6.0')
+    expect(release.gitTag).toBe('v0.6.0')
   }, TIMEOUT)
 
   // scope of testing: ability to make a patch release with 'docs' in angular preset
@@ -204,19 +210,26 @@ describe('release-gen', () => {
 
     const release = await runReleaseGen(testName, branch, { releasePlugins: plugins })
 
-    expect(release.nextVersion).toBe('v0.5.1')
+    expect(release.gitTag).toBe('v0.5.1')
   }, TIMEOUT)
 
   // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
   it('major', async (ctx) => {
     const testName = ctx.task.name
-    const branch = 'int-test050'
+    const branch = 'main' // versions 2.x.x
     checkout(testName, branch)
     commit(testName, 'feat: test\n\nBREAKING CHANGE: test major release')
+    const releaseBranches: BranchSpec[] = [
+      {
+        name: branch,
+        channel: 'the-latest'
+      }
+    ]
 
-    const release = await runReleaseGen(testName, branch)
+    const release = await runReleaseGen(testName, branch, { releaseBranches })
 
-    expect(release.nextVersion).toBe('1.0.0')
+    expect(release.gitTag).toBe('3.0.0')
+    expect(release.channel).toBe('the-latest')
   }, TIMEOUT)
 
   // if no conventional-changelog-conventionalcommits npm dep => clear error
@@ -235,7 +248,7 @@ describe('release-gen', () => {
 
     commit(testName, 'feat(api)!: new major release')
     const release = await runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
-    expect(release.nextVersion).toBe('1.0.0')
+    expect(release.gitTag).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
   }, TIMEOUT)
 
@@ -267,7 +280,7 @@ describe('release-gen', () => {
     commit(testName, 'fix: buf fix')
     commit(testName, 'docs: test documentation')
     const release = await runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
-    expect(release.nextVersion).toBe('v0.5.1')
+    expect(release.gitTag).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
@@ -300,7 +313,8 @@ describe('release-gen', () => {
 
     const release = await runReleaseGen(testName, branch, { releaseBranches })
 
-    expect(release.nextVersion).toBe('v1.2.1')
+    expect(release.gitTag).toBe('v1.2.1')
+    expect(release.channel).toBe(branch)
   }, TIMEOUT)
 
   it('maintenance-minor', async (ctx) => {
@@ -308,16 +322,37 @@ describe('release-gen', () => {
     const branch = '1.x.x' // latest tag v1.2.0
     checkout(testName, branch)
     commit(testName, 'feat: test')
-    const releaseBranches = [
+    const releaseBranches: BranchSpec[] = [
       'main',
       {
         name: '1.x.x', // if `name` was say "legacy", then `range` would matter
-        range: '1.x.x'
+        range: '1.x.x',
+        channel: 'legacy'
       }
     ]
 
     const release = await runReleaseGen(testName, branch, { releaseBranches })
 
-    expect(release.nextVersion).toBe('v1.3.0')
+    expect(release.gitTag).toBe('v1.3.0')
+    expect(release.channel).toBe('legacy')
+  }, TIMEOUT)
+
+  it('prerelease', async (ctx) => {
+    const testName = ctx.task.name
+    const branch = 'beta' // latest tag v3.0.0-beta.1
+    checkout(testName, branch)
+    commit(testName, 'fix: test')
+    const releaseBranches: BranchSpec[] = [
+      'main',
+      {
+        name: branch,
+        prerelease: true
+      }
+    ]
+
+    const release = await runReleaseGen(testName, branch, { releaseBranches })
+
+    expect(release.gitTag).toBe('v3.0.0-beta.2')
+    expect(release.channel).toBe('beta')
   }, TIMEOUT)
 })

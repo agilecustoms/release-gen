@@ -12,10 +12,6 @@ export class ReleaseProcessor {
             return false;
         }
         const nextRelease = result.nextRelease;
-        const version = nextRelease.gitTag;
-        if (!version) {
-            throw new Error('No version found in the next release. This is unexpected');
-        }
         const notes = nextRelease.notes;
         if (!notes) {
             throw new Error('No release notes found in the next release. This is unexpected');
@@ -23,10 +19,7 @@ export class ReleaseProcessor {
         if (options.changelogFile) {
             await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
         }
-        return {
-            nextVersion: version,
-            notes
-        };
+        return nextRelease;
     }
     async semanticRelease(options) {
         const opts = {
