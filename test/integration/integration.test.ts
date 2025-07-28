@@ -1,6 +1,4 @@
 import type { ExecSyncOptions } from 'child_process'
-// import { execSync } from 'node:child_process'
-// import { exec } from 'node:child_process/promises'
 import { execSync, exec as execCallback } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -81,11 +79,7 @@ describe('release-gen', () => {
 
   function checkout(testName: string, branch: string): void {
     const cwd = path.join(gitDir, testName)
-    const options: ExecSyncOptions = {
-      cwd,
-      stdio: 'inherit',
-      timeout: 60_000 // 1 minute timeout for git operations
-    }
+    const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
     execSync(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
     execSync('git sparse-checkout init --cone', options)
@@ -102,11 +96,7 @@ describe('release-gen', () => {
 
   function commit(testName: string, msg: string) {
     const cwd = path.join(gitDir, testName)
-    const options: ExecSyncOptions = {
-      cwd,
-      stdio: 'inherit',
-      timeout: 30_000 // 30 second timeout for commits
-    }
+    const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     fs.writeFileSync(`${cwd}/test${++counter}.txt`, 'test content', 'utf8')
     execSync('git add .', options)
     execSync(`git commit -m "${msg}"`, options)
