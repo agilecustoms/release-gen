@@ -1,6 +1,6 @@
 import process from 'node:process'
 import type { Config, NextRelease, Options, Result } from 'semantic-release'
-import type { Release, ReleaseOptions } from '../model.js'
+import type { ReleaseOptions } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 
@@ -10,17 +10,13 @@ export class ReleaseProcessor {
     private readonly changelogGenerator: ChangelogGenerator
   ) {}
 
-  public async process(options: ReleaseOptions): Promise<Release | false> {
+  public async process(options: ReleaseOptions): Promise<false | NextRelease> {
     const result: Result = await this.semanticRelease(options)
     if (!result) {
       return false
     }
 
     const nextRelease: NextRelease = result.nextRelease
-    const version = nextRelease.gitTag
-    if (!version) {
-      throw new Error('No version found in the next release. This is unexpected')
-    }
 
     const notes = nextRelease.notes
     if (!notes) {
@@ -31,10 +27,7 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    return {
-      nextVersion: version,
-      notes
-    }
+    return nextRelease
   }
 
   private async semanticRelease(options: ReleaseOptions): Promise<Result> {

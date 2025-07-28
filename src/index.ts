@@ -4,7 +4,8 @@ import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
-import type { Release, ReleaseOptions } from './model.js'
+import type { NextRelease } from 'semantic-release'
+import type { ReleaseOptions } from './model.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
@@ -22,7 +23,7 @@ if (stderr) {
 
 const core = await import('@actions/core')
 function getInput(name: string): string {
-  return core.getInput(name, { required: false, trimWhitespace: true })
+  return core.getInput(name, { required: false })
 }
 const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
@@ -60,7 +61,7 @@ const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
 const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
-let result: Release | false
+let result: false | NextRelease
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
@@ -78,12 +79,16 @@ try {
 
 // if no semantic commits that increase version, then semantic-release returns empty result (no error!)
 if (!result) {
-  core.setFailed('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
+  const message = 'Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)'
+  console.error(message)
+  core.setFailed(message)
   process.exit(1)
 }
 
 const notesFilePath = '/tmp/release-gen-notes'
-await fs.writeFile(notesFilePath, result.notes, 'utf8')
+await fs.writeFile(notesFilePath, result.notes!, 'utf8')
 
-core.setOutput('next_version', result.nextVersion)
+core.setOutput('channel', result.channel)
+core.setOutput('git_tag', result.gitTag)
 core.setOutput('notes_file', notesFilePath)
+core.setOutput('type', result.type)

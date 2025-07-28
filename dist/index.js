@@ -18,7 +18,7 @@ if (stderr) {
 }
 const core = await import('@actions/core');
 function getInput(name) {
-    return core.getInput(name, { required: false, trimWhitespace: true });
+    return core.getInput(name, { required: false });
 }
 const changelogFile = getInput('changelog_file');
 const changelogTitle = getInput('changelog_title');
@@ -70,10 +70,14 @@ catch (e) {
     process.exit(1);
 }
 if (!result) {
-    core.setFailed('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)');
+    const message = 'Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)';
+    console.error(message);
+    core.setFailed(message);
     process.exit(1);
 }
 const notesFilePath = '/tmp/release-gen-notes';
 await fs.writeFile(notesFilePath, result.notes, 'utf8');
-core.setOutput('next_version', result.nextVersion);
+core.setOutput('channel', result.channel);
+core.setOutput('git_tag', result.gitTag);
 core.setOutput('notes_file', notesFilePath);
+core.setOutput('type', result.type);

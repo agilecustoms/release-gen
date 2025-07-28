@@ -5,8 +5,3 @@ export type ReleaseOptions = {
   releasePlugins?: string
   tagFormat?: string
 }
-
-export type Release = {
-  nextVersion: string
-  notes: string
-}
