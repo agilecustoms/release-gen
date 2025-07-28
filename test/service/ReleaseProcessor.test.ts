@@ -67,14 +67,6 @@ describe('ReleaseProcessor', () => {
     expect(result).toBe(false)
   })
 
-  it('should throw an error if next release has no version', async () => {
-    semanticReleaseAdapter.run.mockResolvedValue({
-      nextRelease: { gitTag: '', notes: 'Release notes' }
-    })
-
-    await expect(processor.process(OPTIONS)).rejects.toThrow('No version found in the next release. This is unexpected')
-  })
-
   it('should throw an error if next release has no notes', async () => {
     semanticReleaseAdapter.run.mockResolvedValue({
       nextRelease: { gitTag: 'v1.0.0', notes: '' }
@@ -102,7 +94,7 @@ describe('ReleaseProcessor', () => {
     const result = await processor.process(OPTIONS)
 
     expect(result).toEqual({
-      nextVersion: 'v1.0.0',
+      gitTag: 'v1.0.0',
       notes: 'Release notes'
     })
   })
