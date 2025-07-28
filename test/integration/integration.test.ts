@@ -14,6 +14,7 @@ const distDir = path.join(rootDir, 'dist')
 const gitDir = path.join(__dirname, 'git')
 const ghActionDir = path.join(__dirname, 'gh-action')
 const ghActionDistDir = path.join(ghActionDir, 'dist')
+const TIMEOUT = 120_000 // 2 min
 
 let counter = 0
 
@@ -155,7 +156,7 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('v0.5.1')
-  })
+  }, TIMEOUT)
 
   it('minor', (ctx) => {
     const testName = ctx.task.name
@@ -166,7 +167,7 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('v0.6.0')
-  })
+  }, TIMEOUT)
 
   // scope of testing: ability to make a patch release with 'docs' in angular preset
   it('docs-patch', async (ctx) => {
@@ -189,7 +190,7 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch, { releasePlugins: plugins })
 
     expect(release.nextVersion).toBe('v0.5.1')
-  })
+  }, TIMEOUT)
 
   // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
   it('major', async (ctx) => {
@@ -201,7 +202,7 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch)
 
     expect(release.nextVersion).toBe('1.0.0')
-  })
+  }, TIMEOUT)
 
   // if no conventional-changelog-conventionalcommits npm dep => clear error
   // test custom tag format
@@ -221,7 +222,7 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch, CONVENTIONAL_OPTS)
     expect(release.nextVersion).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
-  }, 120_000) // 120 seconds for this test, it is long running
+  }, TIMEOUT)
 
   // test my own convention settings I'm using internally for agilecustoms projects:
   // 1. disable 'perf:'
@@ -255,7 +256,7 @@ describe('release-gen', () => {
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
-  }, 120_000) // 120 seconds for this test, it is long running
+  }, TIMEOUT)
 
   function expectError(callable: () => void): string {
     let error: any // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -285,7 +286,7 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch, { releaseBranches })
 
     expect(release.nextVersion).toBe('v1.2.1')
-  })
+  }, TIMEOUT)
 
   it('maintenance-minor', (ctx) => {
     const testName = ctx.task.name
@@ -303,5 +304,5 @@ describe('release-gen', () => {
     const release = runReleaseGen(testName, branch, { releaseBranches })
 
     expect(release.nextVersion).toBe('v1.3.0')
-  })
+  }, TIMEOUT)
 })
