@@ -142,8 +142,6 @@ describe('release-gen', () => {
       maxBuffer: 1024 * 1024 // 1MB buffer size
     })
 
-    const output = stdout
-
     // Log stderr if there's any (but don't throw)
     if (stderr) {
       console.warn('stderr output:', stderr)
@@ -153,7 +151,7 @@ describe('release-gen', () => {
     const outputMap: Record<string, string> = {}
     const regex = /::set-output name=([^:]+)::([^\n]+)/g
     let match
-    while ((match = regex.exec(output)) !== null) {
+    while ((match = regex.exec(stdout)) !== null) {
       outputMap[match[1]!] = match[2]!
     }
 
@@ -283,7 +281,7 @@ describe('release-gen', () => {
       error = e
     }
     expect(error).toBeDefined()
-    const out = error.stdout?.toString() || error.message || error.toString()
+    const out = error.stdout.toString()
     const iError = out.indexOf('::error::')
     expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
     const nextLine = out.indexOf('\n', iError)
