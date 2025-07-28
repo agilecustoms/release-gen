@@ -22,7 +22,8 @@ let counter = 0
 
 type TestOptions = {
   npmExtraDeps?: string
-  releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec
+  // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
+  releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
   releasePlugins?: object
 }
 
@@ -111,12 +112,12 @@ describe('release-gen', () => {
       GITHUB_WORKSPACE: cwd,
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
-
-      // feed GH actions core.getInput with env vars
-      INPUT_RELEASE_BRANCHES: JSON.stringify([branch]),
     }
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
+    }
+    if (!('releaseBranches' in opts)) {
+      opts.releaseBranches = [branch]
     }
     if (opts.releaseBranches) {
       env['INPUT_RELEASE_BRANCHES'] = JSON.stringify(opts.releaseBranches)
@@ -172,7 +173,10 @@ describe('release-gen', () => {
     const release = await runReleaseGen(testName, branch)
 
     expect(release.gitTag).toBe('v0.5.1')
-    // expect(release.channel).toBe('latest')
+    expect(release.channel).toBeUndefined() // double-checked
+    // maintenance release and prerelease have channel,
+    // main release branch has no default channel at release-gen phase, it is undefined
+    // but then in 'git', 'github' plugins of semantic-release it is set to 'latest'
   }, TIMEOUT)
 
   it('minor', async (ctx) => {
@@ -350,6 +354,5 @@ describe('release-gen', () => {
 
     expect(release.gitTag).toBe('v3.0.0-beta.2')
     expect(release.channel).toBe('beta')
-    expect(release.type).toBe('patch')
   }, TIMEOUT)
 })

@@ -80,4 +80,3 @@ await fs.writeFile(notesFilePath, result.notes, 'utf8');
 core.setOutput('channel', result.channel);
 core.setOutput('git_tag', result.gitTag);
 core.setOutput('notes_file', notesFilePath);
-core.setOutput('type', result.type);
