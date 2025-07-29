@@ -1,25 +1,27 @@
-import { exec } from 'node:child_process'
+import { exec as execSync } from 'node:child_process'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
-import type { NextRelease } from 'semantic-release'
-import type { ReleaseOptions } from './model.js'
+import type { ReleaseOptions, TheNextRelease } from './model.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
-const execAsync = util.promisify(exec)
-let { stdout, stderr } = await execAsync('npm --loglevel error ci --only=prod', {
-  cwd: packageJsonDir
-})
 
-console.log(stdout)
-if (stderr) {
-  console.error('Error during npm ci - packages installed dynamically at runtime')
-  console.error(stderr)
-  process.exit(1)
+const execAsync = util.promisify(execSync)
+async function exec(command: string, error: string, cwd: string = packageJsonDir): Promise<string> {
+  const { stdout, stderr } = await execAsync(command, { cwd })
+  console.log(stdout)
+  if (stderr) {
+    console.error(error)
+    console.error(stderr)
+    process.exit(1)
+  }
+  return stdout
 }
+
+await exec('npm --loglevel error ci --only=prod', 'Error during npm ci - packages installed dynamically at runtime')
 
 const core = await import('@actions/core')
 function getInput(name: string): string {
@@ -33,21 +35,21 @@ const releasePlugins: string = getInput('release_plugins')
 const tagFormat: string = getInput('tag_format')
 
 if (npmExtraDeps) {
-  const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
-  ({ stdout, stderr } = await execAsync(`npm install ${extras}`, {
-    cwd: packageJsonDir
-  }))
-  console.log(stdout)
-  if (stderr) {
-    console.error(`Error during installing extra npm dependencies ${extras}`)
-    console.error(stderr)
-    process.exit(1)
-  }
+  const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ')
+  await exec(`npm install ${extras}`, `Error during installing extra npm dependencies ${extras}`)
 }
 
+// cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
+// need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
+const cwd = process.env.GITHUB_WORKSPACE!
+
+const branchName = await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)
+
 const options: ReleaseOptions = {
+  branchName: branchName.trim(),
   changelogFile,
   changelogTitle,
+  cwd,
   releaseBranches,
   releasePlugins,
   tagFormat
@@ -61,7 +63,7 @@ const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
 const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
-let result: false | NextRelease
+let result: false | TheNextRelease
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
@@ -91,3 +93,4 @@ await fs.writeFile(notesFilePath, result.notes!, 'utf8')
 core.setOutput('channel', result.channel)
 core.setOutput('git_tag', result.gitTag)
 core.setOutput('notes_file', notesFilePath)
+core.setOutput('prerelease', result.prerelease)

@@ -199,5 +199,6 @@ describe('release-gen', () => {
 
     expect(release.gitTag).toBe('v3.0.0-beta.2')
     expect(release.channel).toBe('beta')
+    expect(release.prerelease).toBe(true)
   }, TIMEOUT)
 })

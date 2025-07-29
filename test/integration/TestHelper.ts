@@ -3,8 +3,9 @@ import { execSync, exec as execCallback } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { promisify } from 'node:util'
-import type { BranchSpec, NextRelease, ReleaseType } from 'semantic-release'
+import type { BranchSpec, ReleaseType } from 'semantic-release'
 import type { TestContext } from 'vitest'
+import type { TheNextRelease } from '../../src/model.js'
 
 const exec = promisify(execCallback)
 
@@ -103,7 +104,7 @@ export class TestHelper {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<NextRelease> {
+  public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
     const cwd = path.join(gitDir, this.testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -157,10 +158,11 @@ export class TestHelper {
 
     // outputMap now contains all set-output key-value pairs
     return {
+      channel: outputMap['channel']!,
       gitTag: outputMap['git_tag']!,
       notes: fs.readFileSync(outputMap['notes_file']!, 'utf8'),
-      type: outputMap['type'] as ReleaseType,
-      channel: outputMap['channel']!
-    } as NextRelease
+      prerelease: outputMap['prerelease'] === 'true',
+      type: outputMap['type'] as ReleaseType
+    } as TheNextRelease
   }
 }

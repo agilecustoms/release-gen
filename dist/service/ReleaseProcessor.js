@@ -19,12 +19,13 @@ export class ReleaseProcessor {
         if (options.changelogFile) {
             await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
         }
-        return nextRelease;
+        return { ...nextRelease, prerelease: result.prerelease };
     }
     async semanticRelease(options) {
         const opts = {
             dryRun: true
         };
+        opts['currentBranch'] = options.branchName;
         if (options.tagFormat) {
             opts.tagFormat = options.tagFormat;
         }
@@ -48,7 +49,7 @@ export class ReleaseProcessor {
             opts.repositoryUrl = process.env.REPOSITORY_URL;
         }
         const config = {
-            cwd: process.env.GITHUB_WORKSPACE
+            cwd: options.cwd
         };
         return await this.semanticReleaseAdapter.run(opts, config);
     }
