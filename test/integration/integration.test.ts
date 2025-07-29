@@ -184,7 +184,7 @@ describe('release-gen', () => {
   }, TIMEOUT)
 
   it('prerelease', async () => {
-    const branch = 'beta' // latest tag v3.0.0-beta.1
+    const branch = 'beta' // latest tag v3.0.0-beta.3
     checkout(branch)
     commit('fix: test')
     const releaseBranches: BranchSpec[] = [
@@ -197,7 +197,7 @@ describe('release-gen', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
-    expect(release.gitTag).toBe('v3.0.0-beta.2')
+    expect(release.gitTag).toBe('v3.0.0-beta.4')
     expect(release.channel).toBe('beta')
     expect(release.prerelease).toBe(true)
   }, TIMEOUT)
