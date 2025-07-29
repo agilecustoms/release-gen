@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/agilecustoms/release-gen/compare/v2.2.0...v2.2.1) (2025-07-29)
+
+### Bug Fixes
+
+* fix test bcz prerelease has bumped ([7617339](https://github.com/agilecustoms/release-gen/commit/7617339314e96f87ffe93d1f1211d6f2820e8174))
+
+
 # [2.2.0](https://github.com/agilecustoms/release-gen/compare/v2.1.0...v2.2.0) (2025-07-29)
 
 ### Features
