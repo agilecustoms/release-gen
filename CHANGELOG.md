@@ -1,5 +1,12 @@
 # Changelog
 
+# [2.2.0](https://github.com/agilecustoms/release-gen/compare/v2.1.0...v2.2.0) (2025-07-29)
+
+### Features
+
+* add prerelease output ([83d53e2](https://github.com/agilecustoms/release-gen/commit/83d53e2c46d92b7e0fe31a1856d4e52bb35ca407))
+
+
 # [2.1.0](https://github.com/agilecustoms/release-gen/compare/v2.0.1...v2.1.0) (2025-07-28)
 
 ### Features
