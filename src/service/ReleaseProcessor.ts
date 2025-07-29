@@ -1,6 +1,6 @@
 import process from 'node:process'
-import type { Config, NextRelease, Options, Result } from 'semantic-release'
-import type { ReleaseOptions } from '../model.js'
+import type { Config, NextRelease, Options } from 'semantic-release'
+import type { ReleaseOptions, SemanticReleaseResult, TheNextRelease } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 
@@ -10,8 +10,8 @@ export class ReleaseProcessor {
     private readonly changelogGenerator: ChangelogGenerator
   ) {}
 
-  public async process(options: ReleaseOptions): Promise<false | NextRelease> {
-    const result: Result = await this.semanticRelease(options)
+  public async process(options: ReleaseOptions): Promise<false | TheNextRelease> {
+    const result: SemanticReleaseResult = await this.semanticRelease(options)
     if (!result) {
       return false
     }
@@ -27,13 +27,14 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    return nextRelease
+    return { ...nextRelease, prerelease: result.prerelease }
   }
 
-  private async semanticRelease(options: ReleaseOptions): Promise<Result> {
+  private async semanticRelease(options: ReleaseOptions): Promise<SemanticReleaseResult> {
     const opts: Options = {
       dryRun: true
     }
+    opts['currentBranch'] = options.branchName
     if (options.tagFormat) {
       opts.tagFormat = options.tagFormat
     }
@@ -61,9 +62,7 @@ export class ReleaseProcessor {
     }
 
     const config: Config = {
-      // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
-      // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
-      cwd: process.env.GITHUB_WORKSPACE
+      cwd: options.cwd
     }
 
     return await this.semanticReleaseAdapter.run(opts, config)

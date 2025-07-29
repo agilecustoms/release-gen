@@ -1,5 +1,6 @@
 import esmock from 'esmock'
-import type { Config, Options, PluginSpec, Result } from 'semantic-release'
+import type { BranchSpec, Config, Options, PluginSpec, Result } from 'semantic-release'
+import type { SemanticReleaseResult } from '../model.js'
 
 /**
  * There are 4 default plugins:<br>
@@ -17,9 +18,12 @@ const defaultPlugins = [
 ]
 
 export class SemanticReleaseAdapter {
-  public async run(opts: Options, config: Config): Promise<Result> {
+  public async run(opts: Options, config: Config): Promise<SemanticReleaseResult> {
     const pluginsPath = 'semantic-release/lib/plugins/index.js'
     const getConfigPath = 'semantic-release/lib/get-config.js'
+
+    const currentBranch = opts['currentBranch'] as string
+    let prerelease: boolean = false
 
     const originalPluginsFunc = (await import(pluginsPath)).default
     const getConfig: (context: Config, cliOptions?: Options) => Promise<object> = await esmock(
@@ -28,6 +32,7 @@ export class SemanticReleaseAdapter {
         [pluginsPath]: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           default: async (context: any, pluginsPath: Record<string, string>) => {
+            prerelease = this.isPrerelease(context.options.branches, currentBranch)
             context.options.plugins = this.fixPlugins(context.options.plugins)
             return await originalPluginsFunc(context, pluginsPath)
           }
@@ -45,7 +50,14 @@ export class SemanticReleaseAdapter {
         },
       }
     )
-    return await semanticRelease(opts, config)
+    const result = await semanticRelease(opts, config)
+    return result ? { ...result, prerelease } : result
+  }
+
+  public isPrerelease(branches: BranchSpec[], branch: string): boolean {
+    return branches.some((branchSpec) => {
+      return typeof branchSpec === 'object' && branchSpec.name === branch && branchSpec.prerelease === true
+    })
   }
 
   public fixPlugins(plugins: ReadonlyArray<PluginSpec>): ReadonlyArray<PluginSpec> {
