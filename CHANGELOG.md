@@ -1,5 +1,12 @@
 # Changelog
 
+# [2.3.0](https://github.com/agilecustoms/release-gen/compare/v2.2.2...v2.3.0) (2025-07-30)
+
+### Features
+
+* output git_tags ([d22f8d9](https://github.com/agilecustoms/release-gen/commit/d22f8d94a97190e0b21942249519f2fa9faa0177))
+
+
 ## [2.2.2](https://github.com/agilecustoms/release-gen/compare/v2.2.1...v2.2.2) (2025-07-30)
 
 ### Bug Fixes
