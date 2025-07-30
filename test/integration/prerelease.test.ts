@@ -28,8 +28,9 @@ describe('prerelease', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
-    expect(release.gitTag).toBe('v3.0.0-beta.4')
     expect(release.channel).toBe('beta')
+    expect(release.gitTag).toBe('v3.0.0-beta.4')
+    expect(release.gitTags).toEqual(['v3.0.0-beta.4'])
     expect(release.prerelease).toBe(true)
   }, TIMEOUT)
 })

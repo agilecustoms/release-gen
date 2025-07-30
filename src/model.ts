@@ -16,4 +16,5 @@ export type SemanticReleaseResult = false | Result & {
 
 export type TheNextRelease = NextRelease & {
   prerelease: boolean
+  gitTags: string[]
 }
