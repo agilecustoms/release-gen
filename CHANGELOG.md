@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.3.0](https://github.com/agilecustoms/release-gen/compare/v1.2.0...v1.3.0) (2025-07-30)
+
+### Features
+
+* test minor release ([f910546](https://github.com/agilecustoms/release-gen/commit/f910546fccfbd1b8268dcd11166080cfcb72d402))
+
+
 # [1.2.0](https://github.com/agilecustoms/release-gen/compare/v1.1.1...v1.2.0) (2025-07-27)
 
 ### Features
