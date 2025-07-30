@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/agilecustoms/release-gen/compare/v2.2.1...v2.2.2) (2025-07-30)
+
+### Bug Fixes
+
+* refactor tests and split into multiple files for quicker execution ([4efc27a](https://github.com/agilecustoms/release-gen/commit/4efc27a23045de73b794f568d9a8d3e74bf35ef9))
+
+
 ## [2.2.1](https://github.com/agilecustoms/release-gen/compare/v2.2.0...v2.2.1) (2025-07-29)
 
 ### Bug Fixes
