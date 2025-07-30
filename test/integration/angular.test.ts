@@ -7,7 +7,7 @@ const TIMEOUT = 120_000 // 2 min
 
 const helper = new TestHelper('angular')
 
-describe('release-gen', () => {
+describe('angular', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
 

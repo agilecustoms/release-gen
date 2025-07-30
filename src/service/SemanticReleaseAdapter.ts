@@ -24,6 +24,7 @@ export class SemanticReleaseAdapter {
 
     const currentBranch = opts['currentBranch'] as string
     let prerelease: boolean = false
+    let minorMaintenance: boolean = false
 
     const originalPluginsFunc = (await import(pluginsPath)).default
     const getConfig: (context: Config, cliOptions?: Options) => Promise<object> = await esmock(
@@ -32,8 +33,12 @@ export class SemanticReleaseAdapter {
         [pluginsPath]: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           default: async (context: any, pluginsPath: Record<string, string>) => {
-            prerelease = this.isPrerelease(context.options.branches, currentBranch)
-            context.options.plugins = this.fixPlugins(context.options.plugins)
+            const options = context.options
+            prerelease = this.isPrerelease(options.branches, currentBranch)
+            if (!prerelease) {
+              minorMaintenance = this.isMinorMaintenance(options.branches, currentBranch)
+            }
+            options.plugins = this.fixPlugins(options.plugins)
             return await originalPluginsFunc(context, pluginsPath)
           }
         }
@@ -51,13 +56,28 @@ export class SemanticReleaseAdapter {
       }
     )
     const result = await semanticRelease(opts, config)
-    return result ? { ...result, prerelease } : result
+    return result ? { ...result, prerelease, minorMaintenance } : result
   }
 
   public isPrerelease(branches: BranchSpec[], branch: string): boolean {
     return branches.some((branchSpec) => {
       return typeof branchSpec === 'object' && branchSpec.name === branch && branchSpec.prerelease === true
     })
+  }
+
+  public isMinorMaintenance(branches: BranchSpec[], branch: string): boolean {
+    let range = ''
+    for (const spec of branches) {
+      if (spec === branch) {
+        range = branch
+        break
+      }
+      if (typeof spec === 'object' && spec.name === branch) {
+        range = spec.range || spec.name
+        break
+      }
+    }
+    return /\d+\.\d+\.x/.test(range)
   }
 
   public fixPlugins(plugins: ReadonlyArray<PluginSpec>): ReadonlyArray<PluginSpec> {

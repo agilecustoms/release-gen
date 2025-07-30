@@ -21,7 +21,7 @@ export class ReleaseProcessor {
         }
         return {
             ...nextRelease,
-            gitTags: this.getGitTags(nextRelease.gitTag, result.prerelease),
+            gitTags: this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance),
             prerelease: result.prerelease
         };
     }
@@ -57,11 +57,14 @@ export class ReleaseProcessor {
         };
         return await this.semanticReleaseAdapter.run(opts, config);
     }
-    getGitTags(tag, prerelease) {
+    getGitTags(tag, prerelease, minorMaintenance) {
         if (prerelease) {
             return [tag];
         }
         const minor = tag.slice(0, tag.lastIndexOf('.'));
+        if (minorMaintenance) {
+            return [tag, minor];
+        }
         const major = minor.slice(0, minor.lastIndexOf('.'));
         return [tag, minor, major];
     }
