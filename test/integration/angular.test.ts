@@ -8,7 +8,7 @@ const CONVENTIONAL_OPTS = {
   npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'
 }
 
-const helper = new TestHelper()
+const helper = new TestHelper('angular')
 
 describe('release-gen', () => {
   beforeAll(helper.beforeAll.bind(helper))

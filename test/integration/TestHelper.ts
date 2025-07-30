@@ -13,10 +13,6 @@ const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
 const rootDir = path.resolve(__dirname, '../..')
 const assetsDir = path.resolve(__dirname, 'assets')
-const distDir = path.join(rootDir, 'dist')
-const gitDir = path.join(__dirname, 'git')
-const ghActionDir = path.join(__dirname, 'gh-action')
-const ghActionDistDir = path.join(ghActionDir, 'dist')
 
 const TIMEOUT = 120_000 // 2 min
 let counter = 0
@@ -48,39 +44,49 @@ type TestOptions = {
  * Note: normally on CI (and also in local setup) the auth token is auto-attached via "insteadOf" rule in .gitconfig
  */
 export class TestHelper {
+  private readonly ghActionDir: string
+  private readonly gitDir: string
+
+  constructor(private readonly itName: string) {
+    const itDir = path.join(__dirname, itName)
+    this.ghActionDir = path.join(itDir, 'gh-action')
+    this.gitDir = path.join(itDir, 'git')
+  }
+
   private testName!: string
 
   public beforeAll(): void {
+    const distDir = path.join(rootDir, 'dist')
     // rebuild source code to reflect any changes while work on tests
-    execSync('npm run build', { cwd: rootDir, stdio: 'inherit' })
+    execSync(`npm run build -- --outDir ${distDir}`, { cwd: rootDir, stdio: 'inherit' })
 
-    // copy the entire release-gen / dist dir into test/integration/gh-action
-    fs.rmSync(ghActionDir, { recursive: true, force: true }) // clean before copy
-    fs.mkdirSync(ghActionDir)
-    execSync(`cp -R "${distDir}" "${ghActionDir}"`)
-    // copy root package.json and package-lock.json into test/integration/gh-action
-    execSync(`cp "${path.join(rootDir, 'package.json')}" "${ghActionDir}"`)
-    execSync(`cp "${path.join(rootDir, 'package-lock.json')}" "${ghActionDir}"`)
+    // copy entire 'release-gen/dist/{itName}' dir into test/integration/{itName}/gh-action
+    fs.rmSync(this.ghActionDir, { recursive: true, force: true }) // clean before copy
+    fs.mkdirSync(this.ghActionDir, { recursive: true })
+    execSync(`cp -R "${distDir}" "${this.ghActionDir}"`)
+    // copy root package.json and package-lock.json into test/integration/{itName}/gh-action
+    execSync(`cp "${path.join(rootDir, 'package.json')}" "${this.ghActionDir}"`)
+    execSync(`cp "${path.join(rootDir, 'package-lock.json')}" "${this.ghActionDir}"`)
 
-    // create 'test/integration/git' directory
-    fs.mkdirSync(gitDir, { recursive: true })
+    // create 'test/integration/{itName}/git' directory
+    fs.mkdirSync(this.gitDir, { recursive: true })
   }
 
   public beforeEach(ctx: TestContext): void {
     this.testName = ctx.task.name
 
     // some tests install extra dependency, need to remove it to avoid race conditions
-    const npmDynamicDep = path.join(ghActionDir, 'node_modules/conventional-changelog-conventionalcommits')
+    const npmDynamicDep = path.join(this.ghActionDir, 'node_modules/conventional-changelog-conventionalcommits')
     fs.rmSync(npmDynamicDep, { recursive: true, force: true })
 
-    const testDir = path.join(gitDir, this.testName)
+    const testDir = path.join(this.gitDir, this.testName)
     // delete (if any) and create a directory for this test
     fs.rmSync(testDir, { recursive: true, force: true })
     fs.mkdirSync(testDir)
   }
 
   public checkout(branch: string): void {
-    const cwd = path.join(gitDir, this.testName)
+    const cwd = path.join(this.gitDir, this.testName)
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
     execSync(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
@@ -97,7 +103,7 @@ export class TestHelper {
   }
 
   public commit(msg: string): void {
-    const cwd = path.join(gitDir, this.testName)
+    const cwd = path.join(this.gitDir, this.testName)
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     fs.writeFileSync(`${cwd}/test${++counter}.txt`, 'test content', 'utf8')
     execSync('git add .', options)
@@ -105,7 +111,7 @@ export class TestHelper {
   }
 
   public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
-    const cwd = path.join(gitDir, this.testName)
+    const cwd = path.join(this.gitDir, this.testName)
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       // release-gen action is run from a completely different directory, so it uses GITHUB_WORKSPACE to find the actual repo that needs to be released
@@ -133,8 +139,8 @@ export class TestHelper {
       env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
     }
 
-    // launch release-gen/test/integration/gh-action/dist/index.js
-    const indexJs = path.join(ghActionDistDir, 'index.js')
+    // launch release-gen/test/integration/{itName}/gh-action/dist/index.js
+    const indexJs = path.join(this.ghActionDir, 'dist', 'index.js')
 
     const { stdout, stderr } = await exec(`node ${indexJs}`, {
       env,

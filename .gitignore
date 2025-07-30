@@ -2,8 +2,8 @@ node_modules
 .idea
 
 dist/local.js
-test/integration/gh-action/*
-test/integration/git/*
+test/integration/*/gh-action/*
+test/integration/*/git/*
 
 # system files
 .DS_Store
