@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/agilecustoms/release-gen/compare/v1.2.0...v1.2.1) (2025-07-30)
+
+### Bug Fixes
+
+* test minor maintenance ([b4d08bb](https://github.com/agilecustoms/release-gen/commit/b4d08bbfd7bdaa4f24c8b3c907ee1d56e89a4676))
+
+
 # [1.2.0](https://github.com/agilecustoms/release-gen/compare/v1.1.1...v1.2.0) (2025-07-27)
 
 ### Features
