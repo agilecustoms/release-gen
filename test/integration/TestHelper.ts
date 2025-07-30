@@ -167,6 +167,7 @@ export class TestHelper {
     return {
       channel: outputMap['channel']!,
       gitTag: outputMap['git_tag']!,
+      gitTags: outputMap['git_tags']!.split(' '),
       notes: fs.readFileSync(outputMap['notes_file']!, 'utf8'),
       prerelease: outputMap['prerelease'] === 'true',
       type: outputMap['type'] as ReleaseType

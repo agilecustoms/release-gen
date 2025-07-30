@@ -13,12 +13,17 @@ export class SemanticReleaseAdapter {
         const getConfigPath = 'semantic-release/lib/get-config.js';
         const currentBranch = opts['currentBranch'];
         let prerelease = false;
+        let minorMaintenance = false;
         const originalPluginsFunc = (await import(pluginsPath)).default;
         const getConfig = await esmock(getConfigPath, {
             [pluginsPath]: {
                 default: async (context, pluginsPath) => {
-                    prerelease = this.isPrerelease(context.options.branches, currentBranch);
-                    context.options.plugins = this.fixPlugins(context.options.plugins);
+                    const options = context.options;
+                    prerelease = this.isPrerelease(options.branches, currentBranch);
+                    if (!prerelease) {
+                        minorMaintenance = this.isMinorMaintenance(options.branches, currentBranch);
+                    }
+                    options.plugins = this.fixPlugins(options.plugins);
                     return await originalPluginsFunc(context, pluginsPath);
                 }
             }
@@ -31,12 +36,26 @@ export class SemanticReleaseAdapter {
             },
         });
         const result = await semanticRelease(opts, config);
-        return result ? { ...result, prerelease } : result;
+        return result ? { ...result, prerelease, minorMaintenance } : result;
     }
     isPrerelease(branches, branch) {
         return branches.some((branchSpec) => {
             return typeof branchSpec === 'object' && branchSpec.name === branch && branchSpec.prerelease === true;
         });
+    }
+    isMinorMaintenance(branches, branch) {
+        let range = '';
+        for (const spec of branches) {
+            if (spec === branch) {
+                range = branch;
+                break;
+            }
+            if (typeof spec === 'object' && spec.name === branch) {
+                range = spec.range || spec.name;
+                break;
+            }
+        }
+        return /\d+\.\d+\.x/.test(range);
     }
     fixPlugins(plugins) {
         return plugins.filter((plugin) => {

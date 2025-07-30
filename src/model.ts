@@ -11,9 +11,11 @@ export type ReleaseOptions = {
 }
 
 export type SemanticReleaseResult = false | Result & {
+  minorMaintenance: boolean
   prerelease: boolean
 }
 
 export type TheNextRelease = NextRelease & {
+  gitTags: string[]
   prerelease: boolean
 }

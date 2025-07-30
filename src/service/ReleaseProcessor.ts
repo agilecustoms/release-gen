@@ -27,10 +27,14 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    return { ...nextRelease, prerelease: result.prerelease }
+    return {
+      ...nextRelease,
+      gitTags: this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance),
+      prerelease: result.prerelease
+    }
   }
 
-  private async semanticRelease(options: ReleaseOptions): Promise<SemanticReleaseResult> {
+  private async semanticRelease(options: ReleaseOptions): Promise<false | SemanticReleaseResult> {
     const opts: Options = {
       dryRun: true
     }
@@ -66,5 +70,17 @@ export class ReleaseProcessor {
     }
 
     return await this.semanticReleaseAdapter.run(opts, config)
+  }
+
+  private getGitTags(tag: string, prerelease: boolean, minorMaintenance: boolean): string[] {
+    if (prerelease) {
+      return [tag]
+    }
+    const minor = tag.slice(0, tag.lastIndexOf('.'))
+    if (minorMaintenance) {
+      return [tag, minor]
+    }
+    const major = minor.slice(0, minor.lastIndexOf('.'))
+    return [tag, minor, major]
   }
 }

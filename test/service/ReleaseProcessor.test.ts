@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Mock } from 'vitest'
+import type { ReleaseOptions } from '../../src/model.js'
 import { ChangelogGenerator } from '../../src/service/ChangelogGenerator.js'
 import { ReleaseProcessor } from '../../src/service/ReleaseProcessor.js'
 import { SemanticReleaseAdapter } from '../../src/service/SemanticReleaseAdapter.js'
@@ -14,7 +15,7 @@ const changelogGenerator = {
 
 const OPTIONS = {
   tagFormat: 'v${version}'
-}
+} as ReleaseOptions
 
 describe('ReleaseProcessor', () => {
   const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
@@ -93,9 +94,60 @@ describe('ReleaseProcessor', () => {
 
     const result = await processor.process(OPTIONS)
 
-    expect(result).toEqual({
-      gitTag: 'v1.0.0',
-      notes: 'Release notes'
+    expect(result).toBeTruthy()
+    if (result) {
+      expect(result.gitTag).toBe('v1.0.0')
+      expect(result.notes).toBe('Release notes')
+    }
+  })
+
+  it('should return single git tag for prerelease', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: 'v1.0.0-alpha.1', notes: 'Release notes' },
+      prerelease: true
     })
+
+    const result = await processor.process(OPTIONS)
+
+    expect(result).toBeTruthy()
+    if (result) {
+      expect(result.gitTag).toBe('v1.0.0-alpha.1')
+      expect(result.gitTags).toEqual(['v1.0.0-alpha.1'])
+      expect(result.prerelease).toBe(true)
+    }
+  })
+
+  it('should return two tags for minor maintenance', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: 'v1.2.0', notes: 'Release notes' },
+      minorMaintenance: true,
+      prerelease: false
+    })
+
+    const result = await processor.process(OPTIONS)
+
+    expect(result).toBeTruthy()
+    if (result) {
+      expect(result.gitTag).toBe('v1.2.0')
+      expect(result.gitTags).toEqual(['v1.2.0', 'v1.2'])
+      expect(result.prerelease).toBe(false)
+    }
+  })
+
+  it('should return three tags for regular release', async () => {
+    semanticReleaseAdapter.run.mockResolvedValue({
+      nextRelease: { gitTag: 'v1.2.3', notes: 'Release notes' },
+      minorMaintenance: false,
+      prerelease: false
+    })
+
+    const result = await processor.process(OPTIONS)
+
+    expect(result).toBeTruthy()
+    if (result) {
+      expect(result.gitTag).toBe('v1.2.3')
+      expect(result.gitTags).toEqual(['v1.2.3', 'v1.2', 'v1'])
+      expect(result.prerelease).toBe(false)
+    }
   })
 })
