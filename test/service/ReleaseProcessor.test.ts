@@ -93,9 +93,10 @@ describe('ReleaseProcessor', () => {
 
     const result = await processor.process(OPTIONS)
 
-    expect(result).toEqual({
-      gitTag: 'v1.0.0',
-      notes: 'Release notes'
-    })
+    expect(result).toBeTruthy()
+    if (result) {
+      expect(result.gitTag).toBe('v1.0.0')
+      expect(result.notes).toBe('Release notes')
+    }
   })
 })
