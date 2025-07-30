@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/agilecustoms/release-gen/compare/v2.3.0...v2.3.1) (2025-07-30)
+
+### Bug Fixes
+
+* fix test after manipulation with prerelease and maintenance release branches ([f51e527](https://github.com/agilecustoms/release-gen/commit/f51e52729dd217cc4bab00e41feb2b9b9f97cf09))
+
+
 # [2.3.0](https://github.com/agilecustoms/release-gen/compare/v2.2.2...v2.3.0) (2025-07-30)
 
 ### Features
