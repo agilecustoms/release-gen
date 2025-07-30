@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Mock } from 'vitest'
+import type { ReleaseOptions } from '../../src/model.js'
 import { ChangelogGenerator } from '../../src/service/ChangelogGenerator.js'
 import { ReleaseProcessor } from '../../src/service/ReleaseProcessor.js'
 import { SemanticReleaseAdapter } from '../../src/service/SemanticReleaseAdapter.js'
@@ -14,7 +15,7 @@ const changelogGenerator = {
 
 const OPTIONS = {
   tagFormat: 'v${version}'
-}
+} as ReleaseOptions
 
 describe('ReleaseProcessor', () => {
   const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
