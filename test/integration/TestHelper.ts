@@ -47,13 +47,14 @@ export class TestHelper {
   private readonly ghActionDir: string
   private readonly gitDir: string
 
-  constructor(private readonly itName: string) {
+  constructor(itName: string) {
     const itDir = path.join(__dirname, itName)
     this.ghActionDir = path.join(itDir, 'gh-action')
     this.gitDir = path.join(itDir, 'git')
   }
 
   private testName!: string
+  private testDir!: string
 
   public beforeAll(): void {
     const distDir = path.join(rootDir, 'dist')
@@ -74,19 +75,19 @@ export class TestHelper {
 
   public beforeEach(ctx: TestContext): void {
     this.testName = ctx.task.name
+    this.testDir = path.join(this.gitDir, this.testName)
 
     // some tests install extra dependency, need to remove it to avoid race conditions
     const npmDynamicDep = path.join(this.ghActionDir, 'node_modules/conventional-changelog-conventionalcommits')
     fs.rmSync(npmDynamicDep, { recursive: true, force: true })
 
-    const testDir = path.join(this.gitDir, this.testName)
     // delete (if any) and create a directory for this test
-    fs.rmSync(testDir, { recursive: true, force: true })
-    fs.mkdirSync(testDir)
+    fs.rmSync(this.testDir, { recursive: true, force: true })
+    fs.mkdirSync(this.testDir)
   }
 
   public checkout(branch: string): void {
-    const cwd = path.join(this.gitDir, this.testName)
+    const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
     execSync(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
@@ -103,7 +104,7 @@ export class TestHelper {
   }
 
   public commit(msg: string): void {
-    const cwd = path.join(this.gitDir, this.testName)
+    const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     fs.writeFileSync(`${cwd}/test${++counter}.txt`, 'test content', 'utf8')
     execSync('git add .', options)
@@ -111,7 +112,7 @@ export class TestHelper {
   }
 
   public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
-    const cwd = path.join(this.gitDir, this.testName)
+    const cwd = this.testDir
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       // release-gen action is run from a completely different directory, so it uses GITHUB_WORKSPACE to find the actual repo that needs to be released
