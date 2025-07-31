@@ -94,5 +94,5 @@ core.setOutput('channel', result.channel)
 core.setOutput('git_tags', result.gitTags.join(' '))
 core.setOutput('notes_file', notesFilePath)
 core.setOutput('prerelease', result.prerelease)
-core.setOutput('tags', result.gitTags.join(' ')) // TODO:
-core.setOutput('version', result.gitTag)
+core.setOutput('tags', result.tags.join(' '))
+core.setOutput('version', result.version)

@@ -27,10 +27,13 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
+    const gitTags = this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance)
     return {
       ...nextRelease,
-      gitTags: this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance),
-      prerelease: result.prerelease
+      gitTags,
+      prerelease: result.prerelease,
+      tags: gitTags,
+      version: nextRelease.gitTag
     }
   }
 

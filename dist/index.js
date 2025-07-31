@@ -76,7 +76,8 @@ if (!result) {
 const notesFilePath = '/tmp/release-gen-notes';
 await fs.writeFile(notesFilePath, result.notes, 'utf8');
 core.setOutput('channel', result.channel);
-core.setOutput('version', result.gitTag);
 core.setOutput('git_tags', result.gitTags.join(' '));
 core.setOutput('notes_file', notesFilePath);
 core.setOutput('prerelease', result.prerelease);
+core.setOutput('tags', result.tags.join(' '));
+core.setOutput('version', result.version);
