@@ -4,7 +4,8 @@ import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
-import type { ReleaseOptions, TheNextRelease } from './model.js'
+import type { NextRelease } from 'semantic-release'
+import type { ReleaseOptions, SemanticReleaseResult } from './model.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
@@ -31,6 +32,7 @@ const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
 const npmExtraDeps: string = getInput('npm_extra_deps')
 const releaseBranches: string = getInput('release_branches')
+const releaseChannel: string = getInput('release_channel')
 const releasePlugins: string = getInput('release_plugins')
 const tagFormat: string = getInput('tag_format')
 
@@ -43,10 +45,10 @@ if (npmExtraDeps) {
 // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
 const cwd = process.env.GITHUB_WORKSPACE!
 
-const branchName = await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)
+const branchName = (await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)).trim()
 
 const options: ReleaseOptions = {
-  branchName: branchName.trim(),
+  branchName: branchName,
   changelogFile,
   changelogTitle,
   cwd,
@@ -63,7 +65,7 @@ const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
 const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
-let result: false | TheNextRelease
+let result: SemanticReleaseResult
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
@@ -87,12 +89,26 @@ if (!result) {
   process.exit(1)
 }
 
+const nextRelease: NextRelease = result.nextRelease
 const notesFilePath = '/tmp/release-gen-notes'
-await fs.writeFile(notesFilePath, result.notes!, 'utf8')
+await fs.writeFile(notesFilePath, nextRelease.notes!, 'utf8')
 
-core.setOutput('channel', result.channel)
-core.setOutput('git_tags', result.gitTags.join(' '))
+const gitTags = result.gitTags
+const tags = [...gitTags]
+const channel = releaseChannel || result.channel
+console.error('AlexC releaseChannel', releaseChannel)
+console.error('AlexC result.channel', result.channel)
+console.error('AlexC channel', channel)
+if (channel) {
+  tags.push(channel)
+  if (channel !== branchName) {
+    gitTags.push(channel)
+  }
+}
+
+core.setOutput('channel', result.channel) // empty string is not printed, so no need to || ''
+core.setOutput('git_tags', gitTags.join(' '))
 core.setOutput('notes_file', notesFilePath)
 core.setOutput('prerelease', result.prerelease)
-core.setOutput('tags', result.tags.join(' '))
-core.setOutput('version', result.version)
+core.setOutput('tags', tags.join(' '))
+core.setOutput('version', nextRelease.gitTag)

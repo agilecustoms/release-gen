@@ -1,9 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import type { TheNextRelease } from '../../src/model.js'
-import { TestHelper } from './TestHelper.js'
-
-const TIMEOUT = 120_000 // 2 min
+import { TestHelper, type TheNextRelease, TIMEOUT } from './TestHelper.js'
 
 const helper = new TestHelper('prerelease')
 
@@ -15,7 +12,7 @@ describe('prerelease', () => {
   const commit = helper.commit.bind(helper)
   const runReleaseGen = helper.runReleaseGen.bind(helper)
 
-  it('prerelease', async () => {
+  it('prerelease-default-channel', async () => {
     const branch = 'beta' // latest tag v3.0.0-beta.4
     checkout(branch)
     commit('fix: test')
@@ -29,14 +26,56 @@ describe('prerelease', () => {
 
     const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
 
+    expect(release.version).toBe('v3.0.0-beta.5')
     expect(release.channel).toBe('beta')
+    expect(release.gitTags).toEqual(['v3.0.0-beta.5'])
+    expect(release.tags).toEqual(['v3.0.0-beta.5', 'beta'])
+    expect(release.prerelease).toBe(true)
+  }, TIMEOUT)
+
+  it('prerelease-no-channel', async () => {
+    const branch = 'beta' // latest tag v3.0.0-beta.4
+    checkout(branch)
+    commit('fix: test')
+    const releaseBranches: BranchSpec[] = [
+      'main',
+      {
+        name: branch,
+        prerelease: true,
+        channel: ''
+      }
+    ]
+
+    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+
+    expect(release.channel).toBe('beta')
+    expect(release.prerelease).toBe(true)
+  }, TIMEOUT)
+
+  it('prerelease-branch-channel', async () => {
+    const branch = 'beta' // latest tag v3.0.0-beta.4
+    checkout(branch)
+    commit('fix: test')
+    const releaseBranches: BranchSpec[] = [
+      'main',
+      {
+        name: branch,
+        prerelease: true,
+        channel: branch
+      }
+    ]
+
+    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+
+    expect(release.channel).toBe(branch)
     expect(release.version).toBe('v3.0.0-beta.5')
     expect(release.gitTags).toEqual(['v3.0.0-beta.5'])
+    expect(release.tags).toEqual(['v3.0.0-beta.5', branch])
     expect(release.prerelease).toBe(true)
   }, TIMEOUT)
 
   it('prerelease-channel', async () => {
-    const branch = 'beta'
+    const branch = 'beta' // latest tag v3.0.0-beta.4
     checkout(branch)
     commit('fix: test')
     const releaseBranches: BranchSpec[] = [
@@ -51,5 +90,6 @@ describe('prerelease', () => {
     const release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.channel).toBe('the-beta')
+    expect(release.prerelease).toBe(true)
   }, TIMEOUT)
 })

@@ -3,25 +3,26 @@ import { execSync, exec as execCallback } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { promisify } from 'node:util'
-import type { BranchSpec, ReleaseType } from 'semantic-release'
+import type { BranchSpec, NextRelease } from 'semantic-release'
 import type { TestContext } from 'vitest'
-import type { TheNextRelease } from '../../src/model.js'
+import type { ReleaseDetails } from '../../src/model.js'
 
 const exec = promisify(execCallback)
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
-const rootDir = path.resolve(__dirname, '../..')
-const assetsDir = path.resolve(__dirname, 'assets')
-
-const TIMEOUT = 120_000 // 2 min
+export const TIMEOUT = 120_000 // 2 min
 let counter = 0
 
-type TestOptions = {
+export type TestOptions = {
   npmExtraDeps?: string
   // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
   releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
   releasePlugins?: object
+}
+
+export type TheNextRelease = NextRelease & ReleaseDetails & {
+  tags: string[]
 }
 
 /**
@@ -57,6 +58,7 @@ export class TestHelper {
   private testDir!: string
 
   public beforeAll(): void {
+    const rootDir = path.resolve(__dirname, '../..')
     const distDir = path.join(rootDir, 'dist')
     // rebuild source code to reflect any changes while work on tests
     execSync(`npm run build -- --outDir ${distDir}`, { cwd: rootDir, stdio: 'inherit' })
@@ -97,6 +99,7 @@ export class TestHelper {
     execSync('git config user.name "CI User"', options)
     execSync('git config user.email "ci@example.com"', options)
     // copy assets/{testName}/* into test/integration/git/{testName}
+    const assetsDir = path.resolve(__dirname, 'assets')
     const assetsSrc = path.join(assetsDir, this.testName)
     if (fs.existsSync(assetsSrc)) {
       fs.cpSync(assetsSrc, cwd, { recursive: true })
@@ -170,7 +173,6 @@ export class TestHelper {
       notes: fs.readFileSync(outputMap['notes_file']!, 'utf8'),
       prerelease: outputMap['prerelease'] === 'true',
       tags: outputMap['tags']!.split(' '),
-      type: outputMap['type'] as ReleaseType,
       version: outputMap['version']!,
     } as TheNextRelease
   }

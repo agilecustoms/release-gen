@@ -7,11 +7,17 @@ const defaultPlugins = [
     '@semantic-release/npm',
     '@semantic-release/github',
 ];
+const MAINTENANCE_BRANCH = /\d+\.\d+\.x/;
+const MINOR_MAINTENANCE_BRANCH = /\d+\.x\.x/;
+function isMaintenance(branch) {
+    return MAINTENANCE_BRANCH.test(branch) || MINOR_MAINTENANCE_BRANCH.test(branch);
+}
 export class SemanticReleaseAdapter {
     async run(opts, config) {
         const pluginsPath = 'semantic-release/lib/plugins/index.js';
         const getConfigPath = 'semantic-release/lib/get-config.js';
         const currentBranch = opts['currentBranch'];
+        let channel;
         let prerelease = false;
         let minorMaintenance = false;
         const originalPluginsFunc = (await import(pluginsPath)).default;
@@ -19,6 +25,7 @@ export class SemanticReleaseAdapter {
             [pluginsPath]: {
                 default: async (context, pluginsPath) => {
                     const options = context.options;
+                    channel = this.getChannel(options.branches, currentBranch);
                     prerelease = this.isPrerelease(options.branches, currentBranch);
                     if (!prerelease) {
                         minorMaintenance = this.isMinorMaintenance(options.branches, currentBranch);
@@ -36,7 +43,43 @@ export class SemanticReleaseAdapter {
             },
         });
         const result = await semanticRelease(opts, config);
-        return result ? { ...result, prerelease, minorMaintenance } : result;
+        if (!result) {
+            return false;
+        }
+        const tag = result.nextRelease.gitTag;
+        const gitTags = this.getGitTags(tag, prerelease, minorMaintenance);
+        return { ...result, channel, prerelease, gitTags };
+    }
+    getGitTags(tag, prerelease, minorMaintenance) {
+        if (prerelease) {
+            return [tag];
+        }
+        const minor = tag.slice(0, tag.lastIndexOf('.'));
+        if (minorMaintenance) {
+            return [tag, minor];
+        }
+        const major = minor.slice(0, minor.lastIndexOf('.'));
+        return [tag, minor, major];
+    }
+    getChannel(branches, branch) {
+        for (const spec of branches) {
+            if (spec === branch) {
+                return isMaintenance(branch) ? undefined : 'latest';
+            }
+            if (typeof spec === 'object' && spec.name === branch) {
+                if (spec.prerelease) {
+                    return spec.channel || branch;
+                }
+                if ('channel' in spec) {
+                    return spec.channel || undefined;
+                }
+                if (spec.range) {
+                    return undefined;
+                }
+                return 'latest';
+            }
+        }
+        return undefined;
     }
     isPrerelease(branches, branch) {
         return branches.some((branchSpec) => {
@@ -55,7 +98,7 @@ export class SemanticReleaseAdapter {
                 break;
             }
         }
-        return /\d+\.\d+\.x/.test(range);
+        return MAINTENANCE_BRANCH.test(range);
     }
     fixPlugins(plugins) {
         return plugins.filter((plugin) => {

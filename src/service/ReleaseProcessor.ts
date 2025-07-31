@@ -1,6 +1,6 @@
 import process from 'node:process'
 import type { Config, NextRelease, Options } from 'semantic-release'
-import type { ReleaseOptions, SemanticReleaseResult, TheNextRelease } from '../model.js'
+import type { ReleaseOptions, SemanticReleaseResult } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 
@@ -10,7 +10,7 @@ export class ReleaseProcessor {
     private readonly changelogGenerator: ChangelogGenerator
   ) {}
 
-  public async process(options: ReleaseOptions): Promise<false | TheNextRelease> {
+  public async process(options: ReleaseOptions): Promise<SemanticReleaseResult> {
     const result: SemanticReleaseResult = await this.semanticRelease(options)
     if (!result) {
       return false
@@ -27,17 +27,10 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    const gitTags = this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance)
-    return {
-      ...nextRelease,
-      gitTags,
-      prerelease: result.prerelease,
-      tags: gitTags,
-      version: nextRelease.gitTag
-    }
+    return result
   }
 
-  private async semanticRelease(options: ReleaseOptions): Promise<false | SemanticReleaseResult> {
+  private async semanticRelease(options: ReleaseOptions): Promise<SemanticReleaseResult> {
     const opts: Options = {
       dryRun: true
     }
@@ -73,17 +66,5 @@ export class ReleaseProcessor {
     }
 
     return await this.semanticReleaseAdapter.run(opts, config)
-  }
-
-  private getGitTags(tag: string, prerelease: boolean, minorMaintenance: boolean): string[] {
-    if (prerelease) {
-      return [tag]
-    }
-    const minor = tag.slice(0, tag.lastIndexOf('.'))
-    if (minorMaintenance) {
-      return [tag, minor]
-    }
-    const major = minor.slice(0, minor.lastIndexOf('.'))
-    return [tag, minor, major]
   }
 }

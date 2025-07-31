@@ -1,4 +1,4 @@
-import type { NextRelease, Result } from 'semantic-release'
+import type { Result } from 'semantic-release'
 
 export type ReleaseOptions = {
   branchName: string
@@ -10,14 +10,10 @@ export type ReleaseOptions = {
   tagFormat?: string
 }
 
-export type SemanticReleaseResult = false | Result & {
-  minorMaintenance: boolean
+export type ReleaseDetails = {
+  channel?: string
+  gitTags: string[]
   prerelease: boolean
 }
 
-export type TheNextRelease = NextRelease & {
-  gitTags: string[]
-  prerelease: boolean
-  tags: string[]
-  version: string
-}
+export type SemanticReleaseResult = false | Result & ReleaseDetails

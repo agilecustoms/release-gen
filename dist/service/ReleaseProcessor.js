@@ -19,14 +19,7 @@ export class ReleaseProcessor {
         if (options.changelogFile) {
             await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
         }
-        const gitTags = this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance);
-        return {
-            ...nextRelease,
-            gitTags,
-            prerelease: result.prerelease,
-            tags: gitTags,
-            version: nextRelease.gitTag
-        };
+        return result;
     }
     async semanticRelease(options) {
         const opts = {
@@ -59,16 +52,5 @@ export class ReleaseProcessor {
             cwd: options.cwd
         };
         return await this.semanticReleaseAdapter.run(opts, config);
-    }
-    getGitTags(tag, prerelease, minorMaintenance) {
-        if (prerelease) {
-            return [tag];
-        }
-        const minor = tag.slice(0, tag.lastIndexOf('.'));
-        if (minorMaintenance) {
-            return [tag, minor];
-        }
-        const major = minor.slice(0, minor.lastIndexOf('.'));
-        return [tag, minor, major];
     }
 }

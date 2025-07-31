@@ -26,6 +26,7 @@ const changelogFile = getInput('changelog_file');
 const changelogTitle = getInput('changelog_title');
 const npmExtraDeps = getInput('npm_extra_deps');
 const releaseBranches = getInput('release_branches');
+const releaseChannel = getInput('release_channel');
 const releasePlugins = getInput('release_plugins');
 const tagFormat = getInput('tag_format');
 if (npmExtraDeps) {
@@ -33,9 +34,9 @@ if (npmExtraDeps) {
     await exec(`npm install ${extras}`, `Error during installing extra npm dependencies ${extras}`);
 }
 const cwd = process.env.GITHUB_WORKSPACE;
-const branchName = await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd);
+const branchName = (await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)).trim();
 const options = {
-    branchName: branchName.trim(),
+    branchName: branchName,
     changelogFile,
     changelogTitle,
     cwd,
@@ -73,11 +74,24 @@ if (!result) {
     core.setFailed(message);
     process.exit(1);
 }
+const nextRelease = result.nextRelease;
 const notesFilePath = '/tmp/release-gen-notes';
-await fs.writeFile(notesFilePath, result.notes, 'utf8');
+await fs.writeFile(notesFilePath, nextRelease.notes, 'utf8');
+const gitTags = result.gitTags;
+const tags = [...gitTags];
+const channel = releaseChannel || result.channel;
+console.error('AlexC releaseChannel', releaseChannel);
+console.error('AlexC result.channel', result.channel);
+console.error('AlexC channel', channel);
+if (channel) {
+    tags.push(channel);
+    if (channel !== branchName) {
+        gitTags.push(channel);
+    }
+}
 core.setOutput('channel', result.channel);
-core.setOutput('git_tags', result.gitTags.join(' '));
+core.setOutput('git_tags', gitTags.join(' '));
 core.setOutput('notes_file', notesFilePath);
 core.setOutput('prerelease', result.prerelease);
-core.setOutput('tags', result.tags.join(' '));
-core.setOutput('version', result.version);
+core.setOutput('tags', tags.join(' '));
+core.setOutput('version', nextRelease.gitTag);

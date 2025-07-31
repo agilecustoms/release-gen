@@ -1,7 +1,5 @@
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper } from './TestHelper.js'
-
-const TIMEOUT = 120_000 // 2 min
+import { TestHelper, TIMEOUT } from './TestHelper.js'
 
 const helper = new TestHelper('branches')
 
