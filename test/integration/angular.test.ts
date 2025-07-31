@@ -22,12 +22,12 @@ describe('angular', () => {
 
     const release: TheNextRelease = await runReleaseGen(branch)
 
-    // maintenance release and prerelease have channel,
+    // maintenance release and prerelease have a channel,
     // main release branch has no default channel at release-gen phase, it is undefined
     // but then in 'git', 'github' plugins of semantic-release it is set to 'latest'
     expect(release.channel).toBeUndefined() // double-checked
 
-    expect(release.gitTag).toBe('v0.5.1')
+    expect(release.version).toBe('v0.5.1')
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0'])
   }, TIMEOUT)
 
@@ -38,7 +38,7 @@ describe('angular', () => {
 
     const release = await runReleaseGen(branch)
 
-    expect(release.gitTag).toBe('v0.6.0')
+    expect(release.version).toBe('v0.6.0')
     expect(release.gitTags).toEqual(['v0.6.0', 'v0.6', 'v0'])
   }, TIMEOUT)
 
@@ -61,7 +61,7 @@ describe('angular', () => {
 
     const release = await runReleaseGen(branch, { releasePlugins: plugins })
 
-    expect(release.gitTag).toBe('v0.5.1')
+    expect(release.version).toBe('v0.5.1')
   }, TIMEOUT)
 
   // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
@@ -79,7 +79,7 @@ describe('angular', () => {
     const release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.channel).toBe('the-latest')
-    expect(release.gitTag).toBe('3.0.0')
+    expect(release.version).toBe('3.0.0')
     expect(release.gitTags).toEqual(['3.0.0', '3.0', '3'])
   }, TIMEOUT)
 })

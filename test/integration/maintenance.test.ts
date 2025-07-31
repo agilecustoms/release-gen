@@ -25,8 +25,8 @@ describe('maintenance', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
+    expect(release.version).toBe('v1.3.1')
     expect(release.channel).toBe(branch)
-    expect(release.gitTag).toBe('v1.3.1')
     expect(release.gitTags).toEqual(['v1.3.1', 'v1.3', 'v1'])
   }, TIMEOUT)
 
@@ -45,8 +45,8 @@ describe('maintenance', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
+    expect(release.version).toBe('v1.4.0')
     expect(release.channel).toBe('legacy')
-    expect(release.gitTag).toBe('v1.4.0')
     expect(release.gitTags).toEqual(['v1.4.0', 'v1.4', 'v1'])
   }, TIMEOUT)
 
@@ -65,8 +65,8 @@ describe('maintenance', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
+    expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBe('legacy')
-    expect(release.gitTag).toBe('v1.2.2')
     expect(release.gitTags).toEqual(['v1.2.2', 'v1.2'])
   }, TIMEOUT)
 })

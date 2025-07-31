@@ -24,7 +24,7 @@ describe('branches', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches: undefined })
 
-    expect(release.gitTag).toBe('v3.0.0')
+    expect(release.version).toBe('v3.0.0')
     expect(release.gitTags).toEqual(['v3.0.0', 'v3.0', 'v3'])
   }, TIMEOUT)
 })

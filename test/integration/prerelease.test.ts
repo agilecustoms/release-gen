@@ -1,5 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import type { TheNextRelease } from '../../src/model.js'
 import { TestHelper } from './TestHelper.js'
 
 const TIMEOUT = 120_000 // 2 min
@@ -26,11 +27,29 @@ describe('prerelease', () => {
       }
     ]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.channel).toBe('beta')
-    expect(release.gitTag).toBe('v3.0.0-beta.5')
+    expect(release.version).toBe('v3.0.0-beta.5')
     expect(release.gitTags).toEqual(['v3.0.0-beta.5'])
     expect(release.prerelease).toBe(true)
+  }, TIMEOUT)
+
+  it('prerelease-channel', async () => {
+    const branch = 'beta'
+    checkout(branch)
+    commit('fix: test')
+    const releaseBranches: BranchSpec[] = [
+      'main',
+      {
+        name: branch,
+        prerelease: true,
+        channel: 'the-beta'
+      }
+    ]
+
+    const release = await runReleaseGen(branch, { releaseBranches })
+
+    expect(release.channel).toBe('the-beta')
   }, TIMEOUT)
 })

@@ -166,11 +166,12 @@ export class TestHelper {
     // outputMap now contains all set-output key-value pairs
     return {
       channel: outputMap['channel']!,
-      gitTag: outputMap['git_tag']!,
       gitTags: outputMap['git_tags']!.split(' '),
       notes: fs.readFileSync(outputMap['notes_file']!, 'utf8'),
       prerelease: outputMap['prerelease'] === 'true',
-      type: outputMap['type'] as ReleaseType
+      tags: outputMap['tags']!.split(' '),
+      type: outputMap['type'] as ReleaseType,
+      version: outputMap['version']!,
     } as TheNextRelease
   }
 }

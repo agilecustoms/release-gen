@@ -32,7 +32,7 @@ describe('conventionalcommits', () => {
 
     commit('feat(api)!: new major release')
     const release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
-    expect(release.gitTag).toBe('1.0.0')
+    expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
   }, TIMEOUT)
 
@@ -63,7 +63,7 @@ describe('conventionalcommits', () => {
     commit('fix: buf fix')
     commit('docs: test documentation')
     const release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
-    expect(release.gitTag).toBe('v0.5.1')
+    expect(release.version).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
