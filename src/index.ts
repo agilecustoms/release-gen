@@ -4,8 +4,7 @@ import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
-import type { NextRelease } from 'semantic-release'
-import type { ReleaseOptions, SemanticReleaseResult } from './model.js'
+import type { ReleaseDetails, ReleaseOptions } from './model.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
@@ -64,7 +63,7 @@ const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
 const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
-let result: SemanticReleaseResult
+let result: false | ReleaseDetails
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
@@ -88,13 +87,12 @@ if (!result) {
   process.exit(1)
 }
 
-const nextRelease: NextRelease = result.nextRelease
 const notesFilePath = '/tmp/release-gen-notes'
-await fs.writeFile(notesFilePath, nextRelease.notes!, 'utf8')
+await fs.writeFile(notesFilePath, result.notes!, 'utf8')
 
-core.setOutput('channel', result.channel) // empty string is not printed, so no need to || ''
+core.setOutput('channel', result.channel) // the empty string is not printed, so no need to || ''
 core.setOutput('git_tags', result.gitTags.join(' '))
 core.setOutput('notes_file', notesFilePath)
 core.setOutput('prerelease', result.prerelease)
 core.setOutput('tags', result.tags.join(' '))
-core.setOutput('version', nextRelease.gitTag)
+core.setOutput('version', result.version)

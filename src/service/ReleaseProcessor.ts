@@ -1,8 +1,11 @@
 import process from 'node:process'
-import type { Config, Options } from 'semantic-release'
-import type { ReleaseOptions, SemanticReleaseResult } from '../model.js'
+import type { BranchObject, Config, Options } from 'semantic-release'
+import type { ReleaseDetails, ReleaseOptions, SemanticReleaseResult } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
+
+const MAINTENANCE_BRANCH = /\d+\.x\.x/
+const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/
 
 export class ReleaseProcessor {
   constructor(
@@ -10,7 +13,7 @@ export class ReleaseProcessor {
     private readonly changelogGenerator: ChangelogGenerator
   ) {}
 
-  public async process(options: ReleaseOptions): Promise<SemanticReleaseResult> {
+  public async process(options: ReleaseOptions): Promise<false | ReleaseDetails> {
     const result: SemanticReleaseResult = await this.semanticRelease(options)
     if (!result) {
       return false
@@ -25,7 +28,51 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    return result
+    const version = result.nextRelease.gitTag
+    const branch = result.branch
+    const tags = this.getTags(version, branch)
+    const gitTags = [...tags]
+    // if (branch.channel) {
+    //   tags.push(branch.channel)
+    // if (branch.channel !== branch.name) {
+    //   gitTags.push(branch.channel)
+    // }
+    // }
+
+    let channel = branch.channel
+    if (branch.prerelease) {
+      if (!channel || channel.trim() === '') {
+        channel = branch.name
+      }
+    } else if (channel === undefined) {
+      const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name)
+      if (!maintenance) {
+        channel = 'latest'
+      }
+    }
+
+    if (branch.prerelease) {
+      if (branch.channel) {
+        tags.push(branch.channel)
+      }
+    } else {
+      if (channel) {
+        tags.push(channel)
+      }
+    }
+
+    if (channel && channel !== branch.name) {
+      gitTags.push(channel)
+    }
+
+    return {
+      channel: channel || '',
+      gitTags,
+      notes: notes,
+      prerelease: Boolean(branch.prerelease),
+      tags,
+      version
+    }
   }
 
   private async semanticRelease(options: ReleaseOptions): Promise<SemanticReleaseResult> {
@@ -64,5 +111,21 @@ export class ReleaseProcessor {
     }
 
     return await this.semanticReleaseAdapter.run(opts, config)
+  }
+
+  private getTags(version: string, branch: BranchObject): string[] {
+    const tags = [version]
+    if (!branch.prerelease) {
+      const minor = version.slice(0, version.lastIndexOf('.'))
+      tags.push(minor)
+      const range = branch.range || branch.name
+      console.error('AlexC range: ', range)
+      const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range)
+      if (!minorMaintenance) {
+        const major = minor.slice(0, minor.lastIndexOf('.'))
+        tags.push(major)
+      }
+    }
+    return tags
   }
 }

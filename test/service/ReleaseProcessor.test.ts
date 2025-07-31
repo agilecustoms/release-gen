@@ -79,7 +79,8 @@ describe('ReleaseProcessor', () => {
   it('should generate changelog if changelogFile is provided', async () => {
     const options = { ...OPTIONS, changelogFile: 'CHANGELOG.md', changelogTitle: 'Changelog' }
     semanticReleaseAdapter.run.mockResolvedValue({
-      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' }
+      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
+      branch: { name: 'main' }
     })
 
     await processor.process(options)
@@ -89,15 +90,16 @@ describe('ReleaseProcessor', () => {
 
   it('should return release with nextVersion and notes', async () => {
     semanticReleaseAdapter.run.mockResolvedValue({
-      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' }
+      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
+      branch: { name: 'main' }
     })
 
     const result = await processor.process(OPTIONS)
 
     expect(result).toBeTruthy()
     if (result) {
-      expect(result.nextRelease.gitTag).toBe('v1.0.0')
-      expect(result.nextRelease.notes).toBe('Release notes')
+      expect(result.version).toBe('v1.0.0')
+      expect(result.notes).toBe('Release notes')
     }
   })
 })

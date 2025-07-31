@@ -73,23 +73,11 @@ if (!result) {
     core.setFailed(message);
     process.exit(1);
 }
-const nextRelease = result.nextRelease;
 const notesFilePath = '/tmp/release-gen-notes';
-await fs.writeFile(notesFilePath, nextRelease.notes, 'utf8');
-const gitTags = result.gitTags;
-const tags = [...gitTags];
-const channel = result.channel;
-console.error('AlexC result.channel', result.channel);
-console.error('AlexC channel', channel);
-if (channel) {
-    tags.push(channel);
-    if (channel !== branchName) {
-        gitTags.push(channel);
-    }
-}
+await fs.writeFile(notesFilePath, result.notes, 'utf8');
 core.setOutput('channel', result.channel);
-core.setOutput('git_tags', gitTags.join(' '));
+core.setOutput('git_tags', result.gitTags.join(' '));
 core.setOutput('notes_file', notesFilePath);
 core.setOutput('prerelease', result.prerelease);
-core.setOutput('tags', tags.join(' '));
-core.setOutput('version', nextRelease.gitTag);
+core.setOutput('tags', result.tags.join(' '));
+core.setOutput('version', result.version);
