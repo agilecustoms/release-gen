@@ -73,18 +73,6 @@ export class SemanticReleaseAdapter {
     return { ...result, channel, prerelease, gitTags }
   }
 
-  private getGitTags(tag: string, prerelease: boolean, minorMaintenance: boolean): string[] {
-    if (prerelease) {
-      return [tag]
-    }
-    const minor = tag.slice(0, tag.lastIndexOf('.'))
-    if (minorMaintenance) {
-      return [tag, minor]
-    }
-    const major = minor.slice(0, minor.lastIndexOf('.'))
-    return [tag, minor, major]
-  }
-
   public getChannel(branches: BranchSpec[], branch: string): string | undefined {
     for (const spec of branches) {
       if (spec === branch) {
@@ -103,7 +91,6 @@ export class SemanticReleaseAdapter {
         return 'latest'
       }
     }
-    return undefined // no matching branch found
   }
 
   public isPrerelease(branches: BranchSpec[], branch: string): boolean {
@@ -138,5 +125,17 @@ export class SemanticReleaseAdapter {
       }
       return false
     })
+  }
+
+  public getGitTags(tag: string, prerelease: boolean, minorMaintenance: boolean): string[] {
+    if (prerelease) {
+      return [tag]
+    }
+    const minor = tag.slice(0, tag.lastIndexOf('.'))
+    if (minorMaintenance) {
+      return [tag, minor]
+    }
+    const major = minor.slice(0, minor.lastIndexOf('.'))
+    return [tag, minor, major]
   }
 }

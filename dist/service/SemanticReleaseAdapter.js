@@ -50,17 +50,6 @@ export class SemanticReleaseAdapter {
         const gitTags = this.getGitTags(tag, prerelease, minorMaintenance);
         return { ...result, channel, prerelease, gitTags };
     }
-    getGitTags(tag, prerelease, minorMaintenance) {
-        if (prerelease) {
-            return [tag];
-        }
-        const minor = tag.slice(0, tag.lastIndexOf('.'));
-        if (minorMaintenance) {
-            return [tag, minor];
-        }
-        const major = minor.slice(0, minor.lastIndexOf('.'));
-        return [tag, minor, major];
-    }
     getChannel(branches, branch) {
         for (const spec of branches) {
             if (spec === branch) {
@@ -79,7 +68,6 @@ export class SemanticReleaseAdapter {
                 return 'latest';
             }
         }
-        return undefined;
     }
     isPrerelease(branches, branch) {
         return branches.some((branchSpec) => {
@@ -111,5 +99,16 @@ export class SemanticReleaseAdapter {
             }
             return false;
         });
+    }
+    getGitTags(tag, prerelease, minorMaintenance) {
+        if (prerelease) {
+            return [tag];
+        }
+        const minor = tag.slice(0, tag.lastIndexOf('.'));
+        if (minorMaintenance) {
+            return [tag, minor];
+        }
+        const major = minor.slice(0, minor.lastIndexOf('.'));
+        return [tag, minor, major];
     }
 }

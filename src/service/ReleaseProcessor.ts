@@ -1,5 +1,5 @@
 import process from 'node:process'
-import type { Config, NextRelease, Options } from 'semantic-release'
+import type { Config, Options } from 'semantic-release'
 import type { ReleaseOptions, SemanticReleaseResult } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
@@ -16,9 +16,7 @@ export class ReleaseProcessor {
       return false
     }
 
-    const nextRelease: NextRelease = result.nextRelease
-
-    const notes = nextRelease.notes
+    const notes = result.nextRelease.notes
     if (!notes) {
       throw new Error('No release notes found in the next release. This is unexpected')
     }

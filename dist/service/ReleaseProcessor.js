@@ -11,8 +11,7 @@ export class ReleaseProcessor {
         if (!result) {
             return false;
         }
-        const nextRelease = result.nextRelease;
-        const notes = nextRelease.notes;
+        const notes = result.nextRelease.notes;
         if (!notes) {
             throw new Error('No release notes found in the next release. This is unexpected');
         }

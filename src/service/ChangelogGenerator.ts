@@ -10,7 +10,7 @@ export class ChangelogGenerator {
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err
     }
 
-    // write file effectively: write several strings, avoid concatenation
+    // write a file effectively: write several strings, avoid concatenation
     const stream = await fs.open(file, 'w')
     if (title) {
       await stream.write(title + '\n\n')
