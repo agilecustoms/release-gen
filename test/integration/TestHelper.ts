@@ -21,9 +21,7 @@ export type TestOptions = {
   releasePlugins?: object
 }
 
-export type TheNextRelease = NextRelease & ReleaseDetails & {
-  tags: string[]
-}
+export type TheNextRelease = NextRelease & ReleaseDetails
 
 /**
  * DISCLAIMER about semantic-release

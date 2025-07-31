@@ -244,21 +244,21 @@ describe('SemanticReleaseAdapter', () => {
     it('should return single git tag for prerelease', async () => {
       const prerelease = true
       const minorMaintenance = false
-      const tags = adapter.getGitTags('v1.0.0-alpha.1', prerelease, minorMaintenance)
+      const tags = adapter.getTags('v1.0.0-alpha.1', prerelease, minorMaintenance)
       expect(tags).toEqual(['v1.0.0-alpha.1'])
     })
 
     it('should return two git tags for minor maintenance', async () => {
       const prerelease = false
       const minorMaintenance = true
-      const tags = adapter.getGitTags('v1.2.1', prerelease, minorMaintenance)
+      const tags = adapter.getTags('v1.2.1', prerelease, minorMaintenance)
       expect(tags).toEqual(['v1.2.1', 'v1.2'])
     })
 
     it('should return three git tags for regular release', async () => {
       const prerelease = false
       const minorMaintenance = false
-      const tags = adapter.getGitTags('v1.2.3', prerelease, minorMaintenance)
+      const tags = adapter.getTags('v1.2.3', prerelease, minorMaintenance)
       expect(tags).toEqual(['v1.2.3', 'v1.2', 'v1'])
     })
   })

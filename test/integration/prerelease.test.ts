@@ -29,7 +29,7 @@ describe('prerelease', () => {
     expect(release.version).toBe('v3.0.0-beta.5')
     expect(release.channel).toBe('beta')
     expect(release.gitTags).toEqual(['v3.0.0-beta.5'])
-    expect(release.tags).toEqual(['v3.0.0-beta.5', 'beta'])
+    expect(release.tags).toEqual(['v3.0.0-beta.5'])
     expect(release.prerelease).toBe(true)
   }, TIMEOUT)
 

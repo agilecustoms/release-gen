@@ -26,7 +26,6 @@ const changelogFile = getInput('changelog_file');
 const changelogTitle = getInput('changelog_title');
 const npmExtraDeps = getInput('npm_extra_deps');
 const releaseBranches = getInput('release_branches');
-const releaseChannel = getInput('release_channel');
 const releasePlugins = getInput('release_plugins');
 const tagFormat = getInput('tag_format');
 if (npmExtraDeps) {
@@ -79,8 +78,7 @@ const notesFilePath = '/tmp/release-gen-notes';
 await fs.writeFile(notesFilePath, nextRelease.notes, 'utf8');
 const gitTags = result.gitTags;
 const tags = [...gitTags];
-const channel = releaseChannel || result.channel;
-console.error('AlexC releaseChannel', releaseChannel);
+const channel = result.channel;
 console.error('AlexC result.channel', result.channel);
 console.error('AlexC channel', channel);
 if (channel) {

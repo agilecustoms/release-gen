@@ -69,8 +69,9 @@ export class SemanticReleaseAdapter {
       return false
     }
     const tag = result.nextRelease.gitTag
-    const gitTags = this.getGitTags(tag, prerelease, minorMaintenance)
-    return { ...result, channel, prerelease, gitTags }
+    const tags = this.getTags(tag, channel, currentBranch, prerelease, minorMaintenance)
+    const gitTags = tags.filter(tag => tag !== currentBranch)
+    return { ...result, channel, prerelease, gitTags, tags }
   }
 
   public getChannel(branches: BranchSpec[], branch: string): string | undefined {
@@ -127,15 +128,25 @@ export class SemanticReleaseAdapter {
     })
   }
 
-  public getGitTags(tag: string, prerelease: boolean, minorMaintenance: boolean): string[] {
-    if (prerelease) {
-      return [tag]
+  public getTags(
+    tag: string,
+    channel: string | undefined,
+    branch: string,
+    prerelease: boolean,
+    minorMaintenance: boolean
+  ): string[] {
+    const tags = [tag]
+    if (!prerelease) {
+      const minor = tag.slice(0, tag.lastIndexOf('.'))
+      tags.push(minor)
+      if (!minorMaintenance) {
+        const major = minor.slice(0, minor.lastIndexOf('.'))
+        return [tag, minor, major]
+      }
     }
-    const minor = tag.slice(0, tag.lastIndexOf('.'))
-    if (minorMaintenance) {
-      return [tag, minor]
+    if (channel) {
+      tags.push(channel)
     }
-    const major = minor.slice(0, minor.lastIndexOf('.'))
-    return [tag, minor, major]
+    return tags
   }
 }

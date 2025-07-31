@@ -32,7 +32,6 @@ const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
 const npmExtraDeps: string = getInput('npm_extra_deps')
 const releaseBranches: string = getInput('release_branches')
-const releaseChannel: string = getInput('release_channel')
 const releasePlugins: string = getInput('release_plugins')
 const tagFormat: string = getInput('tag_format')
 
@@ -93,22 +92,9 @@ const nextRelease: NextRelease = result.nextRelease
 const notesFilePath = '/tmp/release-gen-notes'
 await fs.writeFile(notesFilePath, nextRelease.notes!, 'utf8')
 
-const gitTags = result.gitTags
-const tags = [...gitTags]
-const channel = releaseChannel || result.channel
-console.error('AlexC releaseChannel', releaseChannel)
-console.error('AlexC result.channel', result.channel)
-console.error('AlexC channel', channel)
-if (channel) {
-  tags.push(channel)
-  if (channel !== branchName) {
-    gitTags.push(channel)
-  }
-}
-
 core.setOutput('channel', result.channel) // empty string is not printed, so no need to || ''
-core.setOutput('git_tags', gitTags.join(' '))
+core.setOutput('git_tags', result.gitTags.join(' '))
 core.setOutput('notes_file', notesFilePath)
 core.setOutput('prerelease', result.prerelease)
-core.setOutput('tags', tags.join(' '))
+core.setOutput('tags', result.tags.join(' '))
 core.setOutput('version', nextRelease.gitTag)

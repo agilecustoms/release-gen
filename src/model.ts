@@ -14,6 +14,7 @@ export type ReleaseDetails = {
   channel?: string
   gitTags: string[]
   prerelease: boolean
+  tags: string[]
 }
 
 export type SemanticReleaseResult = false | Result & ReleaseDetails
