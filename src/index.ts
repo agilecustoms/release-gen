@@ -4,7 +4,7 @@ import * as path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import * as util from 'node:util'
-import type { ReleaseOptions, TheNextRelease } from './model.js'
+import type { ReleaseDetails, ReleaseOptions } from './model.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
@@ -43,10 +43,10 @@ if (npmExtraDeps) {
 // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
 const cwd = process.env.GITHUB_WORKSPACE!
 
-const branchName = await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)
+const branchName = (await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)).trim()
 
 const options: ReleaseOptions = {
-  branchName: branchName.trim(),
+  branchName: branchName,
   changelogFile,
   changelogTitle,
   cwd,
@@ -63,7 +63,7 @@ const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
 const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
 
-let result: false | TheNextRelease
+let result: false | ReleaseDetails
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
@@ -90,8 +90,9 @@ if (!result) {
 const notesFilePath = '/tmp/release-gen-notes'
 await fs.writeFile(notesFilePath, result.notes!, 'utf8')
 
-core.setOutput('channel', result.channel)
-core.setOutput('git_tag', result.gitTag)
+core.setOutput('channel', result.channel) // the empty string is not printed, so no need to || ''
 core.setOutput('git_tags', result.gitTags.join(' '))
 core.setOutput('notes_file', notesFilePath)
 core.setOutput('prerelease', result.prerelease)
+core.setOutput('tags', result.tags.join(' '))
+core.setOutput('version', result.version)

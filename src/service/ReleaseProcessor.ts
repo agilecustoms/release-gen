@@ -1,8 +1,11 @@
 import process from 'node:process'
-import type { Config, NextRelease, Options } from 'semantic-release'
-import type { ReleaseOptions, SemanticReleaseResult, TheNextRelease } from '../model.js'
+import type { BranchObject, Config, Options } from 'semantic-release'
+import type { ReleaseDetails, ReleaseOptions, SemanticReleaseResult } from '../model.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
+
+const MAINTENANCE_BRANCH = /\d+\.x\.x/
+const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/
 
 export class ReleaseProcessor {
   constructor(
@@ -10,15 +13,13 @@ export class ReleaseProcessor {
     private readonly changelogGenerator: ChangelogGenerator
   ) {}
 
-  public async process(options: ReleaseOptions): Promise<false | TheNextRelease> {
+  public async process(options: ReleaseOptions): Promise<false | ReleaseDetails> {
     const result: SemanticReleaseResult = await this.semanticRelease(options)
     if (!result) {
       return false
     }
 
-    const nextRelease: NextRelease = result.nextRelease
-
-    const notes = nextRelease.notes
+    const notes = result.nextRelease.notes
     if (!notes) {
       throw new Error('No release notes found in the next release. This is unexpected')
     }
@@ -27,14 +28,49 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
+    // first, infer the channel. It is used later to determint tags, gitTags and also as separate output for 'git notes'
+    // special rules apply for prerelease
+    const branch = result.branch
+    let channel = branch.channel
+    if (branch.prerelease) {
+      if (!channel || channel.trim() === '') {
+        channel = branch.name
+      }
+    } else if (channel === undefined) {
+      const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name)
+      if (!maintenance) {
+        channel = 'latest'
+      }
+    }
+
+    // second: infer gitTags - basically split the version tag and add a channel from a prev step
+    const version = result.nextRelease.gitTag
+    const tags = this.getTags(version, branch)
+    const gitTags = [...tags]
+    if (channel && channel !== branch.name) {
+      gitTags.push(channel)
+    }
+
+    // lastly, determine the tags: add an inferred channel or original channel (for prerelease)
+    if (branch.prerelease) {
+      if (branch.channel) {
+        tags.push(branch.channel)
+      }
+    } else if (channel) {
+      tags.push(channel)
+    }
+
     return {
-      ...nextRelease,
-      gitTags: this.getGitTags(nextRelease.gitTag, result.prerelease, result.minorMaintenance),
-      prerelease: result.prerelease
+      channel: channel || undefined,
+      gitTags,
+      notes: notes,
+      prerelease: Boolean(branch.prerelease),
+      tags,
+      version
     }
   }
 
-  private async semanticRelease(options: ReleaseOptions): Promise<false | SemanticReleaseResult> {
+  private async semanticRelease(options: ReleaseOptions): Promise<SemanticReleaseResult> {
     const opts: Options = {
       dryRun: true
     }
@@ -72,15 +108,18 @@ export class ReleaseProcessor {
     return await this.semanticReleaseAdapter.run(opts, config)
   }
 
-  private getGitTags(tag: string, prerelease: boolean, minorMaintenance: boolean): string[] {
-    if (prerelease) {
-      return [tag]
+  private getTags(version: string, branch: BranchObject): string[] {
+    const tags = [version]
+    if (!branch.prerelease) {
+      const minor = version.slice(0, version.lastIndexOf('.'))
+      tags.push(minor)
+      const range = branch.range || branch.name
+      const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range)
+      if (!minorMaintenance) {
+        const major = minor.slice(0, minor.lastIndexOf('.'))
+        tags.push(major)
+      }
     }
-    const minor = tag.slice(0, tag.lastIndexOf('.'))
-    if (minorMaintenance) {
-      return [tag, minor]
-    }
-    const major = minor.slice(0, minor.lastIndexOf('.'))
-    return [tag, minor, major]
+    return tags
   }
 }

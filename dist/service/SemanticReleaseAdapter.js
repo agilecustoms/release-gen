@@ -12,17 +12,13 @@ export class SemanticReleaseAdapter {
         const pluginsPath = 'semantic-release/lib/plugins/index.js';
         const getConfigPath = 'semantic-release/lib/get-config.js';
         const currentBranch = opts['currentBranch'];
-        let prerelease = false;
-        let minorMaintenance = false;
+        let branch = { name: currentBranch };
         const originalPluginsFunc = (await import(pluginsPath)).default;
         const getConfig = await esmock(getConfigPath, {
             [pluginsPath]: {
                 default: async (context, pluginsPath) => {
                     const options = context.options;
-                    prerelease = this.isPrerelease(options.branches, currentBranch);
-                    if (!prerelease) {
-                        minorMaintenance = this.isMinorMaintenance(options.branches, currentBranch);
-                    }
+                    branch = this.findBranch(options.branches, currentBranch);
                     options.plugins = this.fixPlugins(options.plugins);
                     return await originalPluginsFunc(context, pluginsPath);
                 }
@@ -36,26 +32,21 @@ export class SemanticReleaseAdapter {
             },
         });
         const result = await semanticRelease(opts, config);
-        return result ? { ...result, prerelease, minorMaintenance } : result;
+        if (!result) {
+            return false;
+        }
+        return { ...result, branch };
     }
-    isPrerelease(branches, branch) {
-        return branches.some((branchSpec) => {
-            return typeof branchSpec === 'object' && branchSpec.name === branch && branchSpec.prerelease === true;
-        });
-    }
-    isMinorMaintenance(branches, branch) {
-        let range = '';
+    findBranch(branches, branch) {
         for (const spec of branches) {
             if (spec === branch) {
-                range = branch;
-                break;
+                return { name: branch };
             }
             if (typeof spec === 'object' && spec.name === branch) {
-                range = spec.range || spec.name;
-                break;
+                return { ...spec };
             }
         }
-        return /\d+\.\d+\.x/.test(range);
+        throw new Error(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`);
     }
     fixPlugins(plugins) {
         return plugins.filter((plugin) => {

@@ -1,12 +1,12 @@
 import esmock from 'esmock'
-import type { BranchSpec, Config, Options, PluginSpec, Result } from 'semantic-release'
+import type { BranchObject, BranchSpec, Config, Options, PluginSpec, Result } from 'semantic-release'
 import type { SemanticReleaseResult } from '../model.js'
 
 /**
  * There are 4 default plugins:<br>
  * First two are used by `release-gen`
- * Next two are discarded silently as they could come from default configuration
- * Any other plugin is shows warning
+ * Next two are discarded silently as they could come from the default configuration
+ * Any other plugin shows a warning
  */
 const allowedPlugins = [
   '@semantic-release/commit-analyzer', // https://github.com/semantic-release/commit-analyzer
@@ -23,8 +23,7 @@ export class SemanticReleaseAdapter {
     const getConfigPath = 'semantic-release/lib/get-config.js'
 
     const currentBranch = opts['currentBranch'] as string
-    let prerelease: boolean = false
-    let minorMaintenance: boolean = false
+    let branch: BranchObject = { name: currentBranch }
 
     const originalPluginsFunc = (await import(pluginsPath)).default
     const getConfig: (context: Config, cliOptions?: Options) => Promise<object> = await esmock(
@@ -34,10 +33,7 @@ export class SemanticReleaseAdapter {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           default: async (context: any, pluginsPath: Record<string, string>) => {
             const options = context.options
-            prerelease = this.isPrerelease(options.branches, currentBranch)
-            if (!prerelease) {
-              minorMaintenance = this.isMinorMaintenance(options.branches, currentBranch)
-            }
+            branch = this.findBranch(options.branches, currentBranch)
             options.plugins = this.fixPlugins(options.plugins)
             return await originalPluginsFunc(context, pluginsPath)
           }
@@ -56,28 +52,23 @@ export class SemanticReleaseAdapter {
       }
     )
     const result = await semanticRelease(opts, config)
-    return result ? { ...result, prerelease, minorMaintenance } : result
+    if (!result) {
+      return false
+    }
+
+    return { ...result, branch } // channel, prerelease, gitTags, tags }
   }
 
-  public isPrerelease(branches: BranchSpec[], branch: string): boolean {
-    return branches.some((branchSpec) => {
-      return typeof branchSpec === 'object' && branchSpec.name === branch && branchSpec.prerelease === true
-    })
-  }
-
-  public isMinorMaintenance(branches: BranchSpec[], branch: string): boolean {
-    let range = ''
+  public findBranch(branches: BranchSpec[], branch: string): BranchObject {
     for (const spec of branches) {
       if (spec === branch) {
-        range = branch
-        break
+        return { name: branch }
       }
       if (typeof spec === 'object' && spec.name === branch) {
-        range = spec.range || spec.name
-        break
+        return { ...spec } // clone the object to avoid mutation
       }
     }
-    return /\d+\.\d+\.x/.test(range)
+    throw new Error(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`)
   }
 
   public fixPlugins(plugins: ReadonlyArray<PluginSpec>): ReadonlyArray<PluginSpec> {

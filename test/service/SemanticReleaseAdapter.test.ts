@@ -8,6 +8,34 @@ describe('SemanticReleaseAdapter', () => {
     vi.clearAllMocks()
   })
 
+  describe('findBranch', () => {
+    it('should throw error if branch not found', () => {
+      const branches = ['main', 'develop']
+      const branch = 'feature'
+
+      expect(() => adapter.findBranch(branches, branch))
+        .toThrow(`Branch "${branch}" not found in branches: ["main","develop"]`)
+    })
+
+    it('should find branch represented as string', () => {
+      const branches = ['main', 'develop']
+      const branch = 'main'
+
+      const res = adapter.findBranch(branches, branch)
+
+      expect(res).toEqual({ name: 'main' })
+    })
+
+    it('should find branch represented as object', () => {
+      const branches = [{ name: 'main' }, { name: 'develop' }]
+      const branch = 'develop'
+
+      const res = adapter.findBranch(branches, branch)
+
+      expect(res).toEqual({ name: 'develop' })
+    })
+  })
+
   describe('fixPlugins', () => {
     it('should keep mandatory plugins', () => {
       const plugins = ['@semantic-release/commit-analyzer', '@semantic-release/release-notes-generator']
@@ -49,112 +77,6 @@ describe('SemanticReleaseAdapter', () => {
         '@semantic-release/release-notes-generator'
       ])
       expect(consoleWarnSpy).toHaveBeenCalledWith('Plugin "@semantic-release/unsupported-plugin" is not supported by in "release-gen" action, skipping it')
-    })
-  })
-
-  describe('isPrerelease', () => {
-    it('should return false if branch not found', () => {
-      const branches = [
-        { name: 'support', prerelease: false },
-        'main',
-        'next'
-      ]
-      const res = adapter.isPrerelease(branches, 'new-branch')
-      expect(res).toBe(false)
-    })
-
-    it('should return false if branch found but not prerelease', () => {
-      const branches = [
-        { name: 'support', prerelease: false },
-        'main',
-        'next'
-      ]
-      const res = adapter.isPrerelease(branches, 'support')
-      expect(res).toBe(false)
-    })
-
-    it('should return false if branch found, but it is just a string', () => {
-      const branches = ['main']
-      const res = adapter.isPrerelease(branches, 'main')
-      expect(res).toBe(false)
-    })
-
-    it('should return true if branch found and it is prerelease', () => {
-      const branches = [
-        { name: 'support', prerelease: true },
-        'main',
-        'next'
-      ]
-      const res = adapter.isPrerelease(branches, 'support')
-      expect(res).toBe(true)
-    })
-  })
-
-  describe('isMinorMaintenance', () => {
-    it('should return false if branch not found', () => {
-      const branches = [
-        { name: 'support', range: '1.x.x' },
-        'main',
-        'next'
-      ]
-      const res = adapter.isMinorMaintenance(branches, 'new-branch')
-      expect(res).toBe(false)
-    })
-
-    it('should return false if branch found, but it is just a string', () => {
-      const branches = ['main']
-      const res = adapter.isMinorMaintenance(branches, 'main')
-      expect(res).toBe(false)
-    })
-
-    it('should return false if branch found but not maintenance', () => {
-      const branches = [
-        { name: 'main' }
-      ]
-      const res = adapter.isMinorMaintenance(branches, 'main')
-      expect(res).toBe(false)
-    })
-
-    it('should return false if branch is major maintenance', () => {
-      const branches = [
-        'main',
-        '1.x.x'
-      ]
-      const res = adapter.isMinorMaintenance(branches, '1.x.x')
-      expect(res).toBe(false)
-    })
-
-    it('should return false if branch is major maintenance w/ range', () => {
-      const branches = [
-        'main',
-        {
-          name: 'support',
-          range: '1.x.x',
-        }
-      ]
-      const res = adapter.isMinorMaintenance(branches, 'support')
-      expect(res).toBe(false)
-    })
-
-    it('should return true if branch is minor maintenance', () => {
-      const branches = [
-        'main',
-        '1.2.x'
-      ]
-      const res = adapter.isMinorMaintenance(branches, '1.2.x')
-      expect(res).toBe(true)
-    })
-
-    it('should return true if branch is minor maintenance w/ range', () => {
-      const branches = [
-        'main',
-        {
-          name: 'support',
-          range: '1.2.x',
-        }
-      ]
-      const res = adapter.isMinorMaintenance(branches, 'support')
-      expect(res).toBe(true)
     })
   })
 })

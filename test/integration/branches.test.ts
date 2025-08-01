@@ -1,7 +1,5 @@
 import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper } from './TestHelper.js'
-
-const TIMEOUT = 120_000 // 2 min
+import { TestHelper, TIMEOUT } from './TestHelper.js'
 
 const helper = new TestHelper('branches')
 
@@ -24,7 +22,7 @@ describe('branches', () => {
 
     const release = await runReleaseGen(branch, { releaseBranches: undefined })
 
-    expect(release.gitTag).toBe('v3.0.0')
-    expect(release.gitTags).toEqual(['v3.0.0', 'v3.0', 'v3'])
+    expect(release.version).toBe('v3.0.0')
+    expect(release.gitTags).toEqual(['v3.0.0', 'v3.0', 'v3', 'latest'])
   }, TIMEOUT)
 })
