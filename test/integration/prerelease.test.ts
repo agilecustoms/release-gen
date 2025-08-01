@@ -42,7 +42,7 @@ describe('prerelease', () => {
       {
         name: branch,
         prerelease: true,
-        channel: ''
+        channel: '' // same effect as false
       }
     ]
 

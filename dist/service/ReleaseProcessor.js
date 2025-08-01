@@ -20,10 +20,7 @@ export class ReleaseProcessor {
         if (options.changelogFile) {
             await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
         }
-        const version = result.nextRelease.gitTag;
         const branch = result.branch;
-        const tags = this.getTags(version, branch);
-        const gitTags = [...tags];
         let channel = branch.channel;
         if (branch.prerelease) {
             if (!channel || channel.trim() === '') {
@@ -36,21 +33,22 @@ export class ReleaseProcessor {
                 channel = 'latest';
             }
         }
+        const version = result.nextRelease.gitTag;
+        const tags = this.getTags(version, branch);
+        const gitTags = [...tags];
+        if (channel && channel !== branch.name) {
+            gitTags.push(channel);
+        }
         if (branch.prerelease) {
             if (branch.channel) {
                 tags.push(branch.channel);
             }
         }
-        else {
-            if (channel) {
-                tags.push(channel);
-            }
-        }
-        if (channel && channel !== branch.name) {
-            gitTags.push(channel);
+        else if (channel) {
+            tags.push(channel);
         }
         return {
-            channel: channel || '',
+            channel: channel || undefined,
             gitTags,
             notes: notes,
             prerelease: Boolean(branch.prerelease),
@@ -96,7 +94,6 @@ export class ReleaseProcessor {
             const minor = version.slice(0, version.lastIndexOf('.'));
             tags.push(minor);
             const range = branch.range || branch.name;
-            console.error('AlexC range: ', range);
             const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range);
             if (!minorMaintenance) {
                 const major = minor.slice(0, minor.lastIndexOf('.'));

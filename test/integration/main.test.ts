@@ -32,7 +32,7 @@ describe('main', () => {
     const releaseBranches: BranchSpec[] = [
       {
         name: branch,
-        channel: ''
+        channel: false // same effect as ''
       }
     ]
 

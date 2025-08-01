@@ -26,6 +26,7 @@ runs:
   using: 'node20'
   main: 'dist/index.js'
 
+# outputs 'channel' and 'prerelease' are used solely to support prerelease bcz it needs 'git notes'
 outputs:
   channel:
     description: 'Release channel such as latest (for main branch), next (for prerelease) or support (for maintenance)'

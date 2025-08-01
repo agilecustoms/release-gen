@@ -8,6 +8,34 @@ describe('SemanticReleaseAdapter', () => {
     vi.clearAllMocks()
   })
 
+  describe('findBranch', () => {
+    it('should throw error if branch not found', () => {
+      const branches = ['main', 'develop']
+      const branch = 'feature'
+
+      expect(() => adapter.findBranch(branches, branch))
+        .toThrow(`Branch "${branch}" not found in branches: ["main","develop"]`)
+    })
+
+    it('should find branch represented as string', () => {
+      const branches = ['main', 'develop']
+      const branch = 'main'
+
+      const res = adapter.findBranch(branches, branch)
+
+      expect(res).toEqual({ name: 'main' })
+    })
+
+    it('should find branch represented as object', () => {
+      const branches = [{ name: 'main' }, { name: 'develop' }]
+      const branch = 'develop'
+
+      const res = adapter.findBranch(branches, branch)
+
+      expect(res).toEqual({ name: 'develop' })
+    })
+  })
+
   describe('fixPlugins', () => {
     it('should keep mandatory plugins', () => {
       const plugins = ['@semantic-release/commit-analyzer', '@semantic-release/release-notes-generator']

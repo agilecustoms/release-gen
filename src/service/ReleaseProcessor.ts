@@ -28,17 +28,9 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    const version = result.nextRelease.gitTag
+    // first, infer the channel. It is used later to determint tags, gitTags and also as separate output for 'git notes'
+    // special rules apply for prerelease
     const branch = result.branch
-    const tags = this.getTags(version, branch)
-    const gitTags = [...tags]
-    // if (branch.channel) {
-    //   tags.push(branch.channel)
-    // if (branch.channel !== branch.name) {
-    //   gitTags.push(branch.channel)
-    // }
-    // }
-
     let channel = branch.channel
     if (branch.prerelease) {
       if (!channel || channel.trim() === '') {
@@ -51,22 +43,25 @@ export class ReleaseProcessor {
       }
     }
 
-    if (branch.prerelease) {
-      if (branch.channel) {
-        tags.push(branch.channel)
-      }
-    } else {
-      if (channel) {
-        tags.push(channel)
-      }
-    }
-
+    // second: infer gitTags - basically split the version tag and add a channel from a prev step
+    const version = result.nextRelease.gitTag
+    const tags = this.getTags(version, branch)
+    const gitTags = [...tags]
     if (channel && channel !== branch.name) {
       gitTags.push(channel)
     }
 
+    // lastly, determine the tags: add an inferred channel or original channel (for prerelease)
+    if (branch.prerelease) {
+      if (branch.channel) {
+        tags.push(branch.channel)
+      }
+    } else if (channel) {
+      tags.push(channel)
+    }
+
     return {
-      channel: channel || '',
+      channel: channel || undefined,
       gitTags,
       notes: notes,
       prerelease: Boolean(branch.prerelease),
@@ -119,7 +114,6 @@ export class ReleaseProcessor {
       const minor = version.slice(0, version.lastIndexOf('.'))
       tags.push(minor)
       const range = branch.range || branch.name
-      console.error('AlexC range: ', range)
       const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range)
       if (!minorMaintenance) {
         const major = minor.slice(0, minor.lastIndexOf('.'))

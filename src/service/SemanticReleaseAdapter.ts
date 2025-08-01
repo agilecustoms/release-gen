@@ -56,12 +56,6 @@ export class SemanticReleaseAdapter {
       return false
     }
 
-    // const channel = this.getChannel(branch, currentBranch)
-    // const prerelease = this.isPrerelease(branch, currentBranch)
-    // const minorMaintenance = prerelease ? false : this.isMinorMaintenance(branch, currentBranch)
-    // const tag = result.nextRelease.gitTag
-    // const tags = this.getTags(tag, channel, currentBranch, prerelease, minorMaintenance)
-    // const gitTags = tags.filter(tag => tag !== currentBranch)
     return { ...result, branch } // channel, prerelease, gitTags, tags }
   }
 
