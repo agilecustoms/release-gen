@@ -1,5 +1,12 @@
 # Changelog
 
+# [2.4.0](https://github.com/agilecustoms/release-gen/compare/v2.3.1...v2.4.0) (2025-08-01)
+
+### Features
+
+* Tags and release channel ([#16](https://github.com/agilecustoms/release-gen/issues/16)) ([69f522c](https://github.com/agilecustoms/release-gen/commit/69f522c53aea81d6160333d9989d91e10ff25213))
+
+
 ## [2.3.1](https://github.com/agilecustoms/release-gen/compare/v2.3.0...v2.3.1) (2025-07-30)
 
 ### Bug Fixes
