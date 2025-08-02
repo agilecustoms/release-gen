@@ -1,5 +1,12 @@
 # Changelog
 
+# [3.0.0-rc.2](https://github.com/agilecustoms/release-gen/compare/v3.0.0-rc.1...v3.0.0-rc.2) (2025-08-02)
+
+### Bug Fixes
+
+* test rc2 ([d08415f](https://github.com/agilecustoms/release-gen/commit/d08415fce21eb8044e24350debcfa6755f7f49b9))
+
+
 # [3.0.0-rc.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v3.0.0-rc.1) (2025-08-02)
 
 ### Bug Fixes
