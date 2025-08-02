@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v2.4.1) (2025-08-02)
+
+### Bug Fixes
+
+* refactor/improve tests ([#17](https://github.com/agilecustoms/release-gen/issues/17)) ([e648bac](https://github.com/agilecustoms/release-gen/commit/e648bacdb10f8098f0ce32ff4eadef19da6e495f))
+
+
 # [2.4.0](https://github.com/agilecustoms/release-gen/compare/v2.3.1...v2.4.0) (2025-08-01)
 
 ### Features
