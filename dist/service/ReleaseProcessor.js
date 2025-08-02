@@ -22,33 +22,21 @@ export class ReleaseProcessor {
         }
         const branch = result.branch;
         let channel = branch.channel;
-        if (branch.prerelease) {
-            if (!channel || channel.trim() === '') {
-                channel = branch.name;
-            }
-        }
-        else if (channel === undefined) {
+        if (!channel || channel.trim() === '') {
             const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name);
-            if (!maintenance) {
-                channel = 'latest';
-            }
+            channel = branch.prerelease || maintenance ? branch.name : 'latest';
         }
         const version = result.nextRelease.gitTag;
         const tags = this.getTags(version, branch);
         const gitTags = [...tags];
-        if (channel && channel !== branch.name) {
+        if ((branch.channel || branch.channel === undefined) && channel !== branch.name) {
             gitTags.push(channel);
         }
-        if (branch.prerelease) {
-            if (branch.channel) {
-                tags.push(branch.channel);
-            }
-        }
-        else if (channel) {
+        if (branch.channel || (branch.channel === undefined && channel === 'latest')) {
             tags.push(channel);
         }
         return {
-            channel: channel || undefined,
+            channel: channel,
             gitTags,
             notes: notes,
             prerelease: Boolean(branch.prerelease),

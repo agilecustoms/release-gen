@@ -11,7 +11,7 @@ describe('main', () => {
 
   const runFix = helper.runFix.bind(helper)
 
-  it('main-default-channel', async () => {
+  it('channel-default', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
 
     const release: Release = await runFix(branch)
@@ -22,7 +22,7 @@ describe('main', () => {
     expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0', 'latest'])
   })
 
-  it('main-no-channel', async () => {
+  it('channel-false', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
     const releaseBranches: BranchSpec = {
       name: branch,
@@ -32,12 +32,12 @@ describe('main', () => {
     const release: Release = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
-    expect(release.channel).toBeUndefined()
+    expect(release.channel).toBe('latest')
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0'])
     expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0'])
   })
 
-  it('main-branch-channel', async () => {
+  it('channel-branch', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
     const releaseBranches: BranchSpec = {
       name: branch,
@@ -52,7 +52,7 @@ describe('main', () => {
     expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0', branch])
   })
 
-  it('main-channel', async () => {
+  it('channel-custom', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
     const releaseBranches: BranchSpec = {
       name: branch,

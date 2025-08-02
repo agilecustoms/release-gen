@@ -12,7 +12,7 @@ describe('maintenance', () => {
   const runFix = helper.runFix.bind(helper)
   const runFeat = helper.runFeat.bind(helper)
 
-  it('maintenance-patch', async () => {
+  it('patch', async () => {
     const branch = '1.x.x' // latest tag v1.3.0
     const releaseBranches = ['main',
       branch
@@ -21,12 +21,12 @@ describe('maintenance', () => {
     const release: Release = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.3.1')
-    expect(release.channel).toBeUndefined()
+    expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v1.3.1', 'v1.3', 'v1'])
     expect(release.tags).toEqual(['v1.3.1', 'v1.3', 'v1'])
   })
 
-  it('maintenance-minor', async () => {
+  it('minor', async () => {
     const branch = '1.x.x' // latest tag v1.3.0
     const releaseBranches: BranchSpec[] = ['main',
       branch
@@ -35,28 +35,28 @@ describe('maintenance', () => {
     const release: Release = await runFeat(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.4.0')
-    expect(release.channel).toBeUndefined()
+    expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v1.4.0', 'v1.4', 'v1'])
     expect(release.tags).toEqual(['v1.4.0', 'v1.4', 'v1'])
   })
 
-  it('maintenance-minor-channel', async () => {
+  it('channel-branch', async () => {
     const branch = '1.x.x' // latest tag v1.3.0
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.x.x',
       range: '1.x.x',
-      channel: '1.x.x'
+      channel: branch
     }]
 
     const release: Release = await runFeat(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.4.0')
-    expect(release.channel).toBe('1.x.x')
+    expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v1.4.0', 'v1.4', 'v1'])
-    expect(release.tags).toEqual(['v1.4.0', 'v1.4', 'v1', '1.x.x'])
+    expect(release.tags).toEqual(['v1.4.0', 'v1.4', 'v1', branch])
   })
 
-  it('maintenance-minor-channel2', async () => {
+  it('channel-custom', async () => {
     const branch = '1.x.x' // latest tag v1.3.0
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.x.x',
