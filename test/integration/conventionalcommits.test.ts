@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
-import { TestHelper, TIMEOUT } from './TestHelper.js'
+import { TestHelper } from './TestHelper.js'
 
 const CONVENTIONAL_OPTS = {
   npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'
@@ -26,7 +26,7 @@ describe('conventionalcommits', () => {
     })
     expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
       + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
-  }, TIMEOUT)
+  })
 
   // test custom tag format
   // test major version bump with feat! tag
@@ -39,7 +39,7 @@ describe('conventionalcommits', () => {
 
     expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
-  }, TIMEOUT)
+  })
 
   // test my own convention settings I'm using internally for agilecustoms projects:
   // 1. disable 'perf:'
@@ -72,7 +72,7 @@ describe('conventionalcommits', () => {
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
-  }, TIMEOUT)
+  })
 
   async function expectError(callable: () => Promise<void>): Promise<string> {
     let error: any // eslint-disable-line @typescript-eslint/no-explicit-any

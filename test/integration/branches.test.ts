@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
-import { TestHelper, TIMEOUT } from './TestHelper.js'
+import { TestHelper } from './TestHelper.js'
 
 const helper = new TestHelper('branches')
 
@@ -25,5 +25,5 @@ describe('branches', () => {
 
     expect(release.version).toBe('v3.0.0')
     expect(release.gitTags).toEqual(['v3.0.0', 'v3.0', 'v3', 'latest'])
-  }, TIMEOUT)
+  })
 })

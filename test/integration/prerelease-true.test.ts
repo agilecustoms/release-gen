@@ -1,6 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper, type TheNextRelease, TIMEOUT } from './TestHelper.js'
+import { TestHelper, type TheNextRelease } from './TestHelper.js'
 
 const helper = new TestHelper('prerelease-true')
 
@@ -29,7 +29,7 @@ describe('prerelease-true', () => {
     expect(release.gitTags).toEqual(['v3.0.0-next.1'])
     expect(release.tags).toEqual(['v3.0.0-next.1'])
     expect(release.prerelease).toBe(true)
-  }, TIMEOUT)
+  })
 
   it('channel-false', async () => {
     const branch = 'next' // latest tag v2.4.0
@@ -48,7 +48,7 @@ describe('prerelease-true', () => {
     expect(release.gitTags).toEqual(['v3.0.0-next.1'])
     expect(release.tags).toEqual(['v3.0.0-next.1'])
     expect(release.prerelease).toBe(true)
-  }, TIMEOUT)
+  })
 
   it('channel-next', async () => {
     const branch = 'next' // latest tag v2.4.0
@@ -67,7 +67,7 @@ describe('prerelease-true', () => {
     expect(release.gitTags).toEqual(['v3.0.0-next.1'])
     expect(release.tags).toEqual(['v3.0.0-next.1', 'next'])
     expect(release.prerelease).toBe(true)
-  }, TIMEOUT)
+  })
 
   it('channel-beta', async () => {
     const branch = 'next' // latest tag v2.4.0
@@ -86,5 +86,5 @@ describe('prerelease-true', () => {
     expect(release.gitTags).toEqual(['v3.0.0-next.1', 'beta'])
     expect(release.tags).toEqual(['v3.0.0-next.1', 'beta'])
     expect(release.prerelease).toBe(true)
-  }, TIMEOUT)
+  })
 })
