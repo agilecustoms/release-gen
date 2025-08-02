@@ -1,5 +1,17 @@
 # Changelog
 
+# [3.0.0-alpha.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v3.0.0-alpha.1) (2025-08-02)
+
+### Bug Fixes
+
+* test ([0cf250b](https://github.com/agilecustoms/release-gen/commit/0cf250bf743eebe660fea741e942af8e45c9a797))
+
+
+### BREAKING CHANGES
+
+* 3.0.0
+
+
 # [2.4.0](https://github.com/agilecustoms/release-gen/compare/v2.3.1...v2.4.0) (2025-08-01)
 
 ### Features
