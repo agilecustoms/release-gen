@@ -18,11 +18,10 @@ describe('conventionalcommits', () => {
 
   // if no conventional-changelog-conventionalcommits npm dep => clear error
   it('conventionalcommits-miss-dep', async () => {
-    const branch = 'int-test050'
-    checkout(branch)
+    checkout('int-test050')
 
     const error = await expectError(async () => {
-      await runReleaseGen(branch)
+      await runReleaseGen()
     })
     expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
       + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
@@ -31,11 +30,10 @@ describe('conventionalcommits', () => {
   // test custom tag format
   // test major version bump with feat! tag
   it('conventionalcommits', async () => {
-    const branch = 'int-test050'
-    checkout(branch)
+    checkout('int-test050')
     commit('feat(api)!: new major release')
 
-    const release: Release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
+    const release: Release = await runReleaseGen(CONVENTIONAL_OPTS)
 
     expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
@@ -46,8 +44,7 @@ describe('conventionalcommits', () => {
   // 2. add "docs:" commit -> "Documentation" section in release notes
   // 2. add "misc:" commit -> "Miscellaneous" section in release notes
   it('conventionalcommits-custom', async () => {
-    const branch = 'int-test050'
-    checkout(branch)
+    checkout('int-test050')
 
     // check some default types do not do version bump (and also perf is disabled)
     commit('style: test')
@@ -58,7 +55,7 @@ describe('conventionalcommits', () => {
     commit('ci: test')
     commit('perf: perf 1')
     const error = await expectError(async () => {
-      await runReleaseGen(branch, CONVENTIONAL_OPTS)
+      await runReleaseGen(CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
 
@@ -67,7 +64,7 @@ describe('conventionalcommits', () => {
     commit('misc: minor improvements')
     commit('fix: buf fix')
     commit('docs: test documentation')
-    const release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
+    const release = await runReleaseGen(CONVENTIONAL_OPTS)
     expect(release.version).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')

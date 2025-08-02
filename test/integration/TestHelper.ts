@@ -54,6 +54,7 @@ export class TestHelper {
 
   private testName!: string
   private testDir!: string
+  private branchName!: string
 
   public beforeAll(): void {
     const rootDir = path.resolve(__dirname, '../..')
@@ -91,6 +92,7 @@ export class TestHelper {
   }
 
   public checkout(branch: string): void {
+    this.branchName = branch
     const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
@@ -116,7 +118,8 @@ export class TestHelper {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<Release> {
+  public async runReleaseGen(opts: TestOptions = {}): Promise<Release> {
+    const branch = this.branchName
     const cwd = this.testDir
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -182,12 +185,18 @@ export class TestHelper {
   public async runFix(branch: string, opts: TestOptions = {}): Promise<Release> {
     this.checkout(branch)
     this.commit('fix: test')
-    return this.runReleaseGen(branch, opts)
+    return this.runReleaseGen(opts)
   }
 
   public async runFeat(branch: string, opts: TestOptions = {}): Promise<Release> {
     this.checkout(branch)
     this.commit('feat: test')
-    return this.runReleaseGen(branch, opts)
+    return this.runReleaseGen(opts)
+  }
+
+  public async runBreaking(branch: string, opts: TestOptions = {}): Promise<Release> {
+    this.checkout(branch)
+    this.commit('fix: test\nBREAKING CHANGE: test')
+    return this.runReleaseGen(opts)
   }
 }
