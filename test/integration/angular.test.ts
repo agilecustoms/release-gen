@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
-import { TestHelper, TIMEOUT, type TheNextRelease } from './TestHelper.js'
+import { TestHelper, type Release } from './TestHelper.js'
 
 const helper = new TestHelper('angular')
 
@@ -13,25 +13,25 @@ describe('angular', () => {
   const runReleaseGen = helper.runReleaseGen.bind(helper)
   const runFix = helper.runFix.bind(helper)
   const runFeat = helper.runFeat.bind(helper)
+  const runBreaking = helper.runBreaking.bind(helper)
 
   it('patch', async () => {
-    const release: TheNextRelease = await runFix('int-test050')
+    const release: Release = await runFix('int-test050')
 
     expect(release.version).toBe('v0.5.1')
-  }, TIMEOUT)
+  })
 
   it('minor', async () => {
     const branch = 'int-test050'
 
-    const release = await runFeat(branch)
+    const release: Release = await runFeat(branch)
 
     expect(release.version).toBe('v0.6.0')
-  }, TIMEOUT)
+  })
 
   // scope of testing: ability to make a patch release with 'docs' in angular preset
   it('docs-patch', async () => {
-    const branch = 'int-test050'
-    checkout(branch)
+    checkout('int-test050')
     commit('docs: test')
     const plugins = [
       [
@@ -45,19 +45,17 @@ describe('angular', () => {
       '@semantic-release/release-notes-generator'
     ]
 
-    const release = await runReleaseGen(branch, { releasePlugins: plugins })
+    const release: Release = await runReleaseGen({ releasePlugins: plugins })
 
     expect(release.version).toBe('v0.5.1')
-  }, TIMEOUT)
+  })
 
   // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
   it('major', async () => {
-    const branch = 'main' // versions 2.x.x
-    checkout(branch)
-    commit('feat: test\n\nBREAKING CHANGE: test major release')
+    const branch = 'main' // version 2.x.x
 
-    const release = await runReleaseGen(branch)
+    const release: Release = await runBreaking(branch)
 
     expect(release.version).toBe('3.0.0')
-  }, TIMEOUT)
+  })
 })

@@ -1,6 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper, TIMEOUT } from './TestHelper.js'
+import { type Release, TestHelper } from './TestHelper.js'
 
 const helper = new TestHelper('maintenance-minor-range')
 
@@ -14,25 +14,23 @@ describe('maintenance-minor-range', () => {
   const runReleaseGen = helper.runReleaseGen.bind(helper)
 
   it('maintenance-minor-range', async () => {
-    const branch = '1.2.x' // latest tag v1.2.1
-    checkout(branch)
+    checkout('1.2.x') // latest tag v1.2.1
     commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
       range: '1.2.x',
     }]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen({ releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBeUndefined()
     expect(release.gitTags).toEqual(['v1.2.2', 'v1.2'])
     expect(release.tags).toEqual(['v1.2.2', 'v1.2'])
-  }, TIMEOUT)
+  })
 
   it('maintenance-minor-range-channel', async () => {
-    const branch = '1.2.x' // latest tag v1.2.1
-    checkout(branch)
+    checkout('1.2.x') // latest tag v1.2.1
     commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
@@ -40,17 +38,16 @@ describe('maintenance-minor-range', () => {
       channel: '1.2.x'
     }]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen({ releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBe('1.2.x')
     expect(release.gitTags).toEqual(['v1.2.2', 'v1.2'])
     expect(release.tags).toEqual(['v1.2.2', 'v1.2', '1.2.x'])
-  }, TIMEOUT)
+  })
 
   it('maintenance-minor-range-channel2', async () => {
-    const branch = '1.2.x' // latest tag v1.2.1
-    checkout(branch)
+    checkout('1.2.x') // latest tag v1.2.1
     commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
@@ -58,11 +55,11 @@ describe('maintenance-minor-range', () => {
       channel: 'legacy'
     }]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen({ releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBe('legacy')
     expect(release.gitTags).toEqual(['v1.2.2', 'v1.2', 'legacy'])
     expect(release.tags).toEqual(['v1.2.2', 'v1.2', 'legacy'])
-  }, TIMEOUT)
+  })
 })
