@@ -86,6 +86,10 @@ export class TestHelper {
     fs.mkdirSync(this.testDir)
   }
 
+  public afterEach(): void {
+    fs.rmSync(this.testDir, { recursive: true, force: true })
+  }
+
   public checkout(branch: string): void {
     const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
@@ -173,5 +177,17 @@ export class TestHelper {
       tags: outputMap['tags']!.split(' '),
       version: outputMap['version']!,
     } as TheNextRelease
+  }
+
+  public async runFix(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
+    this.checkout(branch)
+    this.commit('fix: test')
+    return this.runReleaseGen(branch, opts)
+  }
+
+  public async runFeat(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
+    this.checkout(branch)
+    this.commit('feat: test')
+    return this.runReleaseGen(branch, opts)
   }
 }

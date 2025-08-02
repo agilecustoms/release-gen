@@ -1,5 +1,5 @@
 import type { BranchSpec } from 'semantic-release'
-import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import { TestHelper, TIMEOUT } from './TestHelper.js'
 
 const helper = new TestHelper('maintenance-minor-range')
@@ -7,6 +7,7 @@ const helper = new TestHelper('maintenance-minor-range')
 describe('maintenance-minor-range', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
+  afterEach(helper.afterEach.bind(helper))
 
   const checkout = helper.checkout.bind(helper)
   const commit = helper.commit.bind(helper)
@@ -16,13 +17,10 @@ describe('maintenance-minor-range', () => {
     const branch = '1.2.x' // latest tag v1.2.1
     checkout(branch)
     commit('fix: test')
-    const releaseBranches: BranchSpec[] = [
-      'main',
-      {
-        name: '1.2.x',
-        range: '1.2.x',
-      }
-    ]
+    const releaseBranches: BranchSpec[] = ['main', {
+      name: '1.2.x',
+      range: '1.2.x',
+    }]
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
@@ -36,14 +34,11 @@ describe('maintenance-minor-range', () => {
     const branch = '1.2.x' // latest tag v1.2.1
     checkout(branch)
     commit('fix: test')
-    const releaseBranches: BranchSpec[] = [
-      'main',
-      {
-        name: '1.2.x',
-        range: '1.2.x',
-        channel: '1.2.x'
-      }
-    ]
+    const releaseBranches: BranchSpec[] = ['main', {
+      name: '1.2.x',
+      range: '1.2.x',
+      channel: '1.2.x'
+    }]
 
     const release = await runReleaseGen(branch, { releaseBranches })
 
@@ -57,14 +52,11 @@ describe('maintenance-minor-range', () => {
     const branch = '1.2.x' // latest tag v1.2.1
     checkout(branch)
     commit('fix: test')
-    const releaseBranches: BranchSpec[] = [
-      'main',
-      {
-        name: '1.2.x',
-        range: '1.2.x',
-        channel: 'legacy'
-      }
-    ]
+    const releaseBranches: BranchSpec[] = ['main', {
+      name: '1.2.x',
+      range: '1.2.x',
+      channel: 'legacy'
+    }]
 
     const release = await runReleaseGen(branch, { releaseBranches })
 

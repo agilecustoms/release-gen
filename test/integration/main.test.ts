@@ -1,5 +1,5 @@
 import type { BranchSpec } from 'semantic-release'
-import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
 import { TestHelper, TIMEOUT, type TheNextRelease } from './TestHelper.js'
 
 const helper = new TestHelper('main')
@@ -7,17 +7,14 @@ const helper = new TestHelper('main')
 describe('main', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
+  afterEach(helper.afterEach.bind(helper))
 
-  const checkout = helper.checkout.bind(helper)
-  const commit = helper.commit.bind(helper)
-  const runReleaseGen = helper.runReleaseGen.bind(helper)
+  const runFix = helper.runFix.bind(helper)
 
   it('main-default-channel', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
-    checkout(branch)
-    commit('fix: test')
 
-    const release: TheNextRelease = await runReleaseGen(branch)
+    const release: TheNextRelease = await runFix(branch)
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBe('latest')
@@ -27,16 +24,12 @@ describe('main', () => {
 
   it('main-no-channel', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
-    checkout(branch)
-    commit('fix: test')
-    const releaseBranches: BranchSpec[] = [
-      {
-        name: branch,
-        channel: false // same effect as ''
-      }
-    ]
+    const releaseBranches: BranchSpec = {
+      name: branch,
+      channel: false // same effect as ''
+    }
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: TheNextRelease = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBeUndefined()
@@ -46,16 +39,12 @@ describe('main', () => {
 
   it('main-branch-channel', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
-    checkout(branch)
-    commit('fix: test')
-    const releaseBranches: BranchSpec[] = [
-      {
-        name: branch,
-        channel: branch
-      }
-    ]
+    const releaseBranches: BranchSpec = {
+      name: branch,
+      channel: branch
+    }
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: TheNextRelease = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBe(branch)
@@ -65,16 +54,12 @@ describe('main', () => {
 
   it('main-channel', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
-    checkout(branch)
-    commit('fix: test')
-    const releaseBranches: BranchSpec[] = [
-      {
-        name: branch,
-        channel: 'release'
-      }
-    ]
+    const releaseBranches: BranchSpec = {
+      name: branch,
+      channel: 'release'
+    }
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: TheNextRelease = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBe('release')

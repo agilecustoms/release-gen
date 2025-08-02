@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
 import { TestHelper, TIMEOUT, type TheNextRelease } from './TestHelper.js'
 
 const helper = new TestHelper('angular')
@@ -6,27 +6,24 @@ const helper = new TestHelper('angular')
 describe('angular', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
+  afterEach(helper.afterEach.bind(helper))
 
   const checkout = helper.checkout.bind(helper)
   const commit = helper.commit.bind(helper)
   const runReleaseGen = helper.runReleaseGen.bind(helper)
+  const runFix = helper.runFix.bind(helper)
+  const runFeat = helper.runFeat.bind(helper)
 
   it('patch', async () => {
-    const branch = 'int-test050'
-    checkout(branch)
-    commit('fix: test')
-
-    const release: TheNextRelease = await runReleaseGen(branch)
+    const release: TheNextRelease = await runFix('int-test050')
 
     expect(release.version).toBe('v0.5.1')
   }, TIMEOUT)
 
   it('minor', async () => {
     const branch = 'int-test050'
-    checkout(branch)
-    commit('feat: test')
 
-    const release = await runReleaseGen(branch)
+    const release = await runFeat(branch)
 
     expect(release.version).toBe('v0.6.0')
   }, TIMEOUT)

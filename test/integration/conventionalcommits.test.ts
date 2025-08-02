@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
 import { TestHelper, TIMEOUT } from './TestHelper.js'
 
 const CONVENTIONAL_OPTS = {
@@ -10,15 +10,14 @@ const helper = new TestHelper('conventionalcommits')
 describe('conventionalcommits', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
+  afterEach(helper.afterEach.bind(helper))
 
   const checkout = helper.checkout.bind(helper)
   const commit = helper.commit.bind(helper)
   const runReleaseGen = helper.runReleaseGen.bind(helper)
 
   // if no conventional-changelog-conventionalcommits npm dep => clear error
-  // test custom tag format
-  // test major version bump with feat! tag
-  it('conventionalcommits', async () => {
+  it('conventionalcommits-miss-dep', async () => {
     const branch = 'int-test050'
     checkout(branch)
 
@@ -27,9 +26,17 @@ describe('conventionalcommits', () => {
     })
     expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
       + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
+  }, TIMEOUT)
 
+  // test custom tag format
+  // test major version bump with feat! tag
+  it('conventionalcommits', async () => {
+    const branch = 'int-test050'
+    checkout(branch)
     commit('feat(api)!: new major release')
+
     const release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
+
     expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
   }, TIMEOUT)
