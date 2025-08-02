@@ -1,5 +1,19 @@
 # Changelog
 
+# [3.0.0-beta.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v3.0.0-beta.1) (2025-08-02)
+
+### Bug Fixes
+
+* change prerelease suffix ([eae800f](https://github.com/agilecustoms/release-gen/commit/eae800f256e59861c79403362753094ebb5bd934))
+* minor change to test bump ([7c793aa](https://github.com/agilecustoms/release-gen/commit/7c793aa106b6e6d1f1713de3ec8ddb3363e6b375))
+* test ([0cf250b](https://github.com/agilecustoms/release-gen/commit/0cf250bf743eebe660fea741e942af8e45c9a797))
+
+
+### BREAKING CHANGES
+
+* 3.0.0
+
+
 # [3.0.0-alpha.2](https://github.com/agilecustoms/release-gen/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2025-08-02)
 
 ### Bug Fixes

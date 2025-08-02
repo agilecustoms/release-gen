@@ -1,6 +1,6 @@
 {
   "name": "release-gen",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-beta.1",
   "description": "GitHub Action wrapper for Semantic Release",
   "keywords": [
     "github-action",
