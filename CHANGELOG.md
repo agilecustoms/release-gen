@@ -1,5 +1,12 @@
 # Changelog
 
+# [2.5.0](https://github.com/agilecustoms/release-gen/compare/v2.4.2...v2.5.0) (2025-08-02)
+
+### Features
+
+* output.channel is always defined ([#19](https://github.com/agilecustoms/release-gen/issues/19)) ([735fb3e](https://github.com/agilecustoms/release-gen/commit/735fb3e1383e4cd125dbdaa53fe61e43747ecb8a))
+
+
 ## [2.4.2](https://github.com/agilecustoms/release-gen/compare/v2.4.1...v2.4.2) (2025-08-02)
 
 ### Bug Fixes
