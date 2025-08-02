@@ -118,7 +118,7 @@ describe('ReleaseProcessor', () => {
     it('minor-maintenance-default-channel', async () => {
       const branch = { name: '1.1.x' }
       const result = await release('1.1.1', branch)
-      expect(result.channel).toBeUndefined()
+      expect(result.channel).toBe('1.1.x')
       expect(result.gitTags).toEqual(['1.1.1', '1.1'])
       expect(result.tags).toEqual(['1.1.1', '1.1'])
     })
@@ -142,7 +142,7 @@ describe('ReleaseProcessor', () => {
     it('maintenance-default', async () => {
       const branch = { name: '1.x.x' }
       const result = await release('1.6.0', branch)
-      expect(result.channel).toBeUndefined()
+      expect(result.channel).toBe('1.x.x')
       expect(result.gitTags).toEqual(['1.6.0', '1.6', '1'])
       expect(result.tags).toEqual(['1.6.0', '1.6', '1'])
     })
@@ -174,7 +174,7 @@ describe('ReleaseProcessor', () => {
     it('main-no-channel', async () => {
       const branch = { name: 'main', channel: '' }
       const result = await release('2.3.0', branch)
-      expect(result.channel).toBeUndefined()
+      expect(result.channel).toBe('latest')
       expect(result.gitTags).toEqual(['2.3.0', '2.3', '2'])
       expect(result.tags).toEqual(['2.3.0', '2.3', '2'])
     })

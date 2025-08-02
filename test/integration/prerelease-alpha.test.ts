@@ -42,12 +42,12 @@ describe('prerelease-alpha', () => {
     expect(release.tags).toEqual(['v3.0.0-alpha.1'])
   })
 
-  it('channel-next', async () => {
+  it('channel-branch', async () => {
     const branch = 'next' // latest tag v2.4.0
     const releaseBranches: BranchSpec[] = ['main', {
       name: branch,
       prerelease: 'alpha',
-      channel: 'next'
+      channel: branch
     }]
 
     const release: Release = await runBreaking(branch, { releaseBranches })
@@ -58,7 +58,7 @@ describe('prerelease-alpha', () => {
     expect(release.tags).toEqual(['v3.0.0-alpha.1', 'next'])
   })
 
-  it('channel-beta', async () => {
+  it('channel-custom', async () => {
     const branch = 'next' // latest tag v2.4.0
     const releaseBranches: BranchSpec[] = ['main', {
       name: branch,

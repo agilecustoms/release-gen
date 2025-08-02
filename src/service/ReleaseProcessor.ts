@@ -28,40 +28,30 @@ export class ReleaseProcessor {
       await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
     }
 
-    // first, infer the channel. It is used later to determint tags, gitTags and also as separate output for 'git notes'
+    // first, infer the channel. It is used later to determine tags, gitTags and also as separate output for 'git notes'
     // special rules apply for prerelease
     const branch = result.branch
     let channel = branch.channel
-    if (branch.prerelease) {
-      if (!channel || channel.trim() === '') {
-        channel = branch.name
-      }
-    } else if (channel === undefined) {
+    if (!channel || channel.trim() === '') {
       const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name)
-      if (!maintenance) {
-        channel = 'latest'
-      }
+      channel = branch.prerelease || maintenance ? branch.name : 'latest'
     }
 
     // second: infer gitTags - basically split the version tag and add a channel from a prev step
     const version = result.nextRelease.gitTag
     const tags = this.getTags(version, branch)
     const gitTags = [...tags]
-    if (channel && channel !== branch.name) {
+    if ((branch.channel || branch.channel === undefined) && channel !== branch.name) {
       gitTags.push(channel)
     }
 
-    // lastly, determine the tags: add an inferred channel or original channel (for prerelease)
-    if (branch.prerelease) {
-      if (branch.channel) {
-        tags.push(branch.channel)
-      }
-    } else if (channel) {
+    // lastly, determine the tags
+    if (branch.channel || (branch.channel === undefined && channel === 'latest')) {
       tags.push(channel)
     }
 
     return {
-      channel: channel || undefined,
+      channel: channel,
       gitTags,
       notes: notes,
       prerelease: Boolean(branch.prerelease),

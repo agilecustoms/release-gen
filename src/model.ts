@@ -13,7 +13,7 @@ export type ReleaseOptions = {
 export type SemanticReleaseResult = false | Result & { branch: BranchObject }
 
 export type ReleaseDetails = {
-  channel?: string
+  channel: string
   gitTags: string[]
   notes: string
   prerelease: boolean

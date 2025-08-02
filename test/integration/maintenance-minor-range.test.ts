@@ -13,7 +13,7 @@ describe('maintenance-minor-range', () => {
   const commit = helper.commit.bind(helper)
   const runReleaseGen = helper.runReleaseGen.bind(helper)
 
-  it('maintenance-minor-range', async () => {
+  it('channel-default', async () => {
     checkout('1.2.x') // latest tag v1.2.1
     commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
@@ -24,12 +24,29 @@ describe('maintenance-minor-range', () => {
     const release: Release = await runReleaseGen({ releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
-    expect(release.channel).toBeUndefined()
+    expect(release.channel).toBe('1.2.x')
     expect(release.gitTags).toEqual(['v1.2.2', 'v1.2'])
     expect(release.tags).toEqual(['v1.2.2', 'v1.2'])
   })
 
-  it('maintenance-minor-range-channel', async () => {
+  it('channel-false', async () => {
+    checkout('1.2.x') // latest tag v1.2.1
+    commit('fix: test')
+    const releaseBranches: BranchSpec[] = ['main', {
+      name: '1.2.x',
+      range: '1.2.x',
+      channel: false
+    }]
+
+    const release: Release = await runReleaseGen({ releaseBranches })
+
+    expect(release.version).toBe('v1.2.2')
+    expect(release.channel).toBe('1.2.x')
+    expect(release.gitTags).toEqual(['v1.2.2', 'v1.2'])
+    expect(release.tags).toEqual(['v1.2.2', 'v1.2'])
+  })
+
+  it('channel-branch', async () => {
     checkout('1.2.x') // latest tag v1.2.1
     commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
@@ -46,7 +63,7 @@ describe('maintenance-minor-range', () => {
     expect(release.tags).toEqual(['v1.2.2', 'v1.2', '1.2.x'])
   })
 
-  it('maintenance-minor-range-channel2', async () => {
+  it('channel-custom', async () => {
     checkout('1.2.x') // latest tag v1.2.1
     commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
