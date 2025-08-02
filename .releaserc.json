@@ -3,7 +3,7 @@
     "main",
     {
       "name": "next",
-      "prerelease": "alpha",
+      "prerelease": "beta",
       "channel": "demo"
     }
   ]
