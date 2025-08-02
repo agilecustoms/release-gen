@@ -1,5 +1,12 @@
 # Changelog
 
+# [3.0.0-beta.2](https://github.com/agilecustoms/release-gen/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2025-08-02)
+
+### Bug Fixes
+
+* test next ([92d6343](https://github.com/agilecustoms/release-gen/commit/92d63432311468b8163dd50f364f936d4611f283))
+
+
 # [3.0.0-beta.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v3.0.0-beta.1) (2025-08-02)
 
 ### Bug Fixes
