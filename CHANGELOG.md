@@ -1,5 +1,12 @@
 # Changelog
 
+# [3.0.0-alpha.2](https://github.com/agilecustoms/release-gen/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2025-08-02)
+
+### Bug Fixes
+
+* minor change to test bump ([7c793aa](https://github.com/agilecustoms/release-gen/commit/7c793aa106b6e6d1f1713de3ec8ddb3363e6b375))
+
+
 # [3.0.0-alpha.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v3.0.0-alpha.1) (2025-08-02)
 
 ### Bug Fixes
