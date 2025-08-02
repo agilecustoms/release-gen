@@ -1,6 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper } from './TestHelper.js'
+import { type Release, TestHelper } from './TestHelper.js'
 
 const helper = new TestHelper('maintenance')
 
@@ -18,7 +18,7 @@ describe('maintenance', () => {
       branch
     ]
 
-    const release = await runFix(branch, { releaseBranches })
+    const release: Release = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.3.1')
     expect(release.channel).toBeUndefined()
@@ -32,7 +32,7 @@ describe('maintenance', () => {
       branch
     ]
 
-    const release = await runFeat(branch, { releaseBranches })
+    const release: Release = await runFeat(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.4.0')
     expect(release.channel).toBeUndefined()
@@ -48,7 +48,7 @@ describe('maintenance', () => {
       channel: '1.x.x'
     }]
 
-    const release = await runFeat(branch, { releaseBranches })
+    const release: Release = await runFeat(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.4.0')
     expect(release.channel).toBe('1.x.x')
@@ -64,7 +64,7 @@ describe('maintenance', () => {
       channel: 'support'
     }]
 
-    const release = await runFeat(branch, { releaseBranches })
+    const release: Release = await runFeat(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.4.0')
     expect(release.channel).toBe('support')

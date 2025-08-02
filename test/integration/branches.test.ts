@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
-import { TestHelper } from './TestHelper.js'
+import { type Release, TestHelper } from './TestHelper.js'
 
 const helper = new TestHelper('branches')
 
@@ -21,7 +21,7 @@ describe('branches', () => {
     checkout(branch)
     commit('fix: test\nBREAKING CHANGE: test')
 
-    const release = await runReleaseGen(branch, { releaseBranches: undefined })
+    const release: Release = await runReleaseGen(branch, { releaseBranches: undefined })
 
     expect(release.version).toBe('v3.0.0')
     expect(release.gitTags).toEqual(['v3.0.0', 'v3.0', 'v3', 'latest'])

@@ -1,6 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper, type TheNextRelease } from './TestHelper.js'
+import { TestHelper, type Release } from './TestHelper.js'
 
 const helper = new TestHelper('main')
 
@@ -14,7 +14,7 @@ describe('main', () => {
   it('main-default-channel', async () => {
     const branch = 'int-test050' // here 'int-test050' plays a role of 'main' branch
 
-    const release: TheNextRelease = await runFix(branch)
+    const release: Release = await runFix(branch)
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBe('latest')
@@ -29,7 +29,7 @@ describe('main', () => {
       channel: false // same effect as ''
     }
 
-    const release: TheNextRelease = await runFix(branch, { releaseBranches })
+    const release: Release = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBeUndefined()
@@ -44,7 +44,7 @@ describe('main', () => {
       channel: branch
     }
 
-    const release: TheNextRelease = await runFix(branch, { releaseBranches })
+    const release: Release = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBe(branch)
@@ -59,7 +59,7 @@ describe('main', () => {
       channel: 'release'
     }
 
-    const release: TheNextRelease = await runFix(branch, { releaseBranches })
+    const release: Release = await runFix(branch, { releaseBranches })
 
     expect(release.version).toBe('v0.5.1')
     expect(release.channel).toBe('release')

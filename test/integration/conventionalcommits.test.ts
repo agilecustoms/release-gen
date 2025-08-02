@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
-import { TestHelper } from './TestHelper.js'
+import { type Release, TestHelper } from './TestHelper.js'
 
 const CONVENTIONAL_OPTS = {
   npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'
@@ -35,7 +35,7 @@ describe('conventionalcommits', () => {
     checkout(branch)
     commit('feat(api)!: new major release')
 
-    const release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
+    const release: Release = await runReleaseGen(branch, CONVENTIONAL_OPTS)
 
     expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')

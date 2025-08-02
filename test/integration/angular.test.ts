@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
-import { TestHelper, type TheNextRelease } from './TestHelper.js'
+import { TestHelper, type Release } from './TestHelper.js'
 
 const helper = new TestHelper('angular')
 
@@ -15,7 +15,7 @@ describe('angular', () => {
   const runFeat = helper.runFeat.bind(helper)
 
   it('patch', async () => {
-    const release: TheNextRelease = await runFix('int-test050')
+    const release: Release = await runFix('int-test050')
 
     expect(release.version).toBe('v0.5.1')
   })
@@ -23,7 +23,7 @@ describe('angular', () => {
   it('minor', async () => {
     const branch = 'int-test050'
 
-    const release = await runFeat(branch)
+    const release: Release = await runFeat(branch)
 
     expect(release.version).toBe('v0.6.0')
   })
@@ -45,7 +45,7 @@ describe('angular', () => {
       '@semantic-release/release-notes-generator'
     ]
 
-    const release = await runReleaseGen(branch, { releasePlugins: plugins })
+    const release: Release = await runReleaseGen(branch, { releasePlugins: plugins })
 
     expect(release.version).toBe('v0.5.1')
   })
@@ -56,7 +56,7 @@ describe('angular', () => {
     checkout(branch)
     commit('feat: test\n\nBREAKING CHANGE: test major release')
 
-    const release = await runReleaseGen(branch)
+    const release: Release = await runReleaseGen(branch)
 
     expect(release.version).toBe('3.0.0')
   })

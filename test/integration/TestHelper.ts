@@ -21,7 +21,7 @@ export type TestOptions = {
   releasePlugins?: object
 }
 
-export type TheNextRelease = NextRelease & ReleaseDetails
+export type Release = NextRelease & ReleaseDetails
 
 /**
  * DISCLAIMER about semantic-release
@@ -116,7 +116,7 @@ export class TestHelper {
     execSync(`git commit -m "${msg}"`, options)
   }
 
-  public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
+  public async runReleaseGen(branch: string, opts: TestOptions = {}): Promise<Release> {
     const cwd = this.testDir
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -176,16 +176,16 @@ export class TestHelper {
       prerelease: outputMap['prerelease'] === 'true',
       tags: outputMap['tags']!.split(' '),
       version: outputMap['version']!,
-    } as TheNextRelease
+    } as Release
   }
 
-  public async runFix(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
+  public async runFix(branch: string, opts: TestOptions = {}): Promise<Release> {
     this.checkout(branch)
     this.commit('fix: test')
     return this.runReleaseGen(branch, opts)
   }
 
-  public async runFeat(branch: string, opts: TestOptions = {}): Promise<TheNextRelease> {
+  public async runFeat(branch: string, opts: TestOptions = {}): Promise<Release> {
     this.checkout(branch)
     this.commit('feat: test')
     return this.runReleaseGen(branch, opts)

@@ -1,6 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper } from './TestHelper.js'
+import { type Release, TestHelper } from './TestHelper.js'
 
 const helper = new TestHelper('maintenance-minor-range')
 
@@ -22,7 +22,7 @@ describe('maintenance-minor-range', () => {
       range: '1.2.x',
     }]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBeUndefined()
@@ -40,7 +40,7 @@ describe('maintenance-minor-range', () => {
       channel: '1.2.x'
     }]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBe('1.2.x')
@@ -58,7 +58,7 @@ describe('maintenance-minor-range', () => {
       channel: 'legacy'
     }]
 
-    const release = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v1.2.2')
     expect(release.channel).toBe('legacy')

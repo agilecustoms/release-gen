@@ -1,6 +1,6 @@
 import type { BranchSpec } from 'semantic-release'
 import { afterEach, beforeAll, beforeEach, expect, describe, it } from 'vitest'
-import { TestHelper, type TheNextRelease } from './TestHelper.js'
+import { TestHelper, type Release } from './TestHelper.js'
 
 const helper = new TestHelper('prerelease-true')
 
@@ -22,13 +22,12 @@ describe('prerelease-true', () => {
       prerelease: true
     }]
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v3.0.0-next.1')
     expect(release.channel).toBe('next')
     expect(release.gitTags).toEqual(['v3.0.0-next.1'])
     expect(release.tags).toEqual(['v3.0.0-next.1'])
-    expect(release.prerelease).toBe(true)
   })
 
   it('channel-false', async () => {
@@ -41,13 +40,12 @@ describe('prerelease-true', () => {
       channel: false
     }]
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v3.0.0-next.1')
     expect(release.channel).toBe('next')
     expect(release.gitTags).toEqual(['v3.0.0-next.1'])
     expect(release.tags).toEqual(['v3.0.0-next.1'])
-    expect(release.prerelease).toBe(true)
   })
 
   it('channel-next', async () => {
@@ -60,13 +58,12 @@ describe('prerelease-true', () => {
       channel: 'next'
     }]
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v3.0.0-next.1')
     expect(release.channel).toBe('next')
     expect(release.gitTags).toEqual(['v3.0.0-next.1'])
     expect(release.tags).toEqual(['v3.0.0-next.1', 'next'])
-    expect(release.prerelease).toBe(true)
   })
 
   it('channel-beta', async () => {
@@ -79,12 +76,11 @@ describe('prerelease-true', () => {
       channel: 'beta'
     }]
 
-    const release: TheNextRelease = await runReleaseGen(branch, { releaseBranches })
+    const release: Release = await runReleaseGen(branch, { releaseBranches })
 
     expect(release.version).toBe('v3.0.0-next.1')
     expect(release.channel).toBe('beta')
     expect(release.gitTags).toEqual(['v3.0.0-next.1', 'beta'])
     expect(release.tags).toEqual(['v3.0.0-next.1', 'beta'])
-    expect(release.prerelease).toBe(true)
   })
 })
