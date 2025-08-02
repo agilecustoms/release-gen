@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, expect, describe, it } from 'vitest'
+import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
 import { TestHelper, TIMEOUT } from './TestHelper.js'
 
 const helper = new TestHelper('branches')
@@ -6,6 +6,7 @@ const helper = new TestHelper('branches')
 describe('branches', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
+  afterEach(helper.afterEach.bind(helper))
 
   const checkout = helper.checkout.bind(helper)
   const commit = helper.commit.bind(helper)
