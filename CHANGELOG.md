@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.2](https://github.com/agilecustoms/release-gen/compare/v2.4.1...v2.4.2) (2025-08-02)
+
+### Bug Fixes
+
+* Simplify Tests ([#18](https://github.com/agilecustoms/release-gen/issues/18)) ([cdd595f](https://github.com/agilecustoms/release-gen/commit/cdd595f6ba6fb55bc2034ca17594b9e7d75396df))
+
+
 ## [2.4.1](https://github.com/agilecustoms/release-gen/compare/v2.4.0...v2.4.1) (2025-08-02)
 
 ### Bug Fixes
