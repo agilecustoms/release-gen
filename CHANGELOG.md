@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.6.0](https://github.com/agilecustoms/release-gen/compare/v2.5.1...v2.6.0) (2025-08-03)
+
+### Features
+
+* default_minor version bump ([#20](https://github.com/agilecustoms/release-gen/issues/20)) ([586bf8a](https://github.com/agilecustoms/release-gen/commit/586bf8ac8e5d47f715a9b4a30e4c210984130053))
+
+### Bug Fixes
+
+* release workflow ([046ecf4](https://github.com/agilecustoms/release-gen/commit/046ecf48339fa6c01139929008b3eb8231111e12))
+
+
 ## [2.5.1](https://github.com/agilecustoms/release-gen/compare/v2.5.0...v2.5.1) (2025-08-03)
 
 ### Bug Fixes
