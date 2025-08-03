@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.1](https://github.com/agilecustoms/release-gen/compare/v2.5.0...v2.5.1) (2025-08-03)
+
+### Bug Fixes
+
+* refactor all tests to be async ([cd5ddff](https://github.com/agilecustoms/release-gen/commit/cd5ddff9eea6bd485e121c14559acd7a47c57302))
+
+
 # [2.5.0](https://github.com/agilecustoms/release-gen/compare/v2.4.2...v2.5.0) (2025-08-02)
 
 ### Features
