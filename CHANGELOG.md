@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.1](https://github.com/agilecustoms/release-gen/compare/v2.7.0...v2.7.1) (2025-08-03)
+
+### Miscellaneous
+
+* fix input description ([4823e76](https://github.com/agilecustoms/release-gen/commit/4823e7654dce7c4be6564f2d4df26368616c7823))
+
+
 ## [2.7.0](https://github.com/agilecustoms/release-gen/compare/v2.6.0...v2.7.0) (2025-08-03)
 
 ### Features
