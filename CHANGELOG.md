@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/agilecustoms/release-gen/compare/v2.6.0...v2.7.0) (2025-08-03)
+
+### Features
+
+* output notes_tmp_file ([b65a340](https://github.com/agilecustoms/release-gen/commit/b65a340c22e5f8a66dfba3b9b8ee5b07bab6769c))
+
+
 ## [2.6.0](https://github.com/agilecustoms/release-gen/compare/v2.5.1...v2.6.0) (2025-08-03)
 
 ### Features
