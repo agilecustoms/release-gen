@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import process from 'node:process';
 import { exec } from '../utils.js';
 const MAINTENANCE_BRANCH = /\d+\.x\.x/;
@@ -5,21 +6,50 @@ const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/;
 export class ReleaseProcessor {
     semanticReleaseAdapter;
     changelogGenerator;
-    constructor(semanticReleaseAdapter, changelogGenerator) {
+    gitClient;
+    constructor(semanticReleaseAdapter, changelogGenerator, gitClient) {
         this.semanticReleaseAdapter = semanticReleaseAdapter;
         this.changelogGenerator = changelogGenerator;
+        this.gitClient = gitClient;
     }
     async process(options) {
-        const result = await this.semanticRelease(options);
-        if (!result) {
-            return false;
+        let result;
+        try {
+            result = await this.semanticRelease(options);
         }
-        const notes = result.nextRelease.notes;
-        if (!notes) {
-            throw new Error('No release notes found in the next release. This is unexpected');
+        catch (e) {
+            if (e instanceof Error && 'code' in e && e.code === 'MODULE_NOT_FOUND') {
+                throw new Error(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`, { cause: e });
+            }
+            throw e;
         }
-        if (options.changelogFile) {
-            await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
+        let notes = undefined;
+        if (result) {
+            notes = result.nextRelease.notes;
+            if (!result.nextRelease.notes) {
+                throw new Error('No release notes found in the next release. This is unexpected');
+            }
+        }
+        else {
+            if (!options.defaultMinor) {
+                throw new Error('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)');
+            }
+            try {
+                await this.gitClient.commit();
+                result = await this.semanticRelease(options);
+                if (!result) {
+                    throw new Error('Unable to generate new version even with "default_minor: true", could be present that doesn\'t respect feat: prefix');
+                }
+            }
+            finally {
+                await this.gitClient.revert();
+            }
+        }
+        if (notes) {
+            if (options.changelogFile) {
+                await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
+            }
+            await fs.writeFile(options.notesTmpFile, notes, 'utf8');
         }
         const branch = result.branch;
         let channel = branch.channel;
@@ -37,9 +67,8 @@ export class ReleaseProcessor {
             tags.push(channel);
         }
         return {
-            channel: channel,
+            channel,
             gitTags,
-            notes: notes,
             prerelease: Boolean(branch.prerelease),
             tags,
             version

@@ -142,6 +142,8 @@ export class TestHelper {
     if (opts.releasePlugins) {
       env['INPUT_RELEASE_PLUGINS'] = JSON.stringify(opts.releasePlugins)
     }
+    const notesTmpFile = `/tmp/release-gen-notes-${Math.random().toString(36).slice(2)}`
+    env['INPUT_NOTES_TMP_FILE'] = notesTmpFile
 
     if (process.env.CI) { // see a DISCLAIMER above
       const githubToken = process.env.GITHUB_TOKEN
@@ -172,7 +174,12 @@ export class TestHelper {
       outputMap[match[1]!] = match[2]!
     }
 
-    const notes = await fs.promises.readFile(outputMap['notes_file']!, 'utf8')
+    let notes = ''
+    if (fs.existsSync(notesTmpFile)) {
+      notes = await fs.promises.readFile(notesTmpFile, 'utf8')
+      fs.rmSync(notesTmpFile)
+    }
+
     // outputMap now contains all set-output key-value pairs
     return {
       channel: outputMap['channel']!,

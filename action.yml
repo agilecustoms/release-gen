@@ -13,6 +13,10 @@ inputs:
     description: 'Default minor version to use if no commits found since last release tag'
     required: false
     default: 'false'
+  notes_tmp_file:
+    description: 'Temporary file to store release notes'
+    required: false
+    default: /tmp/release-gen-notes
   npm_extra_deps: # if use hyphens, then can't mock in integration tests
     description: 'Additional npm dependencies, used to install non-default commit parsers such as conventional-changelog-conventionalcommits@9.1.0'
     required: false

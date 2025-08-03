@@ -1,4 +1,3 @@
-import * as fs from 'node:fs/promises'
 import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -28,6 +27,7 @@ function getInput(name: string): string {
 const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
 const defaultMinor: boolean = getInput('default_minor') === 'true' // default is false
+const notesTmpFile: string = getInput('notes_tmp_file')
 const npmExtraDeps: string = getInput('npm_extra_deps')
 const releaseBranches: string = getInput('release_branches')
 const releasePlugins: string = getInput('release_plugins')
@@ -47,6 +47,7 @@ const options: ReleaseOptions = {
   changelogTitle,
   cwd,
   defaultMinor,
+  notesTmpFile,
   releaseBranches,
   releasePlugins,
   tagFormat
@@ -55,41 +56,25 @@ const options: ReleaseOptions = {
 const { SemanticReleaseAdapter } = await import('./service/SemanticReleaseAdapter.js')
 const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js')
 const { ReleaseProcessor } = await import('./service/ReleaseProcessor.js')
+const { GitClient } = await import('./service/GitClient.js')
 
 const semanticReleaseAdapter = new SemanticReleaseAdapter()
 const changelogGenerator = new ChangelogGenerator()
-const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
+const gitClient = new GitClient()
+const releaseProcessor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator, gitClient)
 
 let result: false | ReleaseDetails
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
-  if (e instanceof Error) {
-    if ('code' in e && e.code === 'MODULE_NOT_FOUND') {
-      core.setFailed(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
-    } else {
-      core.setFailed(e)
-    }
-  } else {
-    core.setFailed(String(e))
-  }
-  process.exit(1)
-}
-
-// if no semantic commits that increase version, then semantic-release returns empty result (no error!)
-if (!result) {
-  const message = 'Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)'
+  const message = (e as Error).message
   console.error(message)
   core.setFailed(message)
   process.exit(1)
 }
 
-const notesFilePath = '/tmp/release-gen-notes'
-await fs.writeFile(notesFilePath, result.notes!, 'utf8')
-
 core.setOutput('channel', result.channel) // the empty string is not printed, so no need to || ''
 core.setOutput('git_tags', result.gitTags.join(' '))
-core.setOutput('notes_file', notesFilePath)
 core.setOutput('prerelease', result.prerelease)
 core.setOutput('tags', result.tags.join(' '))
 core.setOutput('version', result.version)

@@ -5,6 +5,7 @@ export default defineConfig({
     testTimeout: process.env.CI ? 120000 : 0, // 0 locally (no timeout)
     coverage: {
       exclude: [
+        'src/service/GitClient.ts',
         'src/index.ts',
         'src/local.ts',
         'src/model.ts',
@@ -12,7 +13,7 @@ export default defineConfig({
       ],
       reporter: ['text'], // other: 'html', 'clover', 'json'
       thresholds: {
-        lines: 80,
+        lines: 83,
         branches: 90,
       }
     }

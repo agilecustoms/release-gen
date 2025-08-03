@@ -5,6 +5,7 @@ export type ReleaseOptions = {
   changelogTitle?: string
   cwd: string
   defaultMinor: boolean
+  notesTmpFile: string
   releaseBranches?: string
   releasePlugins?: string
   tagFormat?: string
@@ -15,7 +16,6 @@ export type SemanticReleaseResult = false | Result & { branch: BranchObject }
 export type ReleaseDetails = {
   channel: string
   gitTags: string[]
-  notes: string
   prerelease: boolean
   tags: string[]
   version: string

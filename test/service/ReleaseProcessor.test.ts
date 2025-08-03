@@ -1,8 +1,10 @@
+import fs from 'node:fs'
 import type { BranchObject } from 'semantic-release'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Mock } from 'vitest'
 import type { ReleaseDetails, ReleaseOptions } from '../../src/model.js'
 import { ChangelogGenerator } from '../../src/service/ChangelogGenerator.js'
+import { GitClient } from '../../src/service/GitClient.js'
 import { ReleaseProcessor } from '../../src/service/ReleaseProcessor.js'
 import { SemanticReleaseAdapter } from '../../src/service/SemanticReleaseAdapter.js'
 
@@ -14,19 +16,42 @@ const changelogGenerator = {
   generate: vi.fn()
 } as ChangelogGenerator & { generate: Mock }
 
+const gitClient = {
+  commit: vi.fn(),
+  revert: vi.fn()
+} as GitClient & { commit: Mock, revert: Mock }
+
 const OPTIONS = {
+  notesTmpFile: '/tmp/release-gen-notes',
   tagFormat: 'v${version}'
 } as ReleaseOptions
 
+type Result = ReleaseDetails & { notes: string }
+
 describe('ReleaseProcessor', () => {
-  const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator)
+  const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator, gitClient)
+  async function process(options: ReleaseOptions = OPTIONS): Promise<Result> {
+    const notesTmpFile = `/tmp/release-gen-notes-${Math.random().toString(36).slice(2)}`
+    options.notesTmpFile = notesTmpFile
+    try {
+      const res = await processor.process(options)
+      const notes = fs.existsSync(notesTmpFile) ? fs.readFileSync(notesTmpFile).toString() : ''
+      return { ...res, notes }
+    } finally {
+      if (fs.existsSync(notesTmpFile)) {
+        fs.rmSync(notesTmpFile)
+      }
+    }
+  }
 
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('should call semantic-release adapter', async () => {
-    await processor.process(OPTIONS)
+    try {
+      await process()
+    } catch {}
 
     expect(semanticReleaseAdapter.run).toHaveBeenCalledOnce()
   })
@@ -34,7 +59,9 @@ describe('ReleaseProcessor', () => {
   it('should pass release branches to semantic-release adapter', async () => {
     const options = { ...OPTIONS, releaseBranches: '["main"]' }
 
-    await processor.process(options)
+    try {
+      await process(options)
+    } catch {}
 
     const args = semanticReleaseAdapter.run.mock.calls[0]
     expect(args![0].branches).toEqual(['main'])
@@ -43,13 +70,15 @@ describe('ReleaseProcessor', () => {
   it('should throw an error if release branches cannot be parsed', async () => {
     const options = { ...OPTIONS, releaseBranches: 'invalid-json' }
 
-    await expect(processor.process(options)).rejects.toThrow('Failed to parse releaseBranches: invalid-json')
+    await expect(process(options)).rejects.toThrow('Failed to parse releaseBranches: invalid-json')
   })
 
   it('should pass release plugins to semantic-release adapter', async () => {
     const options = { ...OPTIONS, releasePlugins: '["@semantic-release/commit-analyzer"]' }
 
-    await processor.process(options)
+    try {
+      await process(options)
+    } catch {}
 
     const args = semanticReleaseAdapter.run.mock.calls[0]
     expect(args![0].plugins).toEqual(['@semantic-release/commit-analyzer'])
@@ -58,15 +87,21 @@ describe('ReleaseProcessor', () => {
   it('should throw an error if release plugins cannot be parsed', async () => {
     const options = { ...OPTIONS, releasePlugins: 'invalid-json' }
 
-    await expect(processor.process(options)).rejects.toThrow('Failed to parse releasePlugins: invalid-json')
+    await expect(process(options)).rejects.toThrow('Failed to parse releasePlugins: invalid-json')
   })
 
-  it('should return false if semantic-release returns false', async () => {
+  it('should throw clear error if semantic-release thrown error with code MODULE_NOT_FOUND', () => {
+    const error = new Error('test') as Error & { code?: string }
+    error.code = 'MODULE_NOT_FOUND'
+    semanticReleaseAdapter.run.mockRejectedValue(error)
+
+    return expect(process()).rejects.toThrow('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: test')
+  })
+
+  it('should throw ex if semantic-release returns false', async () => {
     semanticReleaseAdapter.run.mockResolvedValue(false)
 
-    const result = await processor.process(OPTIONS)
-
-    expect(result).toBe(false)
+    await expect(process()).rejects.toThrow('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
   })
 
   it('should throw an error if next release has no notes', async () => {
@@ -74,7 +109,7 @@ describe('ReleaseProcessor', () => {
       nextRelease: { gitTag: 'v1.0.0', notes: '' }
     })
 
-    await expect(processor.process(OPTIONS)).rejects.toThrow('No release notes found in the next release. This is unexpected')
+    await expect(process()).rejects.toThrow('No release notes found in the next release. This is unexpected')
   })
 
   it('should generate changelog if changelogFile is provided', async () => {
@@ -84,7 +119,7 @@ describe('ReleaseProcessor', () => {
       branch: { name: 'main' }
     })
 
-    await processor.process(options)
+    await process(options)
 
     expect(changelogGenerator.generate).toHaveBeenCalledWith('CHANGELOG.md', 'Release notes', 'Changelog')
   })
@@ -95,7 +130,7 @@ describe('ReleaseProcessor', () => {
       branch: { name: 'main' }
     })
 
-    const result = await processor.process(OPTIONS)
+    const result = await process()
 
     expect(result).toBeTruthy()
     if (result) {
@@ -110,7 +145,7 @@ describe('ReleaseProcessor', () => {
         nextRelease: { gitTag: version, notes: 'Release notes' },
         branch
       })
-      const result = await processor.process({ branchName: '', cwd: '' })
+      const result = await process()
       expect(result).toBeTruthy()
       return result as ReleaseDetails
     }
@@ -225,6 +260,38 @@ describe('ReleaseProcessor', () => {
       expect(result.channel).toBe('next')
       expect(result.gitTags).toEqual(['3.0.0-beta.4', 'next'])
       expect(result.tags).toEqual(['3.0.0-beta.4', 'next'])
+    })
+  })
+
+  describe('default_minor', () => {
+    it('should call semantic-release 2 times if first attempt return false', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue(false)
+
+      try {
+        await process({ ...OPTIONS, defaultMinor: true })
+      } catch {}
+
+      expect(gitClient.commit).toHaveBeenCalled()
+      expect(semanticReleaseAdapter.run).toHaveBeenCalledTimes(2)
+      expect(gitClient.revert).toHaveBeenCalled()
+    })
+
+    it('should throw an error if unable to generate minor version', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue(false)
+
+      await expect(process({ ...OPTIONS, defaultMinor: true })).rejects.toThrow('Unable to generate new version even with "default_minor: true", could be present that doesn\'t respect feat: prefix')
+    })
+
+    it('should return release details after second attempt with default_minor', async () => {
+      semanticReleaseAdapter.run.mockResolvedValueOnce(false)
+      semanticReleaseAdapter.run.mockResolvedValueOnce({
+        nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes2' },
+        branch: { name: 'main' }
+      })
+
+      const result = await process({ ...OPTIONS, defaultMinor: true })
+
+      expect(result.notes).toBe('')
     })
   })
 })
