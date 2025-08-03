@@ -62,6 +62,7 @@ catch (e) {
 }
 core.setOutput('channel', result.channel);
 core.setOutput('git_tags', result.gitTags.join(' '));
+core.setOutput('notes_tmp_file', result.notesTmpFile);
 core.setOutput('prerelease', result.prerelease);
 core.setOutput('tags', result.tags.join(' '));
 core.setOutput('version', result.version);

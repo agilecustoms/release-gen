@@ -23,6 +23,7 @@ export class ReleaseProcessor {
             }
             throw e;
         }
+        let notesTmpFile = options.notesTmpFile;
         let notes = undefined;
         if (result) {
             notes = result.nextRelease.notes;
@@ -49,7 +50,10 @@ export class ReleaseProcessor {
             if (options.changelogFile) {
                 await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle);
             }
-            await fs.writeFile(options.notesTmpFile, notes, 'utf8');
+            await fs.writeFile(notesTmpFile, notes, 'utf8');
+        }
+        else {
+            notesTmpFile = '';
         }
         const branch = result.branch;
         let channel = branch.channel;
@@ -69,6 +73,7 @@ export class ReleaseProcessor {
         return {
             channel,
             gitTags,
+            notesTmpFile,
             prerelease: Boolean(branch.prerelease),
             tags,
             version

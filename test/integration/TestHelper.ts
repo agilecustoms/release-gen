@@ -168,7 +168,7 @@ export class TestHelper {
 
     // Parse "::set-output" lines into a map
     const outputMap: Record<string, string> = {}
-    const regex = /::set-output name=([^:]+)::([^\n]+)/g
+    const regex = /::set-output name=([^:]+)::([^\n]*)/g
     let match
     while ((match = regex.exec(stdout)) !== null) {
       outputMap[match[1]!] = match[2]!
@@ -180,11 +180,15 @@ export class TestHelper {
       fs.rmSync(notesTmpFile)
     }
 
+    console.error('AlexC: outputMap:', outputMap)
+    console.error('ALexC: stdout:', stdout)
+
     // outputMap now contains all set-output key-value pairs
     return {
       channel: outputMap['channel']!,
       gitTags: outputMap['git_tags']!.split(' '),
       notes,
+      notesTmpFile: outputMap['notes_tmp_file'],
       prerelease: outputMap['prerelease'] === 'true',
       tags: outputMap['tags']!.split(' '),
       version: outputMap['version']!,

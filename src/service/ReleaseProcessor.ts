@@ -28,6 +28,7 @@ export class ReleaseProcessor {
       throw e
     }
 
+    let notesTmpFile = options.notesTmpFile
     let notes: string | undefined = undefined
     if (result) {
       notes = result.nextRelease.notes
@@ -55,7 +56,9 @@ export class ReleaseProcessor {
         await this.changelogGenerator.generate(options.changelogFile, notes, options.changelogTitle)
       }
 
-      await fs.writeFile(options.notesTmpFile, notes, 'utf8')
+      await fs.writeFile(notesTmpFile, notes, 'utf8')
+    } else {
+      notesTmpFile = ''
     }
 
     // first, infer the channel. It is used later to determine tags, gitTags and also as separate output for 'git notes'
@@ -83,6 +86,7 @@ export class ReleaseProcessor {
     return {
       channel,
       gitTags,
+      notesTmpFile,
       prerelease: Boolean(branch.prerelease),
       tags,
       version

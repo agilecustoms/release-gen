@@ -16,6 +16,7 @@ export type SemanticReleaseResult = false | Result & { branch: BranchObject }
 export type ReleaseDetails = {
   channel: string
   gitTags: string[]
+  notesTmpFile: string
   prerelease: boolean
   tags: string[]
   version: string
