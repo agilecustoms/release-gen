@@ -10,7 +10,7 @@ inputs:
     description: 'Title of the changelog file (first line of the file)'
     required: false
   default_minor:
-    description: 'Default minor version to use if no commits found since last release tag'
+    description: 'Bump minor version if no semantic commits found since last release tag'
     required: false
     default: 'false'
   notes_tmp_file:
