@@ -1,4 +1,5 @@
 import process from 'node:process';
+import { exec } from '../utils.js';
 const MAINTENANCE_BRANCH = /\d+\.x\.x/;
 const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/;
 export class ReleaseProcessor {
@@ -48,7 +49,8 @@ export class ReleaseProcessor {
         const opts = {
             dryRun: true
         };
-        opts['currentBranch'] = options.branchName;
+        const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd: options.cwd });
+        opts['currentBranch'] = stdout.trim();
         if (options.tagFormat) {
             opts.tagFormat = options.tagFormat;
         }

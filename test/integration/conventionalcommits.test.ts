@@ -18,7 +18,7 @@ describe('conventionalcommits', () => {
 
   // if no conventional-changelog-conventionalcommits npm dep => clear error
   it('conventionalcommits-miss-dep', async () => {
-    checkout('int-test050')
+    await checkout('int-test050')
 
     const error = await expectError(async () => {
       await runReleaseGen()
@@ -30,8 +30,8 @@ describe('conventionalcommits', () => {
   // test custom tag format
   // test major version bump with feat! tag
   it('conventionalcommits', async () => {
-    checkout('int-test050')
-    commit('feat(api)!: new major release')
+    await checkout('int-test050')
+    await commit('feat(api)!: new major release')
 
     const release: Release = await runReleaseGen(CONVENTIONAL_OPTS)
 
@@ -44,26 +44,26 @@ describe('conventionalcommits', () => {
   // 2. add "docs:" commit -> "Documentation" section in release notes
   // 2. add "misc:" commit -> "Miscellaneous" section in release notes
   it('conventionalcommits-custom', async () => {
-    checkout('int-test050')
+    await checkout('int-test050')
 
     // check some default types do not do version bump (and also perf is disabled)
-    commit('style: test')
-    commit('refactor: test')
-    commit('test: test')
-    commit('chore: test')
-    commit('build: test')
-    commit('ci: test')
-    commit('perf: perf 1')
+    await commit('style: test')
+    await commit('refactor: test')
+    await commit('test: test')
+    await commit('chore: test')
+    await commit('build: test')
+    await commit('ci: test')
+    await commit('perf: perf 1')
     const error = await expectError(async () => {
       await runReleaseGen(CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
 
     // check types that make minor bump, and also perf is disabled
-    commit('perf: test perf')
-    commit('misc: minor improvements')
-    commit('fix: buf fix')
-    commit('docs: test documentation')
+    await commit('perf: test perf')
+    await commit('misc: minor improvements')
+    await commit('fix: buf fix')
+    await commit('docs: test documentation')
     const release = await runReleaseGen(CONVENTIONAL_OPTS)
     expect(release.version).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')

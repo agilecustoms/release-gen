@@ -1,13 +1,11 @@
-import { exec as execSync } from 'node:child_process';
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
+import path from 'node:path';
 import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import * as util from 'node:util';
+import { exec as execAsync } from './utils.js';
 const distDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJsonDir = path.dirname(distDir);
-const execAsync = util.promisify(execSync);
-async function exec(command, error, cwd = packageJsonDir) {
+export async function exec(command, error, cwd = packageJsonDir) {
     const { stdout, stderr } = await execAsync(command, { cwd });
     console.log(stdout);
     if (stderr) {
@@ -24,6 +22,7 @@ function getInput(name) {
 }
 const changelogFile = getInput('changelog_file');
 const changelogTitle = getInput('changelog_title');
+const defaultMinor = getInput('default_minor') === 'true';
 const npmExtraDeps = getInput('npm_extra_deps');
 const releaseBranches = getInput('release_branches');
 const releasePlugins = getInput('release_plugins');
@@ -33,12 +32,11 @@ if (npmExtraDeps) {
     await exec(`npm install ${extras}`, `Error during installing extra npm dependencies ${extras}`);
 }
 const cwd = process.env.GITHUB_WORKSPACE;
-const branchName = (await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)).trim();
 const options = {
-    branchName: branchName,
     changelogFile,
     changelogTitle,
     cwd,
+    defaultMinor,
     releaseBranches,
     releasePlugins,
     tagFormat

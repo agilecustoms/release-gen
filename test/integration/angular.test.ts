@@ -31,8 +31,8 @@ describe('angular', () => {
 
   // scope of testing: ability to make a patch release with 'docs' in angular preset
   it('docs-patch', async () => {
-    checkout('int-test050')
-    commit('docs: test')
+    await checkout('int-test050')
+    await commit('docs: test')
     const plugins = [
       [
         '@semantic-release/commit-analyzer',

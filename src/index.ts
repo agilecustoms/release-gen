@@ -1,16 +1,14 @@
-import { exec as execSync } from 'node:child_process'
 import * as fs from 'node:fs/promises'
-import * as path from 'node:path'
+import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import * as util from 'node:util'
 import type { ReleaseDetails, ReleaseOptions } from './model.js'
+import { exec as execAsync } from './utils.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
 
-const execAsync = util.promisify(execSync)
-async function exec(command: string, error: string, cwd: string = packageJsonDir): Promise<string> {
+export async function exec(command: string, error: string, cwd: string = packageJsonDir): Promise<string> {
   const { stdout, stderr } = await execAsync(command, { cwd })
   console.log(stdout)
   if (stderr) {
@@ -29,6 +27,7 @@ function getInput(name: string): string {
 }
 const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
+const defaultMinor: boolean = getInput('default_minor') === 'true' // default is false
 const npmExtraDeps: string = getInput('npm_extra_deps')
 const releaseBranches: string = getInput('release_branches')
 const releasePlugins: string = getInput('release_plugins')
@@ -43,13 +42,11 @@ if (npmExtraDeps) {
 // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
 const cwd = process.env.GITHUB_WORKSPACE!
 
-const branchName = (await exec('git rev-parse --abbrev-ref HEAD', 'Error during getting current branch name', cwd)).trim()
-
 const options: ReleaseOptions = {
-  branchName: branchName,
   changelogFile,
   changelogTitle,
   cwd,
+  defaultMinor,
   releaseBranches,
   releasePlugins,
   tagFormat

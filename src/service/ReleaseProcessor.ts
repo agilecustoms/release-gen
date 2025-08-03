@@ -1,6 +1,7 @@
 import process from 'node:process'
 import type { BranchObject, Config, Options } from 'semantic-release'
 import type { ReleaseDetails, ReleaseOptions, SemanticReleaseResult } from '../model.js'
+import { exec } from '../utils.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 
@@ -64,7 +65,8 @@ export class ReleaseProcessor {
     const opts: Options = {
       dryRun: true
     }
-    opts['currentBranch'] = options.branchName
+    const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd: options.cwd })
+    opts['currentBranch'] = stdout.trim()
     if (options.tagFormat) {
       opts.tagFormat = options.tagFormat
     }

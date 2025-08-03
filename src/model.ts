@@ -1,10 +1,10 @@
 import type { BranchObject, Result } from 'semantic-release'
 
 export type ReleaseOptions = {
-  branchName: string
   changelogFile?: string
   changelogTitle?: string
   cwd: string
+  defaultMinor: boolean
   releaseBranches?: string
   releasePlugins?: string
   tagFormat?: string

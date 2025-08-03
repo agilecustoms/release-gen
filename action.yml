@@ -4,11 +4,15 @@ author: Alexey Chekulaev
 inputs:
   changelog_file:
     description: 'CHANGELOG.md file path. Pass empty string to disable changelog generation'
-    default: CHANGELOG.md
     required: false
+    default: CHANGELOG.md
   changelog_title:
     description: 'Title of the changelog file (first line of the file)'
     required: false
+  default_minor:
+    description: 'Default minor version to use if no commits found since last release tag'
+    required: false
+    default: 'false'
   npm_extra_deps: # if use hyphens, then can't mock in integration tests
     description: 'Additional npm dependencies, used to install non-default commit parsers such as conventional-changelog-conventionalcommits@9.1.0'
     required: false

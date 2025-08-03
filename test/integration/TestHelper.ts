@@ -1,13 +1,10 @@
 import type { ExecSyncOptions } from 'child_process'
-import { execSync, exec as execCallback } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { promisify } from 'node:util'
 import type { BranchSpec, NextRelease } from 'semantic-release'
 import type { TestContext } from 'vitest'
 import type { ReleaseDetails } from '../../src/model.js'
-
-const exec = promisify(execCallback)
+import { exec } from '../../src/utils.js'
 
 const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
@@ -15,6 +12,7 @@ export const TIMEOUT = 120_000 // 2 min
 let counter = 0
 
 export type TestOptions = {
+  defaultMinor?: boolean
   npmExtraDeps?: string
   // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
   releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
@@ -56,66 +54,66 @@ export class TestHelper {
   private testDir!: string
   private branchName!: string
 
-  public beforeAll(): void {
+  public async beforeAll(): Promise<void> {
     const rootDir = path.resolve(__dirname, '../..')
     const distDir = path.join(rootDir, 'dist')
     // rebuild source code to reflect any changes while work on tests
-    execSync(`npm run build -- --outDir ${distDir}`, { cwd: rootDir, stdio: 'inherit' })
+    await exec(`npm run build -- --outDir ${distDir}`, { cwd: rootDir })
 
     // copy entire 'release-gen/dist/{itName}' dir into test/integration/{itName}/gh-action
-    fs.rmSync(this.ghActionDir, { recursive: true, force: true }) // clean before copy
-    fs.mkdirSync(this.ghActionDir, { recursive: true })
-    execSync(`cp -R "${distDir}" "${this.ghActionDir}"`)
+    await fs.promises.rm(this.ghActionDir, { recursive: true, force: true }) // clean before copy
+    await fs.promises.mkdir(this.ghActionDir, { recursive: true })
+    await exec(`cp -R "${distDir}" "${this.ghActionDir}"`)
     // copy root package.json and package-lock.json into test/integration/{itName}/gh-action
-    execSync(`cp "${path.join(rootDir, 'package.json')}" "${this.ghActionDir}"`)
-    execSync(`cp "${path.join(rootDir, 'package-lock.json')}" "${this.ghActionDir}"`)
+    await exec(`cp "${path.join(rootDir, 'package.json')}" "${this.ghActionDir}"`)
+    await exec(`cp "${path.join(rootDir, 'package-lock.json')}" "${this.ghActionDir}"`)
 
     // create 'test/integration/{itName}/git' directory
-    fs.mkdirSync(this.gitDir, { recursive: true })
+    await fs.promises.mkdir(this.gitDir, { recursive: true })
   }
 
-  public beforeEach(ctx: TestContext): void {
+  public async beforeEach(ctx: TestContext): Promise<void> {
     this.testName = ctx.task.name
     this.testDir = path.join(this.gitDir, this.testName)
 
     // some tests install extra dependency, need to remove it to avoid race conditions
     const npmDynamicDep = path.join(this.ghActionDir, 'node_modules/conventional-changelog-conventionalcommits')
-    fs.rmSync(npmDynamicDep, { recursive: true, force: true })
+    await fs.promises.rm(npmDynamicDep, { recursive: true, force: true })
 
     // delete (if any) and create a directory for this test
-    fs.rmSync(this.testDir, { recursive: true, force: true })
-    fs.mkdirSync(this.testDir)
+    await fs.promises.rm(this.testDir, { recursive: true, force: true })
+    await fs.promises.mkdir(this.testDir)
   }
 
-  public afterEach(): void {
-    fs.rmSync(this.testDir, { recursive: true, force: true })
+  public async afterEach(): Promise<void> {
+    await fs.promises.rm(this.testDir, { recursive: true, force: true })
   }
 
-  public checkout(branch: string): void {
+  public async checkout(branch: string): Promise<void> {
     this.branchName = branch
     const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
     // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    execSync(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
-    execSync('git sparse-checkout init --cone', options)
-    execSync(`git checkout ${branch}`, options)
+    await exec(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
+    await exec('git sparse-checkout init --cone', options)
+    await exec(`git checkout ${branch}`, options)
     // w/o user.name and user.email git will fail to commit on CI
-    execSync('git config user.name "CI User"', options)
-    execSync('git config user.email "ci@example.com"', options)
+    await exec('git config user.name "CI User"', options)
+    await exec('git config user.email "ci@example.com"', options)
     // copy assets/{testName}/* into test/integration/git/{testName}
     const assetsDir = path.resolve(__dirname, 'assets')
     const assetsSrc = path.join(assetsDir, this.testName)
-    if (fs.existsSync(assetsSrc)) {
-      fs.cpSync(assetsSrc, cwd, { recursive: true })
+    if (await fs.promises.stat(assetsSrc).then(() => true, () => false)) {
+      await fs.promises.cp(assetsSrc, cwd, { recursive: true })
     }
   }
 
-  public commit(msg: string): void {
+  public async commit(msg: string): Promise<void> {
     const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
-    fs.writeFileSync(`${cwd}/test${++counter}.txt`, 'test content', 'utf8')
-    execSync('git add .', options)
-    execSync(`git commit -m "${msg}"`, options)
+    await fs.promises.writeFile(`${cwd}/test${++counter}.txt`, 'test content', 'utf8')
+    await exec('git add .', options)
+    await exec(`git commit -m "${msg}"`, options)
   }
 
   public async runReleaseGen(opts: TestOptions = {}): Promise<Release> {
@@ -128,6 +126,9 @@ export class TestHelper {
       GITHUB_WORKSPACE: cwd,
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
+    }
+    if (opts.defaultMinor === true) {
+      env['INPUT_DEFAULT_MINOR'] = 'true'
     }
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
@@ -171,11 +172,12 @@ export class TestHelper {
       outputMap[match[1]!] = match[2]!
     }
 
+    const notes = await fs.promises.readFile(outputMap['notes_file']!, 'utf8')
     // outputMap now contains all set-output key-value pairs
     return {
       channel: outputMap['channel']!,
       gitTags: outputMap['git_tags']!.split(' '),
-      notes: fs.readFileSync(outputMap['notes_file']!, 'utf8'),
+      notes,
       prerelease: outputMap['prerelease'] === 'true',
       tags: outputMap['tags']!.split(' '),
       version: outputMap['version']!,
@@ -183,20 +185,20 @@ export class TestHelper {
   }
 
   public async runFix(branch: string, opts: TestOptions = {}): Promise<Release> {
-    this.checkout(branch)
-    this.commit('fix: test')
+    await this.checkout(branch)
+    await this.commit('fix: test')
     return this.runReleaseGen(opts)
   }
 
   public async runFeat(branch: string, opts: TestOptions = {}): Promise<Release> {
-    this.checkout(branch)
-    this.commit('feat: test')
+    await this.checkout(branch)
+    await this.commit('feat: test')
     return this.runReleaseGen(opts)
   }
 
   public async runBreaking(branch: string, opts: TestOptions = {}): Promise<Release> {
-    this.checkout(branch)
-    this.commit('fix: test\nBREAKING CHANGE: test')
+    await this.checkout(branch)
+    await this.commit('fix: test\nBREAKING CHANGE: test')
     return this.runReleaseGen(opts)
   }
 }

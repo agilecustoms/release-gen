@@ -14,8 +14,8 @@ describe('maintenance-minor-range', () => {
   const runReleaseGen = helper.runReleaseGen.bind(helper)
 
   it('channel-default', async () => {
-    checkout('1.2.x') // latest tag v1.2.1
-    commit('fix: test')
+    await checkout('1.2.x') // latest tag v1.2.1
+    await commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
       range: '1.2.x',
@@ -30,8 +30,8 @@ describe('maintenance-minor-range', () => {
   })
 
   it('channel-false', async () => {
-    checkout('1.2.x') // latest tag v1.2.1
-    commit('fix: test')
+    await checkout('1.2.x') // latest tag v1.2.1
+    await commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
       range: '1.2.x',
@@ -47,8 +47,8 @@ describe('maintenance-minor-range', () => {
   })
 
   it('channel-branch', async () => {
-    checkout('1.2.x') // latest tag v1.2.1
-    commit('fix: test')
+    await checkout('1.2.x') // latest tag v1.2.1
+    await commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
       range: '1.2.x',
@@ -64,8 +64,8 @@ describe('maintenance-minor-range', () => {
   })
 
   it('channel-custom', async () => {
-    checkout('1.2.x') // latest tag v1.2.1
-    commit('fix: test')
+    await checkout('1.2.x') // latest tag v1.2.1
+    await commit('fix: test')
     const releaseBranches: BranchSpec[] = ['main', {
       name: '1.2.x',
       range: '1.2.x',
