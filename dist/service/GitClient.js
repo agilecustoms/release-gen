@@ -9,6 +9,6 @@ export class GitClient {
     }
     async revert() {
         const options = { stdio: 'inherit' };
-        await exec('git reset --hard head^1', options);
+        await exec('git reset --hard HEAD~1', options);
     }
 }

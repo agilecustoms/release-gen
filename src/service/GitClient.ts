@@ -13,6 +13,6 @@ export class GitClient {
 
   public async revert(): Promise<void> {
     const options: ExecSyncOptions = { stdio: 'inherit' }
-    await exec('git reset --hard head^1', options)
+    await exec('git reset --hard HEAD~1', options)
   }
 }
