@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/agilecustoms/release-gen/compare/v2.8.0...v2.9.0) (2025-08-06)
+
+### Features
+
+* version-bump takes 2 options: default-minor and default-patch ([#21](https://github.com/agilecustoms/release-gen/issues/21)) ([4feb447](https://github.com/agilecustoms/release-gen/commit/4feb4470694b74b3f2d71169982a38d833a4c724))
+
+
 ## [2.7.1](https://github.com/agilecustoms/release-gen/compare/v2.7.0...v2.7.1) (2025-08-03)
 
 ### Miscellaneous
