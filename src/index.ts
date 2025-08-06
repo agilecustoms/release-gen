@@ -1,7 +1,7 @@
 import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import type { ReleaseDetails, ReleaseOptions } from './model.js'
+import { type ReleaseDetails, ReleaseError, type ReleaseOptions } from './model.js'
 import { exec as execAsync } from './utils.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
@@ -26,12 +26,12 @@ function getInput(name: string): string {
 }
 const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
-const defaultMinor: boolean = getInput('default_minor') === 'true' // default is false
 const notesTmpFile: string = getInput('notes_tmp_file')
 const npmExtraDeps: string = getInput('npm_extra_deps')
 const releaseBranches: string = getInput('release_branches')
 const releasePlugins: string = getInput('release_plugins')
 const tagFormat: string = getInput('tag_format')
+const versionBump: string = getInput('version_bump')
 
 if (npmExtraDeps) {
   const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ')
@@ -46,11 +46,11 @@ const options: ReleaseOptions = {
   changelogFile,
   changelogTitle,
   cwd,
-  defaultMinor,
   notesTmpFile,
   releaseBranches,
   releasePlugins,
-  tagFormat
+  tagFormat,
+  versionBump
 }
 
 const { SemanticReleaseAdapter } = await import('./service/SemanticReleaseAdapter.js')
@@ -67,9 +67,14 @@ let result: false | ReleaseDetails
 try {
   result = await releaseProcessor.process(options)
 } catch (e) {
-  const message = (e as Error).message
-  console.error(message)
-  core.setFailed(message)
+  if (e instanceof ReleaseError) {
+    const message = (e as Error).message
+    console.error(message)
+    core.setFailed(message)
+  } else {
+    console.error('An unexpected error occurred during the release process:', e)
+    core.setFailed('An unexpected error occurred during the release process. Please check the logs for more details.')
+  }
   process.exit(1)
 }
 

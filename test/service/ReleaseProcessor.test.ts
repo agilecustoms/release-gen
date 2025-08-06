@@ -48,6 +48,12 @@ describe('ReleaseProcessor', () => {
     vi.clearAllMocks()
   })
 
+  it('should throw an error if versionBump is invalid', async () => {
+    const options = { ...OPTIONS, versionBump: 'invalid-option' }
+
+    await expect(process(options)).rejects.toThrow('Invalid version-bump option: invalid-option. Valid options are: default-minor, default-patch')
+  })
+
   it('should call semantic-release adapter', async () => {
     try {
       await process()
@@ -263,12 +269,12 @@ describe('ReleaseProcessor', () => {
     })
   })
 
-  describe('default_minor', () => {
+  describe('version_bump', () => {
     it('should call semantic-release 2 times if first attempt return false', async () => {
       semanticReleaseAdapter.run.mockResolvedValue(false)
 
       try {
-        await process({ ...OPTIONS, defaultMinor: true })
+        await process({ ...OPTIONS, versionBump: 'default-minor' })
       } catch {}
 
       expect(gitClient.commit).toHaveBeenCalled()
@@ -279,17 +285,17 @@ describe('ReleaseProcessor', () => {
     it('should throw an error if unable to generate minor version', async () => {
       semanticReleaseAdapter.run.mockResolvedValue(false)
 
-      await expect(process({ ...OPTIONS, defaultMinor: true })).rejects.toThrow('Unable to generate new version even with "default_minor: true", could be present that doesn\'t respect feat: prefix')
+      await expect(process({ ...OPTIONS, versionBump: 'default-minor' })).rejects.toThrow('Unable to generate new version even with "version-bump", could be present that doesn\'t respect feat: prefix')
     })
 
-    it('should return release details after second attempt with default_minor', async () => {
+    it('should return empty release notes', async () => {
       semanticReleaseAdapter.run.mockResolvedValueOnce(false)
       semanticReleaseAdapter.run.mockResolvedValueOnce({
         nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes2' },
         branch: { name: 'main' }
       })
 
-      const result = await process({ ...OPTIONS, defaultMinor: true })
+      const result = await process({ ...OPTIONS, versionBump: 'default-patch' })
 
       expect(result.notes).toBe('')
     })

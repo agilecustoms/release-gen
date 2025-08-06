@@ -12,7 +12,7 @@ export const TIMEOUT = 120_000 // 2 min
 let counter = 0
 
 export type TestOptions = {
-  defaultMinor?: boolean
+  versionBump?: string
   npmExtraDeps?: string
   // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
   releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
@@ -127,8 +127,8 @@ export class TestHelper {
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
     }
-    if (opts.defaultMinor === true) {
-      env['INPUT_DEFAULT_MINOR'] = 'true'
+    if (opts.versionBump) {
+      env['INPUT_VERSION_BUMP'] = opts.versionBump
     }
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps

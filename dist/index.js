@@ -1,6 +1,7 @@
 import path from 'node:path';
 import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { ReleaseError } from './model.js';
 import { exec as execAsync } from './utils.js';
 const distDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJsonDir = path.dirname(distDir);
@@ -21,12 +22,12 @@ function getInput(name) {
 }
 const changelogFile = getInput('changelog_file');
 const changelogTitle = getInput('changelog_title');
-const defaultMinor = getInput('default_minor') === 'true';
 const notesTmpFile = getInput('notes_tmp_file');
 const npmExtraDeps = getInput('npm_extra_deps');
 const releaseBranches = getInput('release_branches');
 const releasePlugins = getInput('release_plugins');
 const tagFormat = getInput('tag_format');
+const versionBump = getInput('version_bump');
 if (npmExtraDeps) {
     const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
     await exec(`npm install ${extras}`, `Error during installing extra npm dependencies ${extras}`);
@@ -36,11 +37,11 @@ const options = {
     changelogFile,
     changelogTitle,
     cwd,
-    defaultMinor,
     notesTmpFile,
     releaseBranches,
     releasePlugins,
-    tagFormat
+    tagFormat,
+    versionBump
 };
 const { SemanticReleaseAdapter } = await import('./service/SemanticReleaseAdapter.js');
 const { ChangelogGenerator } = await import('./service/ChangelogGenerator.js');
@@ -55,9 +56,15 @@ try {
     result = await releaseProcessor.process(options);
 }
 catch (e) {
-    const message = e.message;
-    console.error(message);
-    core.setFailed(message);
+    if (e instanceof ReleaseError) {
+        const message = e.message;
+        console.error(message);
+        core.setFailed(message);
+    }
+    else {
+        console.error('An unexpected error occurred during the release process:', e);
+        core.setFailed('An unexpected error occurred during the release process. Please check the logs for more details.');
+    }
     process.exit(1);
 }
 core.setOutput('channel', result.channel);

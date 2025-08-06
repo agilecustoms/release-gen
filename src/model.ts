@@ -4,11 +4,11 @@ export type ReleaseOptions = {
   changelogFile?: string
   changelogTitle?: string
   cwd: string
-  defaultMinor: boolean
   notesTmpFile: string
   releaseBranches?: string
   releasePlugins?: string
   tagFormat?: string
+  versionBump: string //  '' | 'default-minor' | 'default-patch'
 }
 
 export type SemanticReleaseResult = false | Result & { branch: BranchObject }
@@ -20,4 +20,11 @@ export type ReleaseDetails = {
   prerelease: boolean
   tags: string[]
   version: string
+}
+
+export class ReleaseError extends Error {
+  constructor(message: string, cause?: unknown) {
+    super(message, { cause })
+    this.name = 'ReleaseError'
+  }
 }
