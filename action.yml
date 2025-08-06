@@ -9,15 +9,11 @@ inputs:
   changelog_title:
     description: 'Title of the changelog file (first line of the file)'
     required: false
-  default_minor:
-    description: 'Bump minor version if no semantic commits found since last release tag'
-    required: false
-    default: 'false'
   notes_tmp_file:
     description: 'Temporary file to store release notes'
     required: false
     default: /tmp/release-gen-notes
-  npm_extra_deps: # if use hyphens, then can't mock in integration tests
+  npm_extra_deps:
     description: 'Additional npm dependencies, used to install non-default commit parsers such as conventional-changelog-conventionalcommits@9.1.0'
     required: false
   release_branches:
@@ -28,6 +24,9 @@ inputs:
     required: false
   tag_format:
     description: 'Tag format. Default: v${version}'
+    required: false
+  version_bump:
+    description: 'Allows to bump a version w/o semantic commits'
     required: false
 
 runs:

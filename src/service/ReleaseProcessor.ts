@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import process from 'node:process'
 import type { BranchObject, Config, Options } from 'semantic-release'
-import type { ReleaseDetails, ReleaseOptions, SemanticReleaseResult } from '../model.js'
+import { type ReleaseDetails, ReleaseError, type ReleaseOptions, type SemanticReleaseResult } from '../model.js'
 import { exec } from '../utils.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { GitClient } from './GitClient.js'
@@ -9,6 +9,7 @@ import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 
 const MAINTENANCE_BRANCH = /\d+\.x\.x/
 const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/
+const VERSION_BUMP_OPTIONS = ['default-minor', 'default-patch']
 
 export class ReleaseProcessor {
   constructor(
@@ -18,12 +19,16 @@ export class ReleaseProcessor {
   ) {}
 
   public async process(options: ReleaseOptions): Promise<ReleaseDetails> {
+    if (options.versionBump && !VERSION_BUMP_OPTIONS.includes(options.versionBump)) {
+      throw new ReleaseError(`Invalid version-bump option: ${options.versionBump}. Valid options are: ${VERSION_BUMP_OPTIONS.join(', ')}`)
+    }
+
     let result: SemanticReleaseResult
     try {
       result = await this.semanticRelease(options)
     } catch (e) {
       if (e instanceof Error && 'code' in e && e.code === 'MODULE_NOT_FOUND') {
-        throw new Error(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`, { cause: e })
+        throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`, { cause: e })
       }
       throw e
     }
@@ -33,18 +38,19 @@ export class ReleaseProcessor {
     if (result) {
       notes = result.nextRelease.notes
       if (!result.nextRelease.notes) {
-        throw new Error('No release notes found in the next release. This is unexpected')
+        throw new ReleaseError('No release notes found in the next release. This is unexpected')
       }
     } else { // if no semantic commits that increase version, then semantic-release returns empty result (no error!)
-      if (!options.defaultMinor) {
-        throw new Error('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
+      if (!options.versionBump) {
+        throw new ReleaseError('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
       }
 
+      const commitType = options.versionBump === 'default-minor' ? 'feat' : 'fix'
       try {
-        await this.gitClient.commit()
+        await this.gitClient.commit(commitType)
         result = await this.semanticRelease(options)
         if (!result) {
-          throw new Error('Unable to generate new version even with "default_minor: true", could be present that doesn\'t respect feat: prefix')
+          throw new ReleaseError('Unable to generate new version even with "version-bump", could be present that doesn\'t respect feat: prefix')
         }
       } finally {
         await this.gitClient.revert()
@@ -106,14 +112,14 @@ export class ReleaseProcessor {
       try {
         opts.branches = JSON.parse(options.releaseBranches)
       } catch (cause) {
-        throw new Error(`Failed to parse releaseBranches: ${options.releaseBranches}`, { cause })
+        throw new ReleaseError(`Failed to parse releaseBranches: ${options.releaseBranches}`, { cause })
       }
     }
     if (options.releasePlugins) {
       try {
         opts.plugins = JSON.parse(options.releasePlugins)
       } catch (cause) {
-        throw new Error(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause })
+        throw new ReleaseError(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause })
       }
     }
 

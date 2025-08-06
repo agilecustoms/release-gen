@@ -1,9 +1,9 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
 import { type Release, TestHelper } from './TestHelper.js'
 
-const helper = new TestHelper('default-minor')
+const helper = new TestHelper('version-bump')
 
-describe('default-minor', () => {
+describe('version-bump', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
   afterEach(helper.afterEach.bind(helper))
@@ -17,10 +17,22 @@ describe('default-minor', () => {
     await checkout(branch)
     await commit('test commit')
 
-    const release: Release = await runReleaseGen({ defaultMinor: true })
+    const release: Release = await runReleaseGen({ versionBump: 'default-minor' })
 
     expect(release.version).toBe('v0.6.0')
     expect(release.gitTags).toEqual(['v0.6.0', 'v0.6', 'v0', 'latest'])
+    expect(release.notesTmpFile).toBe('')
+  })
+
+  it('should-bump-patch', async () => {
+    const branch = 'int-test050'
+    await checkout(branch)
+    await commit('test commit')
+
+    const release: Release = await runReleaseGen({ versionBump: 'default-patch' })
+
+    expect(release.version).toBe('v0.5.1')
+    expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0', 'latest'])
     expect(release.notesTmpFile).toBe('')
   })
 

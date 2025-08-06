@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import { exec } from '../utils.js';
 export class GitClient {
-    async commit() {
+    async commit(type) {
         const options = { stdio: 'inherit' };
         await fs.promises.writeFile(`./release-gen`, '');
         await exec('git add ./release-gen', options);
-        await exec(`git commit -m "feat: synthetic"`, options);
+        await exec(`git commit -m "${type}: synthetic"`, options);
     }
     async revert() {
         const options = { stdio: 'inherit' };
