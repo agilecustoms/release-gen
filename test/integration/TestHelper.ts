@@ -2,7 +2,7 @@ import type { ExecSyncOptions } from 'child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import type { BranchSpec, NextRelease } from 'semantic-release'
-import type { TestContext } from 'vitest'
+import { expect, type TestContext } from 'vitest'
 import type { ReleaseDetails } from '../../src/model.js'
 import { exec } from '../../src/utils.js'
 
@@ -23,17 +23,17 @@ export type Release = NextRelease & ReleaseDetails
 
 /**
  * DISCLAIMER about semantic-release
- * During dry run it invokes the command ` git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
+ * During dry run it invokes the command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
  * I just want to generate version and release notes, but still have to play this game
  * This command brings a lot of issues:
  * 1. If it fails - you get the misleading error "The local main branch is behind the remote one, therefore, a new version won't be published"
- * 2. Even though this repo is public and I can easily clone it via https, still semantic-release requires a token for `git push --dry-run`.
+ * 2. Even though the repo is public and I can easily clone it via https, still semantic-release requires a token for `git push --dry-run`.
  *    Moreover: default ${{github.token}} with `permissions: write` is not enough,
- *    I have to use PAT and don't forget to set `secrets: inherit` in build-and-release.yml workflow
+ *    I have to use PAT and don't forget to set `secrets: inherit` in release.yml workflow when calling 'build' workflow
  * 3. I tried to use this token when cloning the repo (thus the token stays at .git/config file) - but it is ignored.
  *    semantic-release needs token to be present as a parameter `repositoryUrl`.
  *    Since this parameter is not normally set, I had to augment release-gen code to set it if env variable `REPOSITORY_URL` is passed
- * 4. semantic-release doesn't look into the current (checked-out) branch, it stiffs for the current CI tool by various env vars,
+ * 4. semantic-release doesn't look into the current (checked-out) branch, it sniffs for the current CI tool by various env vars,
  *    and then for each CI tool it has separate logic how to determine the current branch, env.GITHUB_REF for GH Actions.
  *    If not passed, semantic-release uses the current feature branch name, not a branch from the integration test
  *    This fix with env variable 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
@@ -180,8 +180,9 @@ export class TestHelper {
       fs.rmSync(notesTmpFile)
     }
 
-    console.error('AlexC: outputMap:', outputMap)
-    console.error('ALexC: stdout:', stdout)
+    // Debug output
+    // console.error('AlexC: outputMap:', outputMap)
+    // console.error('AlexC: stdout:', stdout)
 
     // outputMap now contains all set-output key-value pairs
     return {
@@ -211,5 +212,20 @@ export class TestHelper {
     await this.checkout(branch)
     await this.commit('fix: test\nBREAKING CHANGE: test')
     return this.runReleaseGen(opts)
+  }
+
+  public static async expectError(callable: () => Promise<void>): Promise<string> {
+    let error: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    try {
+      await callable()
+    } catch (e) {
+      error = e
+    }
+    expect(error).toBeDefined()
+    const out = error.stdout.toString()
+    const iError = out.indexOf('::error::')
+    expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
+    const nextLine = out.indexOf('\n', iError)
+    return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
   }
 }

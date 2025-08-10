@@ -20,7 +20,7 @@ describe('conventionalcommits', () => {
   it('conventionalcommits-miss-dep', async () => {
     await checkout('int-test050')
 
-    const error = await expectError(async () => {
+    const error = await TestHelper.expectError(async () => {
       await runReleaseGen()
     })
     expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
@@ -54,7 +54,7 @@ describe('conventionalcommits', () => {
     await commit('build: test')
     await commit('ci: test')
     await commit('perf: perf 1')
-    const error = await expectError(async () => {
+    const error = await TestHelper.expectError(async () => {
       await runReleaseGen(CONVENTIONAL_OPTS)
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
@@ -70,19 +70,4 @@ describe('conventionalcommits', () => {
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')
   })
-
-  async function expectError(callable: () => Promise<void>): Promise<string> {
-    let error: any // eslint-disable-line @typescript-eslint/no-explicit-any
-    try {
-      await callable()
-    } catch (e) {
-      error = e
-    }
-    expect(error).toBeDefined()
-    const out = error.stdout.toString()
-    const iError = out.indexOf('::error::')
-    expect(iError, 'Expected output to contain "::error::"').toBeGreaterThanOrEqual(0)
-    const nextLine = out.indexOf('\n', iError)
-    return out.substring(iError + 9, nextLine > 0 ? nextLine : undefined).trim()
-  }
 })

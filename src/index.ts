@@ -73,7 +73,7 @@ try {
     core.setFailed(message)
   } else {
     console.error('An unexpected error occurred during the release process:', e)
-    core.setFailed('An unexpected error occurred during the release process. Please check the logs for more details.')
+    core.setFailed('An unexpected error occurred during the release process. Please check the logs for more details')
   }
   process.exit(1)
 }

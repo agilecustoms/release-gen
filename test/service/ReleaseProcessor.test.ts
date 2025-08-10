@@ -28,6 +28,15 @@ const OPTIONS = {
 
 type Result = ReleaseDetails & { notes: string }
 
+class ErrorWithCode extends Error {
+  code: string
+
+  constructor(message: string, code: string) {
+    super(message)
+    this.code = code
+  }
+}
+
 describe('ReleaseProcessor', () => {
   const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator, gitClient)
   async function process(options: ReleaseOptions = OPTIONS): Promise<Result> {
@@ -48,10 +57,26 @@ describe('ReleaseProcessor', () => {
     vi.clearAllMocks()
   })
 
-  it('should throw an error if versionBump is invalid', async () => {
-    const options = { ...OPTIONS, versionBump: 'invalid-option' }
+  describe('errors', () => {
+    it('should throw an error if versionBump is invalid', async () => {
+      const options = { ...OPTIONS, versionBump: 'invalid-option' }
 
-    await expect(process(options)).rejects.toThrow('Invalid version-bump option: invalid-option. Valid options are: default-minor, default-patch')
+      await expect(process(options)).rejects.toThrow('Invalid version-bump option: invalid-option. Valid options are: default-minor, default-patch')
+    })
+
+    it('should throw clear error if semantic-release thrown error with code MODULE_NOT_FOUND', () => {
+      const error = new ErrorWithCode('test', 'MODULE_NOT_FOUND')
+      semanticReleaseAdapter.run.mockRejectedValue(error)
+
+      return expect(process()).rejects.toThrow('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: test')
+    })
+
+    it('should throw clear error if semantic-release thrown error with code EGITNOPERMISSION', () => {
+      const error = new ErrorWithCode('test', 'EGITNOPERMISSION')
+      semanticReleaseAdapter.run.mockRejectedValue(error)
+
+      return expect(process()).rejects.toThrow('Not enough permission to push to remote repo. When release from protected branch, you need PAT token issued by person with permission to bypass branch protection rules. Details: test')
+    })
   })
 
   it('should call semantic-release adapter', async () => {
@@ -94,14 +119,6 @@ describe('ReleaseProcessor', () => {
     const options = { ...OPTIONS, releasePlugins: 'invalid-json' }
 
     await expect(process(options)).rejects.toThrow('Failed to parse releasePlugins: invalid-json')
-  })
-
-  it('should throw clear error if semantic-release thrown error with code MODULE_NOT_FOUND', () => {
-    const error = new Error('test') as Error & { code?: string }
-    error.code = 'MODULE_NOT_FOUND'
-    semanticReleaseAdapter.run.mockRejectedValue(error)
-
-    return expect(process()).rejects.toThrow('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: test')
   })
 
   it('should throw ex if semantic-release returns false', async () => {
