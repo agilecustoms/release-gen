@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/agilecustoms/release-gen/compare/v2.10.0...v2.11.0) (2025-08-10)
+
+### Features
+
+* print original error details ([4a5bb88](https://github.com/agilecustoms/release-gen/commit/4a5bb881025f9dd580ae789b48a0a8f2cc735d34))
+
+
 ## [2.10.0](https://github.com/agilecustoms/release-gen/compare/v2.9.0...v2.10.0) (2025-08-10)
 
 ### Features
