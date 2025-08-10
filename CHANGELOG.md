@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/agilecustoms/release-gen/compare/v2.9.0...v2.10.0) (2025-08-10)
+
+### Features
+
+* gracefully handle error EGITNOPERMISSION ([3eb158a](https://github.com/agilecustoms/release-gen/commit/3eb158a77299dad2a3a9b27f093c1745261d87b8))
+
+
 ## [2.9.0](https://github.com/agilecustoms/release-gen/compare/v2.8.0...v2.9.0) (2025-08-06)
 
 ### Features
