@@ -28,13 +28,14 @@ export class ReleaseProcessor {
       result = await this.semanticRelease(options)
     } catch (e) {
       if (e instanceof Error && 'code' in e) {
+        const details = 'details' in e ? e.details : e.message
         if (e.code === 'MODULE_NOT_FOUND') {
           throw new ReleaseError(`You're using non default preset, `
-            + `please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`, { cause: e })
+            + `please specify corresponding npm package in npm-extra-deps input. Details: ${details}`, { cause: e })
         }
         if (e.code === 'EGITNOPERMISSION') {
           throw new ReleaseError(`Not enough permission to push to remote repo. When release from protected branch, `
-            + `you need PAT token issued by person with permission to bypass branch protection rules. Details: ${e.message}`, { cause: e })
+            + `you need PAT token issued by person with permission to bypass branch protection rules. Details: ${details}`, { cause: e })
         }
       }
       throw e
