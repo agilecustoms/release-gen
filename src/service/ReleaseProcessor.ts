@@ -28,15 +28,16 @@ export class ReleaseProcessor {
       result = await this.semanticRelease(options)
     } catch (e) {
       if (e instanceof Error && 'code' in e) {
-        const details = 'details' in e ? e.details : e.message
+        // const details = 'details' in e ? e.details : e.message
+        // this error originates not from semantic-release, but from deeper code. it has no 'details' property
         if (e.code === 'MODULE_NOT_FOUND') {
-          throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input.\n`
-            + `Details: ${details}`, { cause: e })
+          throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
         }
-        if (e.code === 'EGITNOPERMISSION') {
-          throw new ReleaseError(`Not enough permission to push to remote repo. When release from protected branch, `
-            + `you need PAT token issued by person with permission to bypass branch protection rules.\n`
-            + `Details: ${details}`, { cause: e })
+        // rest of errors are from semantic-release, they have 'code', 'message' and 'details' properties
+        // some have useful 'message' and 'details', others don't, see `errors.js` in semantic-release code
+        if (e.code === 'EGITNOPERMISSION') { // 'message' and 'details' not helpful
+          throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
+            + 'you need PAT token issued by person with permission to bypass branch protection rules')
         }
       }
       throw e
