@@ -69,7 +69,7 @@ try {
 } catch (e) {
   if (e instanceof ReleaseError) {
     const message = (e as Error).message
-    console.error(message)
+    // console.error(message)
     core.setFailed(message)
   } else {
     console.error('An unexpected error occurred during the release process:', e)

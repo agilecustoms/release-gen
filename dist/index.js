@@ -58,7 +58,6 @@ try {
 catch (e) {
     if (e instanceof ReleaseError) {
         const message = e.message;
-        console.error(message);
         core.setFailed(message);
     }
     else {
