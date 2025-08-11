@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.1](https://github.com/agilecustoms/release-gen/compare/v2.11.0...v2.11.1) (2025-08-11)
+
+### Bug Fixes
+
+* remove log duplicates ([1e15201](https://github.com/agilecustoms/release-gen/commit/1e152018cfee4c6297739132f450d02a2ade6398))
+
+
 ## [2.11.0](https://github.com/agilecustoms/release-gen/compare/v2.10.0...v2.11.0) (2025-08-10)
 
 ### Features
