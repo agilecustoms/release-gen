@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.3](https://github.com/agilecustoms/release-gen/compare/v2.11.2...v2.11.3) (2025-08-11)
+
+### Bug Fixes
+
+* concise and clear error messages ([9118b8e](https://github.com/agilecustoms/release-gen/commit/9118b8eb43e0ce8a2faf9dd960fe297ee06c6743))
+
+
 ## [2.11.2](https://github.com/agilecustoms/release-gen/compare/v2.11.1...v2.11.2) (2025-08-11)
 
 ### Bug Fixes
