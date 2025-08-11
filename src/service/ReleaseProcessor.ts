@@ -27,17 +27,23 @@ export class ReleaseProcessor {
     try {
       result = await this.semanticRelease(options)
     } catch (e) {
-      if (e instanceof Error && 'code' in e) {
-        // const details = 'details' in e ? e.details : e.message
-        // this error originates not from semantic-release, but from deeper code. it has no 'details' property
-        if (e.code === 'MODULE_NOT_FOUND') {
-          throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
+      if (e instanceof Error) {
+        if ('code' in e) {
+          // const details = 'details' in e ? e.details : e.message
+          // this error originates not from semantic-release, but from deeper code. it has no 'details' property
+          if (e.code === 'MODULE_NOT_FOUND') {
+            throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
+          }
+          // rest of errors are from semantic-release, they have 'code', 'message' and 'details' properties
+          // some have useful 'message' and 'details', others don't, see `errors.js` in semantic-release code
+          if (e.code === 'EGITNOPERMISSION') { // 'message' and 'details' not helpful
+            throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
+              + 'you need PAT token issued by person with permission to bypass branch protection rules')
+          }
         }
-        // rest of errors are from semantic-release, they have 'code', 'message' and 'details' properties
-        // some have useful 'message' and 'details', others don't, see `errors.js` in semantic-release code
-        if (e.code === 'EGITNOPERMISSION') { // 'message' and 'details' not helpful
-          throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
-            + 'you need PAT token issued by person with permission to bypass branch protection rules')
+        // weirdly but error EINVALIDTAGFORMAT has no code, so had to sniff by message
+        if (e.message.includes('Invalid `tagFormat` option')) {
+          throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)')
         }
       }
       throw e

@@ -23,13 +23,18 @@ export class ReleaseProcessor {
             result = await this.semanticRelease(options);
         }
         catch (e) {
-            if (e instanceof Error && 'code' in e) {
-                if (e.code === 'MODULE_NOT_FOUND') {
-                    throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`);
+            if (e instanceof Error) {
+                if ('code' in e) {
+                    if (e.code === 'MODULE_NOT_FOUND') {
+                        throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`);
+                    }
+                    if (e.code === 'EGITNOPERMISSION') {
+                        throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
+                            + 'you need PAT token issued by person with permission to bypass branch protection rules');
+                    }
                 }
-                if (e.code === 'EGITNOPERMISSION') {
-                    throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
-                        + 'you need PAT token issued by person with permission to bypass branch protection rules');
+                if (e.message.includes('Invalid `tagFormat` option')) {
+                    throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)');
                 }
             }
             throw e;

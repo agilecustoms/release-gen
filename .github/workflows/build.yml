@@ -30,10 +30,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
-#      - name: Test
-#        run: npm run test
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
+      - name: Test
+        run: npm run test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
 
       - name: Build
         run: npm run build

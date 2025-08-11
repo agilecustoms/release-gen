@@ -1,6 +1,6 @@
 import esmock from 'esmock'
 import type { BranchObject, BranchSpec, Config, Options, PluginSpec, Result } from 'semantic-release'
-import type { SemanticReleaseResult } from '../model.js'
+import { ReleaseError, type SemanticReleaseResult } from '../model.js'
 
 /**
  * There are 4 default plugins:<br>
@@ -68,7 +68,7 @@ export class SemanticReleaseAdapter {
         return { ...spec } // clone the object to avoid mutation
       }
     }
-    throw new Error(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`)
+    throw new ReleaseError(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`)
   }
 
   public fixPlugins(plugins: ReadonlyArray<PluginSpec>): ReadonlyArray<PluginSpec> {

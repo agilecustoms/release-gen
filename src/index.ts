@@ -69,11 +69,11 @@ try {
 } catch (e) {
   if (e instanceof ReleaseError) {
     const message = (e as Error).message
-    // console.error(message)
     core.setFailed(message)
   } else {
     console.error('An unexpected error occurred during the release process:', e)
     core.setFailed('An unexpected error occurred during the release process. Please check the logs for more details')
+    // core.setFailed(e instanceof Error ? e.message : String(e))
   }
   process.exit(1)
 }

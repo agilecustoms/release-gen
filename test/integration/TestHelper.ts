@@ -12,14 +12,22 @@ export const TIMEOUT = 120_000 // 2 min
 let counter = 0
 
 export type TestOptions = {
-  versionBump?: string
   npmExtraDeps?: string
   // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
   releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
   releasePlugins?: object
+  tagFormat?: string
+  versionBump?: string
 }
 
 export type Release = NextRelease & ReleaseDetails
+
+class NodeError extends Error {
+  constructor(message: string, cause: unknown) {
+    super(message, { cause })
+    this.name = 'NodeError'
+  }
+}
 
 /**
  * DISCLAIMER about semantic-release
@@ -127,9 +135,6 @@ export class TestHelper {
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
     }
-    if (opts.versionBump) {
-      env['INPUT_VERSION_BUMP'] = opts.versionBump
-    }
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
     }
@@ -141,6 +146,12 @@ export class TestHelper {
     }
     if (opts.releasePlugins) {
       env['INPUT_RELEASE_PLUGINS'] = JSON.stringify(opts.releasePlugins)
+    }
+    if (opts.tagFormat) {
+      env['INPUT_TAG_FORMAT'] = opts.tagFormat
+    }
+    if (opts.versionBump) {
+      env['INPUT_VERSION_BUMP'] = opts.versionBump
     }
     const notesTmpFile = `/tmp/release-gen-notes-${Math.random().toString(36).slice(2)}`
     env['INPUT_NOTES_TMP_FILE'] = notesTmpFile
@@ -154,12 +165,22 @@ export class TestHelper {
     // launch release-gen/test/integration/{itName}/gh-action/dist/index.js
     const indexJs = path.join(this.ghActionDir, 'dist', 'index.js')
 
-    const { stdout, stderr } = await exec(`node ${indexJs}`, {
+    const options = {
       env,
       cwd,
       timeout: TIMEOUT,
       maxBuffer: 1024 * 1024 // 1MB buffer size
-    })
+    }
+
+    let stdout = ''
+    let stderr = ''
+    try {
+      const res = await exec(`node ${indexJs}`, options)
+      stdout = res.stdout
+      stderr = res.stderr
+    } catch (e) {
+      throw new NodeError('Error running release-gen', e)
+    }
 
     // Log stderr if there's any (but don't throw)
     if (stderr) {
@@ -219,7 +240,11 @@ export class TestHelper {
     try {
       await callable()
     } catch (e) {
-      error = e
+      if (e instanceof NodeError) {
+        error = e.cause
+      } else {
+        throw e
+      }
     }
     expect(error).toBeDefined()
     const out = error.stdout.toString()

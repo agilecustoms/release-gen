@@ -1,4 +1,5 @@
 import esmock from 'esmock';
+import { ReleaseError } from '../model.js';
 const allowedPlugins = [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
@@ -46,7 +47,7 @@ export class SemanticReleaseAdapter {
                 return { ...spec };
             }
         }
-        throw new Error(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`);
+        throw new ReleaseError(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`);
     }
     fixPlugins(plugins) {
         return plugins.filter((plugin) => {

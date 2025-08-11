@@ -75,7 +75,14 @@ describe('ReleaseProcessor', () => {
       const error = new ErrorWithCode('test', 'EGITNOPERMISSION')
       semanticReleaseAdapter.run.mockRejectedValue(error)
 
-      return expect(process()).rejects.toThrow('Not enough permission to push to remote repo. When release from protected branch, you need PAT token issued by person with permission to bypass branch protection rules. Details: test')
+      return expect(process()).rejects.toThrow('Not enough permission to push to remote repo. When release from protected branch, you need PAT token issued by person with permission to bypass branch protection rules')
+    })
+
+    it('should throw clear error if invalid tag format', () => {
+      const error = new Error('Invalid `tagFormat` option')
+      semanticReleaseAdapter.run.mockRejectedValue(error)
+
+      return expect(process()).rejects.toThrow('Invalid tag format (tag-format input or tagFormat in .releaserc.json)')
     })
   })
 
