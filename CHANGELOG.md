@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.0](https://github.com/agilecustoms/release-gen/compare/v2.11.3...v2.12.0) (2025-08-13)
+
+### Features
+
+* channel support ${name} placeholder ([71a3003](https://github.com/agilecustoms/release-gen/commit/71a3003368cef873511b7d489ab030b58f2f1179))
+
+
 ## [2.11.3](https://github.com/agilecustoms/release-gen/compare/v2.11.2...v2.11.3) (2025-08-11)
 
 ### Bug Fixes
