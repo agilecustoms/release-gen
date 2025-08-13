@@ -12,11 +12,14 @@ export const TIMEOUT = 120_000 // 2 min
 let counter = 0
 
 export type TestOptions = {
+  floatingTags?: boolean
   npmExtraDeps?: string
   // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
   releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
+  releaseChannel?: string
   releasePlugins?: object
   tagFormat?: string
+  version?: string
   versionBump?: string
 }
 
@@ -135,6 +138,7 @@ export class TestHelper {
       GITHUB_REF: branch, // see a DISCLAIMER above
       GITHUB_OUTPUT: '', // this makes `core.setOutput` to print to stdout instead of file
     }
+    env['INPUT_FLOATING_TAGS'] = opts.floatingTags === false ? 'false' : 'true'
     if (opts.npmExtraDeps) {
       env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
     }
@@ -144,11 +148,17 @@ export class TestHelper {
     if (opts.releaseBranches) {
       env['INPUT_RELEASE_BRANCHES'] = JSON.stringify(opts.releaseBranches)
     }
+    if (opts.releaseChannel) {
+      env['INPUT_RELEASE_CHANNEL'] = opts.releaseChannel
+    }
     if (opts.releasePlugins) {
       env['INPUT_RELEASE_PLUGINS'] = JSON.stringify(opts.releasePlugins)
     }
     if (opts.tagFormat) {
       env['INPUT_TAG_FORMAT'] = opts.tagFormat
+    }
+    if (opts.version) {
+      env['INPUT_VERSION'] = opts.version
     }
     if (opts.versionBump) {
       env['INPUT_VERSION_BUMP'] = opts.versionBump

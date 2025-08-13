@@ -9,6 +9,9 @@ inputs:
   changelog_title:
     description: 'Title of the changelog file (first line of the file)'
     required: false
+  floating_tags:
+    description: 'When next version to be released is 1.2.4, then also release 1, 1.2 and latest. Not desired for public terraform modules'
+    required: false
   notes_tmp_file:
     description: 'Temporary file to store release notes'
     required: false
@@ -19,6 +22,9 @@ inputs:
   release_branches:
     required: false
     description: 'The branches on which releases should happen. It will override the branches attribute in your configuration file'
+  release_channel:
+    description: 'Basically a tag that moves on each release, primarily used with with input `version`'
+    required: false
   release_plugins:
     description: 'Release plugins configuration'
     required: false
@@ -26,7 +32,7 @@ inputs:
     description: 'Tag format. Default: v${version}'
     required: false
   version:
-    description: 'Version to release. If not specified, the version will be calculated based on commits since last release tag'
+    description: 'Explicit version to use instead of auto-generation'
     required: false
   version_bump:
     description: 'Allows to bump a version w/o semantic commits'

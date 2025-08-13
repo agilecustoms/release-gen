@@ -337,4 +337,87 @@ describe('ReleaseProcessor', () => {
       expect(result.notes).toBe('')
     })
   })
+
+  describe('explicit version', () => {
+    it('should not call semanticReleaseAdapter', async () => {
+      await process({ ...OPTIONS, version: '2025.08.13' })
+
+      expect(semanticReleaseAdapter.run).not.toHaveBeenCalled()
+    })
+
+    it('should return no notes and prerelease false', async () => {
+      const result = await process({ ...OPTIONS, version: '2025.08.13' })
+
+      expect(result.notes).toBe('')
+      expect(result.prerelease).toBe(false)
+    })
+
+    describe('no floating tags', () => {
+      it('channel-empty', async () => {
+        const result = await process({ ...OPTIONS, version: '1.2.4', floatingTags: false })
+
+        expect(result.gitTags).toEqual(['1.2.4'])
+        expect(result.tags).toEqual(['1.2.4'])
+        expect(result.channel).toBe('latest')
+      })
+
+      it('channel-false', async () => {
+        const result = await process({ ...OPTIONS, version: '1.3.0', floatingTags: false, releaseChannel: false })
+
+        expect(result.gitTags).toEqual(['1.3.0'])
+        expect(result.tags).toEqual(['1.3.0'])
+        expect(result.channel).toBe('main')
+      })
+
+      it('channel-branch', async () => {
+        const result = await process({ ...OPTIONS, version: '2.0.0', floatingTags: false, releaseChannel: 'main' })
+
+        expect(result.gitTags).toEqual(['2.0.0'])
+        expect(result.tags).toEqual(['2.0.0'])
+        expect(result.channel).toBe('main')
+      })
+
+      it('channel-release', async () => {
+        const result = await process({ ...OPTIONS, version: '2.1', floatingTags: false, releaseChannel: 'release' })
+
+        expect(result.gitTags).toEqual(['2.1'])
+        expect(result.tags).toEqual(['2.1'])
+        expect(result.channel).toBe('release')
+      })
+    })
+
+    describe('floating tags', () => {
+      it('channel-empty', async () => {
+        const result = await process({ ...OPTIONS, version: '1.2.4', floatingTags: true })
+
+        expect(result.gitTags).toEqual(['1.2.4', '1.2', '1', 'latest'])
+        expect(result.tags).toEqual(['1.2.4', '1.2', '1', 'latest'])
+        expect(result.channel).toBe('latest')
+      })
+
+      it('channel-false', async () => {
+        const result = await process({ ...OPTIONS, version: '1.3.0', floatingTags: true, releaseChannel: false })
+
+        expect(result.gitTags).toEqual(['1.3.0', '1.3', '1'])
+        expect(result.tags).toEqual(['1.3.0', '1.3', '1'])
+        expect(result.channel).toBe('main')
+      })
+
+      it('channel-branch', async () => {
+        const result = await process({ ...OPTIONS, version: '2.0.0', floatingTags: true, releaseChannel: 'main' })
+
+        expect(result.gitTags).toEqual(['2.0.0', '2.0', '2'])
+        expect(result.tags).toEqual(['2.0.0', '2.0', '2', 'main'])
+        expect(result.channel).toBe('main')
+      })
+
+      it('channel-release', async () => {
+        const result = await process({ ...OPTIONS, version: '2.1', floatingTags: true, releaseChannel: 'release' })
+
+        expect(result.gitTags).toEqual(['2.1', '2', 'release'])
+        expect(result.tags).toEqual(['2.1', '2', 'release'])
+        expect(result.channel).toBe('release')
+      })
+    })
+  })
 })

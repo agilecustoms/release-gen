@@ -3,11 +3,14 @@ import type { BranchObject, Result } from 'semantic-release'
 export type ReleaseOptions = {
   changelogFile?: string
   changelogTitle?: string
+  floatingTags: boolean
   cwd: string
   notesTmpFile: string
   releaseBranches?: string
+  releaseChannel?: string | false
   releasePlugins?: string
   tagFormat?: string
+  version?: string
   versionBump: string //  '' | 'default-minor' | 'default-patch'
 }
 

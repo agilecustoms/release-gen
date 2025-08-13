@@ -19,33 +19,22 @@ export class ReleaseProcessor {
   ) {}
 
   public async process(options: ReleaseOptions): Promise<ReleaseDetails> {
+    const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd: options.cwd })
+    const currentBranch = stdout.trim()
+
+    if (options.version) {
+      return this.explicitVersion(options, currentBranch)
+    }
+
     if (options.versionBump && !VERSION_BUMP_OPTIONS.includes(options.versionBump)) {
       throw new ReleaseError(`Invalid version-bump option: ${options.versionBump}. Valid options are: ${VERSION_BUMP_OPTIONS.join(', ')}`)
     }
 
     let result: SemanticReleaseResult
     try {
-      result = await this.semanticRelease(options)
+      result = await this.semanticRelease(options, currentBranch)
     } catch (e) {
-      if (e instanceof Error) {
-        if ('code' in e) {
-          // const details = 'details' in e ? e.details : e.message
-          // this error originates not from semantic-release, but from deeper code. it has no 'details' property
-          if (e.code === 'MODULE_NOT_FOUND') {
-            throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
-          }
-          // rest of errors are from semantic-release, they have 'code', 'message' and 'details' properties
-          // some have useful 'message' and 'details', others don't, see `errors.js` in semantic-release code
-          if (e.code === 'EGITNOPERMISSION') { // 'message' and 'details' not helpful
-            throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
-              + 'you need PAT token issued by person with permission to bypass branch protection rules')
-          }
-        }
-        // weirdly but error EINVALIDTAGFORMAT has no code, so had to sniff by message
-        if (e.message.includes('Invalid `tagFormat` option')) {
-          throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)')
-        }
-      }
+      this.handleError(e)
       throw e
     }
 
@@ -64,7 +53,7 @@ export class ReleaseProcessor {
       const commitType = options.versionBump === 'default-minor' ? 'feat' : 'fix'
       try {
         await this.gitClient.commit(commitType)
-        result = await this.semanticRelease(options)
+        result = await this.semanticRelease(options, currentBranch)
         if (!result) {
           throw new ReleaseError('Unable to generate new version even with "version-bump", could be present that doesn\'t respect feat: prefix')
         }
@@ -119,12 +108,71 @@ export class ReleaseProcessor {
     }
   }
 
-  private async semanticRelease(options: ReleaseOptions): Promise<SemanticReleaseResult> {
+  private explicitVersion(options: ReleaseOptions, currentBranch: string): ReleaseDetails {
+    let channel = options.releaseChannel
+    if (channel === false) {
+      channel = currentBranch
+    } else if (!channel) {
+      channel = 'latest'
+    }
+
+    const version = options.version!
+    const tags = [version]
+    const gitTags = [version]
+    if (options.floatingTags) {
+      let tag = version
+      for (let lastDotIndex; (lastDotIndex = tag.lastIndexOf('.')) !== -1;) {
+        tag = tag.slice(0, lastDotIndex)
+        tags.push(tag)
+        gitTags.push(tag)
+      }
+
+      if (options.releaseChannel !== false) {
+        tags.push(channel)
+        if (channel !== currentBranch) {
+          gitTags.push(channel)
+        }
+      }
+    }
+
+    return {
+      channel,
+      gitTags,
+      notesTmpFile: '',
+      prerelease: false,
+      tags,
+      version
+    }
+  }
+
+  private handleError(e: unknown): void {
+    if (!(e instanceof Error)) {
+      return
+    }
+    if ('code' in e) {
+      // const details = 'details' in e ? e.details : e.message
+      // this error originates not from semantic-release, but from deeper code. it has no 'details' property
+      if (e.code === 'MODULE_NOT_FOUND') {
+        throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
+      }
+      // rest of errors are from semantic-release, they have 'code', 'message' and 'details' properties
+      // some have useful 'message' and 'details', others don't, see `errors.js` in semantic-release code
+      if (e.code === 'EGITNOPERMISSION') { // 'message' and 'details' not helpful
+        throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
+          + 'you need PAT token issued by person with permission to bypass branch protection rules')
+      }
+    }
+    // weirdly but error EINVALIDTAGFORMAT has no code, so had to sniff by message
+    if (e.message.includes('Invalid `tagFormat` option')) {
+      throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)')
+    }
+  }
+
+  private async semanticRelease(options: ReleaseOptions, currentBranch: string): Promise<SemanticReleaseResult> {
     const opts: Options = {
       dryRun: true
     }
-    const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd: options.cwd })
-    opts['currentBranch'] = stdout.trim()
+    opts['currentBranch'] = currentBranch
     if (options.tagFormat) {
       opts.tagFormat = options.tagFormat
     }
