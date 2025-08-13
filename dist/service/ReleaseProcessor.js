@@ -74,13 +74,16 @@ export class ReleaseProcessor {
             channel = branch.prerelease || maintenance ? branch.name : 'latest';
         }
         const version = result.nextRelease.gitTag;
-        const tags = this.getTags(version, branch);
-        const gitTags = [...tags];
-        if ((branch.channel || branch.channel === undefined) && channel !== branch.name) {
-            gitTags.push(channel);
-        }
-        if (branch.channel || (branch.channel === undefined && channel === 'latest')) {
-            tags.push(channel);
+        const tags = [version];
+        const gitTags = [version];
+        if (options.floatingTags) {
+            this.addTags(tags, gitTags, version, branch);
+            if ((branch.channel || branch.channel === undefined) && channel !== branch.name) {
+                gitTags.push(channel);
+            }
+            if (branch.channel || (branch.channel === undefined && channel === 'latest')) {
+                tags.push(channel);
+            }
         }
         return {
             channel,
@@ -174,18 +177,18 @@ export class ReleaseProcessor {
         };
         return await this.semanticReleaseAdapter.run(opts, config);
     }
-    getTags(version, branch) {
-        const tags = [version];
+    addTags(tags, gitTags, version, branch) {
         if (!branch.prerelease) {
             const minor = version.slice(0, version.lastIndexOf('.'));
             tags.push(minor);
+            gitTags.push(minor);
             const range = branch.range || branch.name;
             const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range);
             if (!minorMaintenance) {
                 const major = minor.slice(0, minor.lastIndexOf('.'));
                 tags.push(major);
+                gitTags.push(major);
             }
         }
-        return tags;
     }
 }

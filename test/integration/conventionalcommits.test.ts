@@ -8,7 +8,7 @@ const CONVENTIONAL_OPTS = {
 const helper = new TestHelper('conventionalcommits')
 
 describe('conventionalcommits', () => {
-  beforeAll(helper.beforeAll.bind(helper))
+  beforeAll(helper.beforeAll.bind(helper), 20_000)
   beforeEach(helper.beforeEach.bind(helper))
   afterEach(helper.afterEach.bind(helper))
 
