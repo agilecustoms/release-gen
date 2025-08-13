@@ -41,7 +41,7 @@ describe('version-bump', () => {
     await checkout(branch)
     await commit('feat: commit')
 
-    const release: Release = await runReleaseGen()
+    const release: Release = await runReleaseGen({ versionBump: 'default-patch' })
 
     expect(release.version).toBe('v0.6.0')
     expect(release.notesTmpFile).toBeTruthy() // /tmp/release-gen-notes-kuhpg1g7mt
