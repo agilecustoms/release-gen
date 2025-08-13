@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.2](https://github.com/agilecustoms/release-gen/compare/v2.13.1...v2.13.2) (2025-08-13)
+
+### Miscellaneous
+
+* minor test improvements ([5ed6138](https://github.com/agilecustoms/release-gen/commit/5ed6138df50c3e7140f07c04fc3124cef83ca8fe))
+
+
 ## [2.13.1](https://github.com/agilecustoms/release-gen/compare/v2.13.0...v2.13.1) (2025-08-13)
 
 ### Bug Fixes
