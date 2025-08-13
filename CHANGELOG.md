@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.1](https://github.com/agilecustoms/release-gen/compare/v2.13.0...v2.13.1) (2025-08-13)
+
+### Bug Fixes
+
+* 'floating-tags: false' for 'semantic-release' and 'version-bump' ([fbbf614](https://github.com/agilecustoms/release-gen/commit/fbbf614d85567da825e86fc12cbd5f83abc04bb3))
+
+
 ## [2.13.0](https://github.com/agilecustoms/release-gen/compare/v2.12.0...v2.13.0) (2025-08-13)
 
 ### Features
