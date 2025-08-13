@@ -1,3 +1,4 @@
+import type { BranchSpec } from 'semantic-release'
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
 import { type Release, TestHelper } from './TestHelper.js'
 
@@ -9,6 +10,7 @@ describe('branches', () => {
   afterEach(helper.afterEach.bind(helper))
 
   const runBreaking = helper.runBreaking.bind(helper)
+  const runFeat = helper.runFeat.bind(helper)
 
   /**
    * here I test what happens if "branches" in .releaserc.json is not array, but a string "main"
@@ -21,5 +23,17 @@ describe('branches', () => {
 
     expect(release.version).toBe('v3.0.0')
     expect(release.gitTags).toEqual(['v3.0.0', 'v3.0', 'v3', 'latest'])
+  })
+
+  it('channel-with-placeholder', async () => {
+    const branch = 'int-test050'
+    const releaseBranches: ReadonlyArray<BranchSpec> = [{
+      name: branch,
+      channel: '${name}-channel',
+    }]
+
+    const release: Release = await runFeat(branch, { releaseBranches })
+
+    expect(release.channel).toBe('int-test050-channel')
   })
 })

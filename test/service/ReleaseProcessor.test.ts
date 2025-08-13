@@ -177,7 +177,7 @@ describe('ReleaseProcessor', () => {
       })
       const result = await process()
       expect(result).toBeTruthy()
-      return result as ReleaseDetails
+      return result
     }
 
     it('minor-maintenance-default-channel', async () => {
@@ -290,6 +290,19 @@ describe('ReleaseProcessor', () => {
       expect(result.channel).toBe('next')
       expect(result.gitTags).toEqual(['3.0.0-beta.4', 'next'])
       expect(result.tags).toEqual(['3.0.0-beta.4', 'next'])
+    })
+
+    it('prerelease-channel-with-placeholder', async () => {
+      const branch = { name: 'next', channel: 'release-${name}', prerelease: true }
+
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { gitTag: '3.0.0-beta.4', notes: 'Release notes', channel: 'release-next' },
+        branch
+      })
+      const result = await process()
+      expect(result.channel).toBe('release-next')
+      expect(result.gitTags).toEqual(['3.0.0-beta.4', 'release-next'])
+      expect(result.tags).toEqual(['3.0.0-beta.4', 'release-next'])
     })
   })
 

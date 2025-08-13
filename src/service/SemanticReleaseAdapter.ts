@@ -51,7 +51,7 @@ export class SemanticReleaseAdapter {
         },
       }
     )
-    const result = await semanticRelease(opts, config)
+    const result: Result = await semanticRelease(opts, config)
     if (!result) {
       return false
     }

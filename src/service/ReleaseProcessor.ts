@@ -83,9 +83,13 @@ export class ReleaseProcessor {
       notesTmpFile = ''
     }
 
+    const branch = result.branch
+    // if a channel has ${name} placeholder, the result.nextRelease.channel has processed value, so use it
+    if (branch.channel && result.nextRelease.channel) {
+      branch.channel = result.nextRelease.channel
+    }
     // first, infer the channel. It is used later to determine tags, gitTags and also as separate output for 'git notes'
     // special rules apply for prerelease
-    const branch = result.branch
     let channel = branch.channel
     if (!channel || channel.trim() === '') {
       const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name)

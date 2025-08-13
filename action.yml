@@ -25,6 +25,9 @@ inputs:
   tag_format:
     description: 'Tag format. Default: v${version}'
     required: false
+  version:
+    description: 'Version to release. If not specified, the version will be calculated based on commits since last release tag'
+    required: false
   version_bump:
     description: 'Allows to bump a version w/o semantic commits'
     required: false
