@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.0](https://github.com/agilecustoms/release-gen/compare/v2.12.0...v2.13.0) (2025-08-13)
+
+### Features
+
+* add support for explicit version including floating tags and release channel ([4173a67](https://github.com/agilecustoms/release-gen/commit/4173a6740775471743fd11eae4478ec03a8af690))
+
+
 ## [2.12.0](https://github.com/agilecustoms/release-gen/compare/v2.11.3...v2.12.0) (2025-08-13)
 
 ### Features
