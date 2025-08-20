@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import process from 'node:process';
 import { ReleaseError } from '../model.js';
-import { exec } from '../utils.js';
 const MAINTENANCE_BRANCH = /\d+\.x\.x/;
 const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/;
 const VERSION_BUMP_OPTIONS = ['default-minor', 'default-patch'];
@@ -15,8 +14,7 @@ export class ReleaseProcessor {
         this.gitClient = gitClient;
     }
     async process(options) {
-        const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd: options.cwd });
-        const currentBranch = stdout.trim();
+        const currentBranch = await this.gitClient.getCurrentBranch(options.cwd);
         if (options.version) {
             return this.explicitVersion(options, currentBranch);
         }

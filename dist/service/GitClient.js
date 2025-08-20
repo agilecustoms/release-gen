@@ -11,4 +11,8 @@ export class GitClient {
         const options = { stdio: 'inherit' };
         await exec('git reset --hard HEAD~1', options);
     }
+    async getCurrentBranch(cwd) {
+        const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd });
+        return stdout.trim();
+    }
 }

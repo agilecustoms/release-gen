@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.13.3](https://github.com/agilecustoms/release-gen/compare/v2.13.2...v2.13.3) (2025-08-20)
+
+### Miscellaneous
+
+* Maintenance: build process, test stability ([#22](https://github.com/agilecustoms/release-gen/issues/22)) ([a533585](https://github.com/agilecustoms/release-gen/commit/a53358517bb76f9a1f8629971712ff6bb5892e32))
+* update deps ([025363a](https://github.com/agilecustoms/release-gen/commit/025363a1ca55e7c10c2d5ef34ea54d3d4d53b60b))
+
+
 ## [2.13.2](https://github.com/agilecustoms/release-gen/compare/v2.13.1...v2.13.2) (2025-08-13)
 
 ### Miscellaneous
