@@ -31,4 +31,3 @@ Parameters are not documented: part of them are pass through from `release` acti
 ## Misc
 
 The majority of GH actions use kebab-case for inputs, but this action uses snake_case. It is done for integration testing purposes
-
