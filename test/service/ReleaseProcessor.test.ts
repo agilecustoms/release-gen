@@ -18,8 +18,9 @@ const changelogGenerator = {
 
 const gitClient = {
   commit: vi.fn(),
-  revert: vi.fn()
-} as GitClient & { commit: Mock, revert: Mock }
+  revert: vi.fn(),
+  getCurrentBranch: vi.fn()
+} as GitClient & { commit: Mock, revert: Mock, getCurrentBranch: Mock }
 
 const OPTIONS = {
   floatingTags: true,
@@ -56,6 +57,7 @@ describe('ReleaseProcessor', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    gitClient.getCurrentBranch.mockResolvedValue('main')
   })
 
   describe('errors', () => {

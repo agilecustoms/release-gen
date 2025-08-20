@@ -2,7 +2,6 @@ import fs from 'node:fs/promises'
 import process from 'node:process'
 import type { BranchObject, Config, Options } from 'semantic-release'
 import { type ReleaseDetails, ReleaseError, type ReleaseOptions, type SemanticReleaseResult } from '../model.js'
-import { exec } from '../utils.js'
 import type { ChangelogGenerator } from './ChangelogGenerator.js'
 import type { GitClient } from './GitClient.js'
 import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
@@ -19,8 +18,7 @@ export class ReleaseProcessor {
   ) {}
 
   public async process(options: ReleaseOptions): Promise<ReleaseDetails> {
-    const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd: options.cwd })
-    const currentBranch = stdout.trim()
+    const currentBranch = await this.gitClient.getCurrentBranch(options.cwd)
 
     if (options.version) {
       return this.explicitVersion(options, currentBranch)

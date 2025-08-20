@@ -14,4 +14,9 @@ export class GitClient {
     const options: ExecSyncOptions = { stdio: 'inherit' }
     await exec('git reset --hard HEAD~1', options)
   }
+
+  public async getCurrentBranch(cwd: string): Promise<string> {
+    const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd })
+    return stdout.trim()
+  }
 }

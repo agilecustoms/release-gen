@@ -11,7 +11,8 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       artifacts: true
-    secrets: inherit
+    permissions:
+      contents: write # needs "write" GH_TOKEN to _probe_ git push in semantic-release
 
   Release:
     needs: Build
