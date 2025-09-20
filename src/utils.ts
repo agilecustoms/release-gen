@@ -4,5 +4,5 @@ import util from 'node:util'
 const execAsync = util.promisify(execSync)
 
 export async function exec(command: string, options: ExecOptions = {}): Promise<{ stdout: string, stderr: string }> {
-  return execAsync(command, options)
+  return execAsync(command, options) as Promise<{ stdout: string, stderr: string }>
 }
