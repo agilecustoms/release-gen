@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.13.4](https://github.com/agilecustoms/release-gen/compare/v2.13.3...v2.13.4) (2025-09-20)
+
+### Bug Fixes
+
+* fix compilation ([b138780](https://github.com/agilecustoms/release-gen/commit/b138780531f300fb26bf019669e6ac5af94b3329))
+
+### Miscellaneous
+
+* update deps, use latest GH actions ([c0eb17c](https://github.com/agilecustoms/release-gen/commit/c0eb17c57b7a57647a7445dd6df28fd87a265952))
+
+
 ## [2.13.3](https://github.com/agilecustoms/release-gen/compare/v2.13.2...v2.13.3) (2025-08-20)
 
 ### Miscellaneous
