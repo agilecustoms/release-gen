@@ -2,10 +2,10 @@
   "include": [
     "src"
   ],
-  // Runtime is Node 20 (max available in GitHub actions as of Jan 2025)
+  // Runtime is Node 24 (max available in GitHub actions as of Sep 2025)
   // 'tsc' used directly (not 'ncc' like in other Node.js GH actions)
   "compilerOptions": {
-    "target": "ES2022",             // highest fully supported by Node 20
+    "target": "ES2024",             // highest fully supported by Node 24
     "moduleResolution": "nodenext",
     "module": "nodenext",
     "outDir": "dist",

@@ -39,7 +39,7 @@ inputs:
     required: false
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
 
 outputs:
@@ -55,7 +55,3 @@ outputs:
     description: 'Whether the release is a prerelease or not'
   tags:
     description: 'Space-separated tags to create: git_tags + branch name'
-
-# Node 20 is max as of June 2025
-# https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-javascript-action
-# https://docs.github.com/en/actions/sharing-automations/creating-actions/metadata-syntax-for-github-actions
