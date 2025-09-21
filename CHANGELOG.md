@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.0.0](https://github.com/agilecustoms/release-gen/compare/v2.13.4...v3.0.0) (2025-09-21)
+
+### ⚠ BREAKING CHANGES
+
+* use Node24
+
+### Features
+
+* use Node24 ([8e3794b](https://github.com/agilecustoms/release-gen/commit/8e3794b601b7221e007d0dc73001b3d1abe26884))
+
+### Bug Fixes
+
+* integration tests ([d6f1f03](https://github.com/agilecustoms/release-gen/commit/d6f1f0359fd50667bc400187df93bf5d6f6607bc))
+
+
 ## [2.13.4](https://github.com/agilecustoms/release-gen/compare/v2.13.3...v2.13.4) (2025-09-20)
 
 ### Bug Fixes
