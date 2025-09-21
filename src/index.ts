@@ -18,6 +18,7 @@ export async function exec(command: string, error: string, cwd: string = package
   return stdout
 }
 
+console.log('Node version: ' + process.version)
 await exec('npm --loglevel error ci --only=prod', 'Error during npm ci - packages installed dynamically at runtime')
 
 const core = await import('@actions/core')
