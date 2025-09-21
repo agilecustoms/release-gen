@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1](https://github.com/agilecustoms/release-gen/compare/v3.0.0...v3.0.1) (2025-09-21)
+
+### Bug Fixes
+
+* downgrade engine back to 20 ([b44dfe1](https://github.com/agilecustoms/release-gen/commit/b44dfe1d2206a051d8f88c8c169f07e666f8c1a0))
+* integration tests ([323a579](https://github.com/agilecustoms/release-gen/commit/323a5798542a3f3577cd26f1c53389beebc8a756))
+
+
 ## [3.0.0](https://github.com/agilecustoms/release-gen/compare/v2.13.4...v3.0.0) (2025-09-21)
 
 ### ⚠ BREAKING CHANGES
