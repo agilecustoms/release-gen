@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/agilecustoms/release-gen/compare/v3.0.1...v3.0.2) (2025-09-21)
+
+### Miscellaneous
+
+* minor update to re-test build ([a33e1a8](https://github.com/agilecustoms/release-gen/commit/a33e1a816abcf036c50ad1bdf9de0049b4027124))
+
+
 ## [3.0.1](https://github.com/agilecustoms/release-gen/compare/v3.0.0...v3.0.1) (2025-09-21)
 
 ### Bug Fixes
