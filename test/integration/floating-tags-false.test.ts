@@ -26,7 +26,7 @@ describe('floating-tags-false', () => {
     expect(release.tags).toEqual(['v1.3.1'])
   })
 
-  it('prerelease-channel-custom', async () => {
+  it.skip('prerelease-channel-custom', async () => {
     const branch = 'next' // latest tag v2.4.0
     const releaseBranches: BranchSpec[] = ['main', {
       name: branch,

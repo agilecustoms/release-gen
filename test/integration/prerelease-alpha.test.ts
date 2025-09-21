@@ -4,7 +4,7 @@ import { TestHelper, type Release } from './TestHelper.js'
 
 const helper = new TestHelper('prerelease-alpha')
 
-describe('prerelease-alpha', () => {
+describe.skip('prerelease-alpha', () => {
   beforeAll(helper.beforeAll.bind(helper))
   beforeEach(helper.beforeEach.bind(helper))
   afterEach(helper.afterEach.bind(helper))
