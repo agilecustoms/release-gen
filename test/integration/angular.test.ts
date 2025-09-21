@@ -52,10 +52,10 @@ describe('angular', () => {
 
   // scope of testing: major release, non-default tagFormat (specified in .releaserc.json)
   it('major', async () => {
-    const branch = 'main' // version 2.x.x
+    const branch = 'main' // version 3.x.x
 
     const release: Release = await runBreaking(branch)
 
-    expect(release.version).toBe('3.0.0')
+    expect(release.version).toBe('4.0.0')
   })
 })
