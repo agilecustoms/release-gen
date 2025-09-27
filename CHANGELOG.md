@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3](https://github.com/agilecustoms/release-gen/compare/v3.0.2...v3.0.3) (2025-09-27)
+
+### Miscellaneous
+
+* update deps, unify build workflow ([77537a2](https://github.com/agilecustoms/release-gen/commit/77537a2a4f4f95a9ad295379cb6f08a5f8119aa3))
+
+
 ## [3.0.2](https://github.com/agilecustoms/release-gen/compare/v3.0.1...v3.0.2) (2025-09-21)
 
 ### Miscellaneous
