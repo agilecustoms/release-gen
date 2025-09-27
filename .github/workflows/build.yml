@@ -2,14 +2,6 @@ name: Build
 
 on:
   push:
-    branches-ignore:
-      - main
-      - 1.x.x
-  workflow_call:
-    inputs:
-      artifacts:
-        type: boolean
-        default: false
 
 jobs:
   Build:
@@ -46,7 +38,30 @@ jobs:
         run: npm run build
 
       - name: Upload artifacts
-        if: inputs.artifacts
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/1.x.x'
         uses: actions/upload-artifact@v4
         with:
           path: dist # take everything from dist/ folder
+
+  Release:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/1.x.x'
+    needs: Build
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: dist
+
+      - name: Release
+        uses: agilecustoms/release@next
+        with:
+          npm-extra-deps: conventional-changelog-conventionalcommits@9.1.0
+        env:
+          GH_TOKEN: ${{ secrets.GH_PUBLIC_RELEASES_TOKEN }}
