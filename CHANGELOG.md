@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.4](https://github.com/agilecustoms/release-gen/compare/v3.0.3...v3.0.4) (2025-11-04)
+
+### Miscellaneous
+
+* update deps ([bde50b2](https://github.com/agilecustoms/release-gen/commit/bde50b2c7b76c387472e1b89e972997803c3d7c7))
+
+
 ## [3.0.3](https://github.com/agilecustoms/release-gen/compare/v3.0.2...v3.0.3) (2025-09-27)
 
 ### Miscellaneous
