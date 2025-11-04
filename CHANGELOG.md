@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/agilecustoms/release-gen/compare/v3.1.1...v3.1.2) (2025-11-04)
+
+### Bug Fixes
+
+* update package-lock after upgrading to new node ([713b351](https://github.com/agilecustoms/release-gen/commit/713b351db0451ee1c2b9f32f2353fdb3e14dffb8))
+
+
 ## [3.1.1](https://github.com/agilecustoms/release-gen/compare/v3.1.0...v3.1.1) (2025-11-04)
 
 ### Miscellaneous
