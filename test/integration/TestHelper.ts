@@ -1,4 +1,5 @@
 import type { ExecSyncOptions } from 'child_process'
+import type { ExecException } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import type { BranchSpec, NextRelease } from 'semantic-release'
@@ -189,6 +190,9 @@ export class TestHelper {
       stdout = res.stdout
       stderr = res.stderr
     } catch (e) {
+      const ex = e as ExecException
+      console.log(ex.stdout)
+      console.error(ex.stderr)
       throw new NodeError('Error running release-gen', e)
     }
 

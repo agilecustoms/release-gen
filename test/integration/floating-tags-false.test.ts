@@ -27,7 +27,7 @@ describe('floating-tags-false', () => {
   })
 
   it('prerelease-channel-custom', async () => {
-    const branch = 'next' // latest tag v2.4.0
+    const branch = 'test-next' // latest tag v3.1.2
     const releaseBranches: BranchSpec[] = ['main', {
       name: branch,
       prerelease: 'alpha',
@@ -36,9 +36,9 @@ describe('floating-tags-false', () => {
 
     const release: Release = await runBreaking(branch, { releaseBranches, floatingTags: false })
 
-    expect(release.version).toBe('v3.0.0-alpha.1')
+    expect(release.version).toBe('v4.0.0-alpha.1')
     expect(release.channel).toBe('beta')
-    expect(release.gitTags).toEqual(['v3.0.0-alpha.1'])
-    expect(release.tags).toEqual(['v3.0.0-alpha.1'])
+    expect(release.gitTags).toEqual(['v4.0.0-alpha.1'])
+    expect(release.tags).toEqual(['v4.0.0-alpha.1'])
   })
 })
