@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/agilecustoms/release-gen/compare/v3.1.0...v3.1.1) (2025-11-04)
+
+### Miscellaneous
+
+* use upload-artifact@v5 ([53ff064](https://github.com/agilecustoms/release-gen/commit/53ff064bd00d123476ef4331d373a66a2306b0eb))
+
+
 ## [3.1.0](https://github.com/agilecustoms/release-gen/compare/v3.0.4...v3.1.0) (2025-11-04)
 
 ### Features
