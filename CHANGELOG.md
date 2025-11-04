@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.1.3](https://github.com/agilecustoms/release-gen/compare/v3.1.2...v3.1.3) (2025-11-04)
+
+### Bug Fixes
+
+* one more update of package-lock.json ([14c0c24](https://github.com/agilecustoms/release-gen/commit/14c0c2434217616f21d4614b5c04c7b4abd24655))
+
+### Miscellaneous
+
+* fix integration tests ([02465de](https://github.com/agilecustoms/release-gen/commit/02465dedde8ecfeb472aa204dab84e4e2a9796df))
+
+
 ## [3.1.2](https://github.com/agilecustoms/release-gen/compare/v3.1.1...v3.1.2) (2025-11-04)
 
 ### Bug Fixes
