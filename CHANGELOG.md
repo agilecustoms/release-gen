@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/agilecustoms/release-gen/compare/v3.0.4...v3.1.0) (2025-11-04)
+
+### Features
+
+* officially switch to Node 24 ([5e6ebff](https://github.com/agilecustoms/release-gen/commit/5e6ebff319488d9a30cc3fa93462df36c12ad408))
+
+
 ## [3.0.4](https://github.com/agilecustoms/release-gen/compare/v3.0.3...v3.0.4) (2025-11-04)
 
 ### Miscellaneous
