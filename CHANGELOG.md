@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.1.4](https://github.com/agilecustoms/release-gen/compare/v3.1.3...v3.1.4) (2025-11-09)
+
+### Miscellaneous
+
+* add release type build: ([63a2116](https://github.com/agilecustoms/release-gen/commit/63a21160cac80f0ae5674e4a44c621ee60e05691))
+
+### Dependencies update
+
+* **deps:** bump the all group with 3 updates ([5f2ab2e](https://github.com/agilecustoms/release-gen/commit/5f2ab2e1689b0b17546293bb04f018b30b75438c))
+
+
 ## [3.1.3](https://github.com/agilecustoms/release-gen/compare/v3.1.2...v3.1.3) (2025-11-04)
 
 ### Bug Fixes
