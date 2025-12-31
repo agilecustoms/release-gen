@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/agilecustoms/release-gen/compare/v3.1.4...v3.2.0) (2025-12-31)
+
+### Features
+
+* use actions/core v2 ([db38018](https://github.com/agilecustoms/release-gen/commit/db3801817e262c48cbecaf5fc28371190157fdb8))
+
+
 ## [3.1.4](https://github.com/agilecustoms/release-gen/compare/v3.1.3...v3.1.4) (2025-11-09)
 
 ### Miscellaneous
