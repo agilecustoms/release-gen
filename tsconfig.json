@@ -6,6 +6,7 @@
   // 'tsc' used directly (not 'ncc' like in other Node.js GH actions)
   "compilerOptions": {
     "target": "ES2024",             // highest fully supported by Node 24
+    "lib": ["ES2024"],              // overrides default to tell compiler to NOT use browser libs
     "moduleResolution": "nodenext",
     "module": "nodenext",
     "outDir": "dist",
