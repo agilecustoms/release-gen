@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.3](https://github.com/agilecustoms/release-gen/compare/v3.2.2...v3.2.3) (2026-01-13)
+
+### Miscellaneous
+
+* update deps ([0f2b8f3](https://github.com/agilecustoms/release-gen/commit/0f2b8f3676554f78ade2b0ccee89a72af5b14d2b))
+
+
 ## [3.2.2](https://github.com/agilecustoms/release-gen/compare/v3.2.1...v3.2.2) (2026-01-13)
 
 ### Miscellaneous
