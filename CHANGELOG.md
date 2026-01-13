@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/agilecustoms/release-gen/compare/v3.2.1...v3.2.2) (2026-01-13)
+
+### Miscellaneous
+
+* update actions in build workflow ([bcbb4a4](https://github.com/agilecustoms/release-gen/commit/bcbb4a4f0486334d8ec1df10b6f1c7f195184a52))
+
+
 ## [3.2.1](https://github.com/agilecustoms/release-gen/compare/v3.2.0...v3.2.1) (2026-01-09)
 
 ### Miscellaneous
