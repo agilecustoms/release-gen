@@ -21,6 +21,7 @@ export class SemanticReleaseAdapter {
   public async run(opts: Options, config: Config): Promise<SemanticReleaseResult> {
     const pluginsPath = 'semantic-release/lib/plugins/index.js'
     const getConfigPath = 'semantic-release/lib/get-config.js'
+    const gitPath = 'semantic-release/lib/git.js'
 
     const currentBranch = opts['currentBranch'] as string
     let branch: BranchObject = { name: currentBranch }
@@ -42,13 +43,24 @@ export class SemanticReleaseAdapter {
     )
 
     const semanticRelease: (options: Options, environment?: Config) => Promise<Result> = await esmock(
-      'semantic-release',
+      'semantic-release/index.js',
       {
         [getConfigPath]: {
           default: async (context: Config, cliOptions?: Options) => {
             return await getConfig(context, cliOptions)
           },
         },
+        [gitPath]: {
+          verifyAuth: async (_: string, __: string, ___: object) => {
+            // the real implementation calls 'git push --dry-run' which causes an error. Override with noop to avoid error
+          },
+          // getGitHead: async (_: object) => {
+          //   return ''
+          // },
+          // getTagHead: async (_: string, __: object) => {
+          //   return ''
+          // }
+        }
       }
     )
     const result: Result = await semanticRelease(opts, config)

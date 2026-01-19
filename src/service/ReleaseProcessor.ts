@@ -152,7 +152,7 @@ export class ReleaseProcessor {
     }
     if ('code' in e) {
       // const details = 'details' in e ? e.details : e.message
-      // this error originates not from semantic-release, but from deeper code. it has no 'details' property
+      // this error originates not from semantic-release but from deeper code. it has no 'details' property
       if (e.code === 'MODULE_NOT_FOUND') {
         throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
       }
