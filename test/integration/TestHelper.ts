@@ -167,11 +167,11 @@ export class TestHelper {
     const notesTmpFile = `/tmp/release-gen-notes-${Math.random().toString(36).slice(2)}`
     env['INPUT_NOTES_TMP_FILE'] = notesTmpFile
 
-    if (process.env.CI) { // see a DISCLAIMER above
-      const githubToken = process.env.GITHUB_TOKEN
-      if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-      env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
-    }
+    // if (process.env.CI) { // see a DISCLAIMER above
+    //   const githubToken = process.env.GITHUB_TOKEN
+    //   if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
+    //   env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
+    // }
 
     // launch release-gen/test/integration/{itName}/gh-action/dist/index.js
     const indexJs = path.join(this.ghActionDir, 'dist', 'index.js')
