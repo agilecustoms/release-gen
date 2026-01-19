@@ -50,7 +50,7 @@ jobs:
     environment: release
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
 
@@ -60,7 +60,7 @@ jobs:
           path: dist
 
       - name: Release
-        uses: agilecustoms/release@next
+        uses: agilecustoms/release@main
         with:
           npm-extra-deps: conventional-changelog-conventionalcommits@9.1.0
         env:
