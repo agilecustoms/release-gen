@@ -42,6 +42,7 @@ export class SemanticReleaseAdapter {
       }
     )
 
+    // noinspection JSUnusedGlobalSymbols
     const semanticRelease: (options: Options, environment?: Config) => Promise<Result> = await esmock(
       'semantic-release/index.js',
       {
@@ -55,7 +56,7 @@ export class SemanticReleaseAdapter {
             // override with noop to avoid any error
             // (real implementation calls 'git push --dry-run' which causes authorization error)
           }
-          // other two functions being used are: getGitHead, getTagHead - I do not override them, so real implementation are used
+          // the other two functions being used are: getGitHead, getTagHead - I do not override them, so real implementations are used
         }
       }
     )
