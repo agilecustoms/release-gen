@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.0.0",
-    "@types/node": "^24.0.0",
+    "@types/node": "^25.0.9",
     "@vitest/coverage-v8": "^4.0.8",
     "eslint": "^9.9.0",
     "eslint-plugin-import": "^2.31.0",
