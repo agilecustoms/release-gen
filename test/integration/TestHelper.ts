@@ -35,22 +35,10 @@ class NodeError extends Error {
 
 /**
  * DISCLAIMER about semantic-release
- * During dry run it invokes the command `git push --dry-run --no-verify ${repositoryUrl} HEAD:${branch}`
- * I just want to generate version and release notes, but still have to play this game
- * This command brings a lot of issues:
- * 1. If it fails - you get the misleading error "The local main branch is behind the remote one, therefore, a new version won't be published"
- * 2. Even though the repo is public and I can easily clone it via https, still semantic-release requires a token for `git push --dry-run`.
- *    Moreover: default ${{github.token}} with `permissions: write` is not enough,
- *    I have to use PAT and don't forget to set `secrets: inherit` in release.yml workflow when calling 'build' workflow
- * 3. I tried to use this token when cloning the repo (thus the token stays at .git/config file) - but it is ignored.
- *    semantic-release needs token to be present as a parameter `repositoryUrl`.
- *    Since this parameter is not normally set, I had to augment release-gen code to set it if env variable `REPOSITORY_URL` is passed
- * 4. semantic-release doesn't look into the current (checked-out) branch, it sniffs for the current CI tool by various env vars,
- *    and then for each CI tool it has separate logic how to determine the current branch, env.GITHUB_REF for GH Actions.
- *    If not passed, semantic-release uses the current feature branch name, not a branch from the integration test
- *    This fix with env variable 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
- *
- * Note: normally on CI (and also in local setup) the auth token is auto-attached via "insteadOf" rule in .gitconfig
+ * it doesn't look into the current (checked-out) branch, it sniffs for the current CI tool by various env vars,
+ * and then for each CI tool it has separate logic how to determine the current branch, env.GITHUB_REF for GH Actions.
+ * If not passed, semantic-release uses the current feature branch name, not a branch from the integration test
+ * This fix with env variable 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
  */
 export class TestHelper {
   private readonly ghActionDir: string
@@ -166,12 +154,6 @@ export class TestHelper {
     }
     const notesTmpFile = `/tmp/release-gen-notes-${Math.random().toString(36).slice(2)}`
     env['INPUT_NOTES_TMP_FILE'] = notesTmpFile
-
-    // if (process.env.CI) { // see a DISCLAIMER above
-    //   const githubToken = process.env.GITHUB_TOKEN
-    //   if (!githubToken) throw new Error('GITHUB_TOKEN is not set')
-    //   env['REPOSITORY_URL'] = `https://x-access-token:${githubToken}@${repoUrl}`
-    // }
 
     // launch release-gen/test/integration/{itName}/gh-action/dist/index.js
     const indexJs = path.join(this.ghActionDir, 'dist', 'index.js')

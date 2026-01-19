@@ -52,14 +52,10 @@ export class SemanticReleaseAdapter {
         },
         [gitPath]: {
           verifyAuth: async (_: string, __: string, ___: object) => {
-            // the real implementation calls 'git push --dry-run' which causes an error. Override with noop to avoid error
-          },
-          // getGitHead: async (_: object) => {
-          //   return ''
-          // },
-          // getTagHead: async (_: string, __: object) => {
-          //   return ''
-          // }
+            // override with noop to avoid any error
+            // (real implementation calls 'git push --dry-run' which causes authorization error)
+          }
+          // other two functions being used are: getGitHead, getTagHead - I do not override them, so real implementation are used
         }
       }
     )
