@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.1](https://github.com/agilecustoms/release-gen/compare/v3.3.0...v3.3.1) (2026-01-19)
+
+### Miscellaneous
+
+* cleanup old code not needed any more bcz 'git push --dry-run' is now not used ([fda22c6](https://github.com/agilecustoms/release-gen/commit/fda22c69bf37d7f1890fd86b087d285af4215fe8))
+* update deps ([d20db6b](https://github.com/agilecustoms/release-gen/commit/d20db6b50a18d5399e651d35adecefa4237eee2f))
+
+
 ## [3.3.0](https://github.com/agilecustoms/release-gen/compare/v3.2.4...v3.3.0) (2026-01-19)
 
 ### Features

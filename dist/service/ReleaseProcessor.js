@@ -1,5 +1,4 @@
 import fs from 'node:fs/promises';
-import process from 'node:process';
 import { ReleaseError } from '../model.js';
 const MAINTENANCE_BRANCH = /\d+\.x\.x/;
 const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/;
@@ -134,10 +133,6 @@ export class ReleaseProcessor {
             if (e.code === 'MODULE_NOT_FOUND') {
                 throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`);
             }
-            if (e.code === 'EGITNOPERMISSION') {
-                throw new ReleaseError('Not enough permission to push to remote repo. When release from protected branch, '
-                    + 'you need PAT token issued by person with permission to bypass branch protection rules');
-            }
         }
         if (e.message.includes('Invalid `tagFormat` option')) {
             throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)');
@@ -166,9 +161,6 @@ export class ReleaseProcessor {
             catch (cause) {
                 throw new ReleaseError(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause });
             }
-        }
-        if (process.env.REPOSITORY_URL) {
-            opts.repositoryUrl = process.env.REPOSITORY_URL;
         }
         const config = {
             cwd: options.cwd

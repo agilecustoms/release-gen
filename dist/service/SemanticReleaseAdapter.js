@@ -34,7 +34,7 @@ export class SemanticReleaseAdapter {
             },
             [gitPath]: {
                 verifyAuth: async (_, __, ___) => {
-                },
+                }
             }
         });
         const result = await semanticRelease(opts, config);
