@@ -12,6 +12,7 @@ export class SemanticReleaseAdapter {
     async run(opts, config) {
         const pluginsPath = 'semantic-release/lib/plugins/index.js';
         const getConfigPath = 'semantic-release/lib/get-config.js';
+        const gitPath = 'semantic-release/lib/git.js';
         const currentBranch = opts['currentBranch'];
         let branch = { name: currentBranch };
         const originalPluginsFunc = (await import(pluginsPath)).default;
@@ -25,12 +26,16 @@ export class SemanticReleaseAdapter {
                 }
             }
         });
-        const semanticRelease = await esmock('semantic-release', {
+        const semanticRelease = await esmock('semantic-release/index.js', {
             [getConfigPath]: {
                 default: async (context, cliOptions) => {
                     return await getConfig(context, cliOptions);
                 },
             },
+            [gitPath]: {
+                verifyAuth: async (_, __, ___) => {
+                },
+            }
         });
         const result = await semanticRelease(opts, config);
         if (!result) {
