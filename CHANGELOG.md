@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/agilecustoms/release-gen/compare/v3.2.4...v3.3.0) (2026-01-19)
+
+### Features
+
+* disable git push dry-run ([#29](https://github.com/agilecustoms/release-gen/issues/29)) ([20ae092](https://github.com/agilecustoms/release-gen/commit/20ae0922a4ac7ca9778f0a55782e0e05bc4dc8f5))
+
+
 ## [3.2.4](https://github.com/agilecustoms/release-gen/compare/v3.2.3...v3.2.4) (2026-01-19)
 
 ### Miscellaneous
