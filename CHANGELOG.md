@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.3](https://github.com/agilecustoms/release-gen/compare/v3.3.2...v3.3.3) (2026-01-20)
+
+### Dependencies update
+
+* use actions/checkout@v6 (2) ([1446c4f](https://github.com/agilecustoms/release-gen/commit/1446c4fc97fb55a11c01083f9139209fc9494635))
+
+
 ## [3.3.2](https://github.com/agilecustoms/release-gen/compare/v3.3.1...v3.3.2) (2026-01-20)
 
 ### Dependencies update
