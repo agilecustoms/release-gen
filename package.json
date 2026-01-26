@@ -38,9 +38,9 @@
     "semantic-release": "^25.0.2"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^5.0.0",
-    "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^4.0.8",
+    "@stylistic/eslint-plugin": "^5.7.1",
+    "@types/node": "^25.0.10",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^9.9.0",
     "eslint-plugin-import": "^2.31.0",
     "husky": "^9.1.7",
