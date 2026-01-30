@@ -14,7 +14,6 @@ let counter = 0
 
 export type TestOptions = {
   floatingTags?: boolean
-  npmExtraDeps?: string
   // if 'releaseBranches' key is set but null or undefine, then use semantic-release default
   releaseBranches?: ReadonlyArray<BranchSpec> | BranchSpec | undefined
   releaseChannel?: string
@@ -129,9 +128,6 @@ export class TestHelper {
       GITHUB_REF: branch,
     }
     env['INPUT_FLOATING_TAGS'] = opts.floatingTags === false ? 'false' : 'true'
-    if (opts.npmExtraDeps) {
-      env['INPUT_NPM_EXTRA_DEPS'] = opts.npmExtraDeps
-    }
     if (!('releaseBranches' in opts)) {
       opts.releaseBranches = [branch]
     }

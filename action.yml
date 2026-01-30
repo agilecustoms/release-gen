@@ -16,9 +16,6 @@ inputs:
     description: 'Temporary file to store release notes'
     required: false
     default: /tmp/release-gen-notes
-  npm_extra_deps:
-    description: 'Additional npm dependencies, used to install non-default commit parsers such as conventional-changelog-conventionalcommits@9.1.0'
-    required: false
   release_branches:
     required: false
     description: 'The branches on which releases should happen. It will override the branches attribute in your configuration file'
