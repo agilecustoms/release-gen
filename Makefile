@@ -5,7 +5,7 @@ app0-install-deps:
 	@npm install
 
 app0-update-deps:
-	@npm update; npm outdated
+	@npm update; npm install; npm outdated
 
 app1-lint:
 	@npm run lint
