@@ -1,10 +1,6 @@
 import { beforeAll, beforeEach, afterEach, expect, describe, it } from 'vitest'
 import { type Release, TestHelper } from './TestHelper.js'
 
-const CONVENTIONAL_OPTS = {
-  npmExtraDeps: 'conventional-changelog-conventionalcommits@9.1.0'
-}
-
 const helper = new TestHelper('conventionalcommits')
 
 describe('conventionalcommits', () => {
@@ -16,24 +12,13 @@ describe('conventionalcommits', () => {
   const commit = helper.commit.bind(helper)
   const runReleaseGen = helper.runReleaseGen.bind(helper)
 
-  // if no conventional-changelog-conventionalcommits npm dep => clear error
-  it('conventionalcommits-miss-dep', async () => {
-    await checkout('int-test050')
-
-    const error = await TestHelper.expectError(async () => {
-      await runReleaseGen()
-    })
-    expect(error).toBe('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input.'
-      + ' Details: Cannot find module \'conventional-changelog-conventionalcommits\'')
-  })
-
   // test custom tag format
   // test major version bump with feat! tag
   it('conventionalcommits', async () => {
     await checkout('int-test050')
     await commit('feat(api)!: new major release')
 
-    const release: Release = await runReleaseGen(CONVENTIONAL_OPTS)
+    const release: Release = await runReleaseGen()
 
     expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
@@ -55,7 +40,7 @@ describe('conventionalcommits', () => {
     await commit('ci: test')
     await commit('perf: perf 1')
     const error = await TestHelper.expectError(async () => {
-      await runReleaseGen(CONVENTIONAL_OPTS)
+      await runReleaseGen()
     })
     expect(error).toBe('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
 
@@ -64,7 +49,7 @@ describe('conventionalcommits', () => {
     await commit('misc: minor improvements')
     await commit('fix: buf fix')
     await commit('docs: test documentation')
-    const release = await runReleaseGen(CONVENTIONAL_OPTS)
+    const release = await runReleaseGen()
     expect(release.version).toBe('v0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')

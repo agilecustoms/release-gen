@@ -32,21 +32,12 @@ const changelogFile: string = getInput('changelog_file')
 const changelogTitle: string = getInput('changelog_title')
 const floatingTags: boolean = getInput('floating_tags') !== 'false'
 const notesTmpFile: string = getInput('notes_tmp_file')
-const npmExtraDeps: string = getInput('npm_extra_deps')
 const releaseBranches: string = getInput('release_branches')
 const releaseChannel: string | false = getInput('release_channel') === 'false' ? false : getInput('release_channel')
 const releasePlugins: string = getInput('release_plugins')
 const tagFormat: string = getInput('tag_format')
 const version: string = getInput('version')
 const versionBump: string = getInput('version_bump')
-
-if (npmExtraDeps) {
-  const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ')
-  await exec(
-    `npm install ${extras} --loglevel=error --no-audit --no-fund --no-progress --no-save`,
-    `Error during installing extra npm dependencies ${extras}`
-  )
-}
 
 // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
