@@ -33,7 +33,7 @@
     "run-local": "tsc && node dist/local.js"
   },
   "dependencies": {
-    "@actions/core": "^2.0.0",
+    "@actions/core": "^3.0.0",
     "esmock": "^2.7.1",
     "semantic-release": "^25.0.2"
   },
