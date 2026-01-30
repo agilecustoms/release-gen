@@ -55,15 +55,29 @@ export class SemanticReleaseAdapter {
         throw new ReleaseError(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`);
     }
     fixPlugins(plugins) {
-        return plugins.filter((plugin) => {
-            const name = typeof plugin === 'string' ? plugin : plugin[0];
-            if (allowedPlugins.includes(name)) {
-                return true;
+        const res = [];
+        for (let plugin of plugins) {
+            let name;
+            if (typeof plugin === 'string') {
+                name = plugin;
+                plugin = [
+                    plugin,
+                    { preset: 'conventionalcommits' }
+                ];
             }
-            if (!defaultPlugins.includes(name)) {
-                console.warn(`Plugin "${name}" is not supported by in "release-gen" action, skipping it`);
+            else {
+                name = plugin[0];
             }
-            return false;
-        });
+            if (!allowedPlugins.includes(name)) {
+                if (!defaultPlugins.includes(name)) {
+                    console.warn(`Plugin "${name}" is not supported by in "release-gen" action, skipping it`);
+                }
+                continue;
+            }
+            const spec = plugin[1];
+            spec.preset = 'conventionalcommits';
+            res.push(plugin);
+        }
+        return res;
     }
 }

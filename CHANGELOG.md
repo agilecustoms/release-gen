@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/agilecustoms/release-gen/compare/v4.0.1...v4.1.0) (2026-01-30)
+
+### Features
+
+* enforce conventionalcommits ([9317cd5](https://github.com/agilecustoms/release-gen/commit/9317cd584d32df08939b95879608efcc6f7698d2))
+
+
 ## [4.0.1](https://github.com/agilecustoms/release-gen/compare/v4.0.0...v4.0.1) (2026-01-30)
 
 ### Miscellaneous
