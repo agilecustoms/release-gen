@@ -7,8 +7,8 @@ import { exec as execAsync } from './utils.js'
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 const packageJsonDir = path.dirname(distDir)
 
-export async function exec(command: string, error: string, cwd: string = packageJsonDir): Promise<string> {
-  const { stdout, stderr } = await execAsync(command, { cwd })
+async function exec(command: string, error: string): Promise<string> {
+  const { stdout, stderr } = await execAsync(command, { cwd: packageJsonDir })
   console.log(stdout)
   if (stderr) {
     console.error(error)
@@ -19,7 +19,10 @@ export async function exec(command: string, error: string, cwd: string = package
 }
 
 console.log('Node version: ' + process.version)
-await exec('npm --loglevel error ci --only=prod', 'Error during npm ci - packages installed dynamically at runtime')
+await exec(
+  'npm ci --only=prod --loglevel=error --no-audit --no-fund --no-progress',
+  'Error during npm ci - packages installed dynamically at runtime'
+)
 
 const core = await import('@actions/core')
 function getInput(name: string): string {
@@ -39,7 +42,10 @@ const versionBump: string = getInput('version_bump')
 
 if (npmExtraDeps) {
   const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ')
-  await exec(`npm install ${extras}`, `Error during installing extra npm dependencies ${extras}`)
+  await exec(
+    `npm install ${extras} --loglevel=error --no-audit --no-fund --no-progress --no-save`,
+    `Error during installing extra npm dependencies ${extras}`
+  )
 }
 
 // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
