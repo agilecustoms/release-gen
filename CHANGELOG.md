@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/agilecustoms/release-gen/compare/v4.0.0...v4.0.1) (2026-01-30)
+
+### Miscellaneous
+
+* avoid drift after call npm install [skip ci] ([f48ec38](https://github.com/agilecustoms/release-gen/commit/f48ec38102611100c5ac45d5c5a7addf182a90a1))
+
+
 ## [4.0.0](https://github.com/agilecustoms/release-gen/compare/v3.4.0...v4.0.0) (2026-01-30)
 
 ### ⚠ BREAKING CHANGES
