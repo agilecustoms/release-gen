@@ -17,12 +17,12 @@ describe('branches', () => {
    * So that I safely use options.branches in the code
    */
   it('single-branch', async () => {
-    const branch = 'main' // latest tag v3.x.x
+    const branch = 'main' // latest tag v4.x.x
 
     const release: Release = await runBreaking(branch, { releaseBranches: undefined })
 
-    expect(release.version).toBe('v4.0.0')
-    expect(release.gitTags).toEqual(['v4.0.0', 'v4.0', 'v4', 'latest'])
+    expect(release.version).toBe('v5.0.0')
+    expect(release.gitTags).toEqual(['v5.0.0', 'v5.0', 'v5', 'latest'])
   })
 
   it('channel-with-placeholder', async () => {
