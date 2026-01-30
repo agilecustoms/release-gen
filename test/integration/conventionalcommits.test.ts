@@ -20,7 +20,7 @@ describe('conventionalcommits', () => {
 
     const release: Release = await runReleaseGen()
 
-    expect(release.version).toBe('1.0.0')
+    expect(release.version).toBe('v1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
   })
 

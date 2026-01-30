@@ -1,3 +1,4 @@
+import type { PluginSpec } from 'semantic-release'
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { SemanticReleaseAdapter } from '../../src/service/SemanticReleaseAdapter.js'
 
@@ -42,7 +43,20 @@ describe('SemanticReleaseAdapter', () => {
 
       const res = adapter.fixPlugins(plugins)
 
-      expect(res).toEqual(plugins)
+      expect(res).toEqual([
+        [
+          '@semantic-release/commit-analyzer',
+          {
+            preset: 'conventionalcommits',
+          }
+        ],
+        [
+          '@semantic-release/release-notes-generator',
+          {
+            preset: 'conventionalcommits',
+          }
+        ]
+      ])
     })
 
     it('should discard unsupported default plugins', () => {
@@ -56,8 +70,18 @@ describe('SemanticReleaseAdapter', () => {
       const res = adapter.fixPlugins(plugins)
 
       expect(res).toEqual([
-        '@semantic-release/commit-analyzer',
-        '@semantic-release/release-notes-generator'
+        [
+          '@semantic-release/commit-analyzer',
+          {
+            preset: 'conventionalcommits',
+          },
+        ],
+        [
+          '@semantic-release/release-notes-generator',
+          {
+            preset: 'conventionalcommits',
+          },
+        ]
       ])
     })
 
@@ -73,10 +97,35 @@ describe('SemanticReleaseAdapter', () => {
       const res = adapter.fixPlugins(plugins)
 
       expect(res).toEqual([
-        '@semantic-release/commit-analyzer',
-        '@semantic-release/release-notes-generator'
+        [
+          '@semantic-release/commit-analyzer',
+          {
+            preset: 'conventionalcommits',
+          },
+        ],
+        [
+          '@semantic-release/release-notes-generator',
+          {
+            preset: 'conventionalcommits',
+          },
+        ]
       ])
       expect(consoleWarnSpy).toHaveBeenCalledWith('Plugin "@semantic-release/unsupported-plugin" is not supported by in "release-gen" action, skipping it')
+    })
+
+    it('should add preset mandatory plugins', () => {
+      const plugins = [['@semantic-release/commit-analyzer', { preset: 'angular' }] as PluginSpec]
+
+      const res = adapter.fixPlugins(plugins)
+
+      expect(res).toEqual([
+        [
+          '@semantic-release/commit-analyzer',
+          {
+            preset: 'conventionalcommits',
+          },
+        ]
+      ])
     })
   })
 })
