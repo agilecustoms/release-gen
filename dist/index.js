@@ -25,17 +25,12 @@ const changelogFile = getInput('changelog_file');
 const changelogTitle = getInput('changelog_title');
 const floatingTags = getInput('floating_tags') !== 'false';
 const notesTmpFile = getInput('notes_tmp_file');
-const npmExtraDeps = getInput('npm_extra_deps');
 const releaseBranches = getInput('release_branches');
 const releaseChannel = getInput('release_channel') === 'false' ? false : getInput('release_channel');
 const releasePlugins = getInput('release_plugins');
 const tagFormat = getInput('tag_format');
 const version = getInput('version');
 const versionBump = getInput('version_bump');
-if (npmExtraDeps) {
-    const extras = npmExtraDeps.replace(/['"]/g, '').replace(/[\n\r]/g, ' ');
-    await exec(`npm install ${extras} --loglevel=error --no-audit --no-fund --no-progress --no-save`, `Error during installing extra npm dependencies ${extras}`);
-}
 const cwd = process.env.GITHUB_WORKSPACE;
 const options = {
     changelogFile,

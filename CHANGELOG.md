@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.0.0](https://github.com/agilecustoms/release-gen/compare/v3.4.0...v4.0.0) (2026-01-30)
+
+### ⚠ BREAKING CHANGES
+
+* eliminate npm_extra_deps. always use conventional commits
+
+### Features
+
+* eliminate npm_extra_deps. always use conventional commits ([c62cb76](https://github.com/agilecustoms/release-gen/commit/c62cb767367406137aed0c3e2610c9b9c75c38c1))
+* update actions/core to version 3 ([8b3d708](https://github.com/agilecustoms/release-gen/commit/8b3d708cf7abe4d469a489f860a96b578f38ecca))
+
+
 ## [3.4.0](https://github.com/agilecustoms/release-gen/compare/v3.3.3...v3.4.0) (2026-01-30)
 
 ### Features
