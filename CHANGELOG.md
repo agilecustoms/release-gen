@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/agilecustoms/release-gen/compare/v3.3.3...v3.4.0) (2026-01-30)
+
+### Features
+
+* cleaner logs ([fc7e566](https://github.com/agilecustoms/release-gen/commit/fc7e566c9f3e5d597e57e2913fe63e84d5a317ea))
+
+
 ## [3.3.3](https://github.com/agilecustoms/release-gen/compare/v3.3.2...v3.3.3) (2026-01-20)
 
 ### Dependencies update
