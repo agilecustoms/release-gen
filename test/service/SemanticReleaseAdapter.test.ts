@@ -1,5 +1,6 @@
 import type { PluginSpec } from 'semantic-release'
 import { beforeEach, describe, it, expect, vi } from 'vitest'
+import { ReleaseError } from '../../src/model.js'
 import { SemanticReleaseAdapter } from '../../src/service/SemanticReleaseAdapter.js'
 
 describe('SemanticReleaseAdapter', () => {
@@ -113,8 +114,8 @@ describe('SemanticReleaseAdapter', () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith('Plugin "@semantic-release/unsupported-plugin" is not supported by in "release-gen" action, skipping it')
     })
 
-    it('should add preset mandatory plugins', () => {
-      const plugins = [['@semantic-release/commit-analyzer', { preset: 'angular' }] as PluginSpec]
+    it('should set preset if not specified', () => {
+      const plugins = [['@semantic-release/commit-analyzer', { }] as PluginSpec]
 
       const res = adapter.fixPlugins(plugins)
 
@@ -126,6 +127,14 @@ describe('SemanticReleaseAdapter', () => {
           },
         ]
       ])
+    })
+
+    it('should error out if unsupported present specified', () => {
+      const plugins = [['@semantic-release/commit-analyzer', { preset: 'angular' }] as PluginSpec]
+
+      expect(() => adapter.fixPlugins(plugins))
+        .toThrow(ReleaseError)
+        // .toThrow(`Starting from v4 (Feb 8, 2026) only "conventionalcommits" preset supported. Encountered "angular"`)
     })
   })
 })
