@@ -60,10 +60,7 @@ export class SemanticReleaseAdapter {
             let name;
             if (typeof plugin === 'string') {
                 name = plugin;
-                plugin = [
-                    plugin,
-                    { preset: 'conventionalcommits' }
-                ];
+                plugin = [plugin, {}];
             }
             else {
                 name = plugin[0];
@@ -75,7 +72,12 @@ export class SemanticReleaseAdapter {
                 continue;
             }
             const spec = plugin[1];
-            spec.preset = 'conventionalcommits';
+            if (!spec.preset) {
+                spec.preset = 'conventionalcommits';
+            }
+            else if (spec.preset !== 'conventionalcommits') {
+                throw new ReleaseError(`Starting from v4 (Feb 8, 2026) only "conventionalcommits" preset supported. Encountered "${name}"`);
+            }
             res.push(plugin);
         }
         return res;

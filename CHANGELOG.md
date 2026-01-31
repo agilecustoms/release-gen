@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/agilecustoms/release-gen/compare/v4.1.0...v4.2.0) (2026-01-31)
+
+### Features
+
+* throw error if unsupported preset specified (empty is fine) ([226776e](https://github.com/agilecustoms/release-gen/commit/226776ea33975c2020a9c41ea5ef5fef905a55de))
+
+
 ## [4.1.0](https://github.com/agilecustoms/release-gen/compare/v4.0.1...v4.1.0) (2026-01-30)
 
 ### Features
