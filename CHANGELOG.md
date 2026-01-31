@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/agilecustoms/release-gen/compare/v4.2.0...v4.2.1) (2026-01-31)
+
+### Bug Fixes
+
+* error message in case wrong preset is passed ([88b1f5c](https://github.com/agilecustoms/release-gen/commit/88b1f5c26e5ea14f5eb109ae1d64d0a9d5897840))
+
+
 ## [4.2.0](https://github.com/agilecustoms/release-gen/compare/v4.1.0...v4.2.0) (2026-01-31)
 
 ### Features

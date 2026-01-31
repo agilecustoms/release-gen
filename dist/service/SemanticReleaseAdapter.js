@@ -76,7 +76,7 @@ export class SemanticReleaseAdapter {
                 spec.preset = 'conventionalcommits';
             }
             else if (spec.preset !== 'conventionalcommits') {
-                throw new ReleaseError(`Starting from v4 (Feb 8, 2026) only "conventionalcommits" preset supported. Encountered "${name}"`);
+                throw new ReleaseError(`Starting from v4 (Feb 8, 2026) only "conventionalcommits" preset supported. Encountered "${spec.preset}"`);
             }
             res.push(plugin);
         }
