@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.2](https://github.com/agilecustoms/release-gen/compare/v4.2.1...v4.2.2) (2026-02-01)
+
+### Miscellaneous
+
+* fix release date ([12ff3c9](https://github.com/agilecustoms/release-gen/commit/12ff3c9f31bc205642e4c427c4695e03b3423220))
+
+
 ## [4.2.1](https://github.com/agilecustoms/release-gen/compare/v4.2.0...v4.2.1) (2026-01-31)
 
 ### Bug Fixes
