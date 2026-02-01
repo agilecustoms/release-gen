@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.3](https://github.com/agilecustoms/release-gen/compare/v4.2.2...v4.2.3) (2026-02-01)
+
+### Miscellaneous
+
+* get rid of npm-extra-deps ([a3fd4d9](https://github.com/agilecustoms/release-gen/commit/a3fd4d95a29ce98b4f6de87791dc4020d38d611d))
+
+
 ## [4.2.2](https://github.com/agilecustoms/release-gen/compare/v4.2.1...v4.2.2) (2026-02-01)
 
 ### Miscellaneous
