@@ -149,13 +149,6 @@ export class ReleaseProcessor {
     if (!(e instanceof Error)) {
       return
     }
-    if ('code' in e) {
-      // const details = 'details' in e ? e.details : e.message
-      // this error originates not from semantic-release but from deeper code. it has no 'details' property
-      if (e.code === 'MODULE_NOT_FOUND') {
-        throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`)
-      }
-    }
     // weirdly but error EINVALIDTAGFORMAT has no code, so had to sniff by message
     if (e.message.includes('Invalid `tagFormat` option')) {
       throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)')

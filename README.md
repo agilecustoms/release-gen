@@ -21,7 +21,6 @@ Parameters are not documented: part of them are pass through from `release` acti
   with:
     changelog_file: ${{ inputs.changelog-file }}
     changelog_title: ${{ inputs.changelog-title }}
-    npm_extra_deps: ${{ inputs.npm-extra-deps }}
     release_branches: ${{ inputs.release-branches }}
     release_plugins: ${{ inputs.release-plugins }}
     tag_format: ${{ inputs.tag-format }}

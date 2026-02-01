@@ -30,15 +30,6 @@ const OPTIONS = {
 
 type Result = ReleaseDetails & { notes: string }
 
-class ErrorWithCode extends Error {
-  code: string
-
-  constructor(message: string, code: string) {
-    super(message)
-    this.code = code
-  }
-}
-
 describe('ReleaseProcessor', () => {
   const processor = new ReleaseProcessor(semanticReleaseAdapter, changelogGenerator, gitClient)
   async function process(options: ReleaseOptions = OPTIONS): Promise<Result> {
@@ -65,13 +56,6 @@ describe('ReleaseProcessor', () => {
       const options = { ...OPTIONS, versionBump: 'invalid-option' }
 
       await expect(process(options)).rejects.toThrow('Invalid version-bump option: invalid-option. Valid options are: default-minor, default-patch')
-    })
-
-    it('should throw clear error if semantic-release thrown error with code MODULE_NOT_FOUND', () => {
-      const error = new ErrorWithCode('test', 'MODULE_NOT_FOUND')
-      semanticReleaseAdapter.run.mockRejectedValue(error)
-
-      return expect(process()).rejects.toThrow('You\'re using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: test')
     })
 
     it('should throw clear error if invalid tag format', () => {
