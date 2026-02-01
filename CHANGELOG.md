@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.4](https://github.com/agilecustoms/release-gen/compare/v4.2.3...v4.2.4) (2026-02-01)
+
+### Miscellaneous
+
+* cleanup npm-extra-deps usages ([2a0c1da](https://github.com/agilecustoms/release-gen/commit/2a0c1dac722bf16e860d409ba82d8f525a2c1bfa))
+
+
 ## [4.2.3](https://github.com/agilecustoms/release-gen/compare/v4.2.2...v4.2.3) (2026-02-01)
 
 ### Miscellaneous

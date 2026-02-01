@@ -129,11 +129,6 @@ export class ReleaseProcessor {
         if (!(e instanceof Error)) {
             return;
         }
-        if ('code' in e) {
-            if (e.code === 'MODULE_NOT_FOUND') {
-                throw new ReleaseError(`You're using non default preset, please specify corresponding npm package in npm-extra-deps input. Details: ${e.message}`);
-            }
-        }
         if (e.message.includes('Invalid `tagFormat` option')) {
             throw new ReleaseError('Invalid tag format (tag-format input or tagFormat in .releaserc.json)');
         }
