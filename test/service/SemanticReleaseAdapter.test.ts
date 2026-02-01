@@ -132,7 +132,7 @@ describe('SemanticReleaseAdapter', () => {
       const plugins = [['@semantic-release/commit-analyzer', { preset: 'angular' }] as PluginSpec]
 
       expect(() => adapter.fixPlugins(plugins))
-        .toThrow(`Starting from v4 (Feb 8, 2026) only "conventionalcommits" preset supported. Encountered "angular"`)
+        .toThrow(`Starting from v4 (Feb 1, 2026) only "conventionalcommits" preset supported. Encountered "angular"`)
     })
   })
 })
