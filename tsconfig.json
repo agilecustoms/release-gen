@@ -7,8 +7,10 @@
   "compilerOptions": {
     "target": "ES2024",             // highest fully supported by Node 24
     "lib": ["ES2024"],              // overrides default to tell compiler to NOT use browser libs
+    "types": ["node"],              // include Node types for built-in modules and globals
     "moduleResolution": "nodenext",
     "module": "nodenext",
+    "rootDir": "./src",             // if not specified we get ./dist/src/ :(
     "outDir": "dist",
 
     // DEFAULTS that are always "good to have" - expect to be the same for all projects
