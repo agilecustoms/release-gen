@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.7](https://github.com/agilecustoms/release-gen/compare/v4.2.6...v4.2.7) (2026-04-02)
+
+### Miscellaneous
+
+* update to TypeScript 6 ([bab633d](https://github.com/agilecustoms/release-gen/commit/bab633dd1e617a258249f1faf7f6351aaeedb364))
+
+
 ## [4.2.6](https://github.com/agilecustoms/release-gen/compare/v4.2.5...v4.2.6) (2026-03-17)
 
 ### Miscellaneous
