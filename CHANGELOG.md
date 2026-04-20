@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.8](https://github.com/agilecustoms/release-gen/compare/v4.2.7...v4.2.8) (2026-04-20)
+
+### Bug Fixes
+
+* vulnerability ([37a7043](https://github.com/agilecustoms/release-gen/commit/37a70437c46eb05bc723ec64b4522ebc9dbdac7e))
+
+
 ## [4.2.7](https://github.com/agilecustoms/release-gen/compare/v4.2.6...v4.2.7) (2026-04-02)
 
 ### Miscellaneous
