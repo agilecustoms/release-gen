@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.9](https://github.com/agilecustoms/release-gen/compare/v4.2.8...v4.2.9) (2026-05-04)
+
+### Miscellaneous
+
+* update deps, don't use husky for pre-commit hooks ([17e446d](https://github.com/agilecustoms/release-gen/commit/17e446d72a937fc93da2d5c0a0341a664a7f2840))
+
+
 ## [4.2.8](https://github.com/agilecustoms/release-gen/compare/v4.2.7...v4.2.8) (2026-04-20)
 
 ### Bug Fixes
