@@ -21,3 +21,8 @@ app3-build:
 
 git-fetch-tags:
 	@git fetch --tags --force
+
+# ---------------------------------------------------
+
+x-install-git-hooks:
+	@cp .github/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
