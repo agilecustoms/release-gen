@@ -1,4 +1,4 @@
-import fs from 'fs/promises'
+import fs from 'node:fs/promises'
 
 export class ChangelogGenerator {
   public async generate(file: string, notes: string, title?: string): Promise<void> {
@@ -11,7 +11,7 @@ export class ChangelogGenerator {
     }
 
     // write a file effectively: write several strings, avoid concatenation
-    const stream = await fs.open(file, 'w')
+    await using stream = await fs.open(file, 'w')
     if (title) {
       await stream.write(title + '\n\n')
     }

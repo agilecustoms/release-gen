@@ -1,7 +1,7 @@
 import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { type ReleaseDetails, ReleaseError, type ReleaseOptions } from './model.js'
+import { type ReleaseDetails, ReleaseError, type ReleaseOptions, VALID_VERSION_BUMPS, type VersionBump } from './model.js'
 import { exec as execAsync } from './utils.js'
 
 const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
@@ -37,7 +37,11 @@ const releaseChannel: string | false = getInput('release_channel') === 'false' ?
 const releasePlugins: string = getInput('release_plugins')
 const tagFormat: string = getInput('tag_format')
 const version: string = getInput('version')
-const versionBump: string = getInput('version_bump')
+const versionBump = getInput('version_bump') as VersionBump
+if (!VALID_VERSION_BUMPS.includes(versionBump)) {
+  core.setFailed(`Invalid version-bump value: "${versionBump}"`)
+  process.exit(1)
+}
 
 // cwd is /home/runner/work/_actions/agilecustoms/release-gen/main/dist
 // need to be '/home/runner/work/{repo}/{repo}', like '/home/runner/work/release/release'
