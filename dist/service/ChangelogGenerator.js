@@ -1,30 +1,94 @@
-import fs from 'fs/promises';
+var __addDisposableResource = (this && this.__addDisposableResource) || function (env, value, async) {
+    if (value !== null && value !== void 0) {
+        if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
+        var dispose, inner;
+        if (async) {
+            if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
+            dispose = value[Symbol.asyncDispose];
+        }
+        if (dispose === void 0) {
+            if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
+            dispose = value[Symbol.dispose];
+            if (async) inner = dispose;
+        }
+        if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };
+        env.stack.push({ value: value, dispose: dispose, async: async });
+    }
+    else if (async) {
+        env.stack.push({ async: true });
+    }
+    return value;
+};
+var __disposeResources = (this && this.__disposeResources) || (function (SuppressedError) {
+    return function (env) {
+        function fail(e) {
+            env.error = env.hasError ? new SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
+            env.hasError = true;
+        }
+        var r, s = 0;
+        function next() {
+            while (r = env.stack.pop()) {
+                try {
+                    if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
+                    if (r.dispose) {
+                        var result = r.dispose.call(r.value);
+                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });
+                    }
+                    else s |= 1;
+                }
+                catch (e) {
+                    fail(e);
+                }
+            }
+            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
+            if (env.hasError) throw env.error;
+        }
+        return next();
+    };
+})(typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+});
+import fs from 'node:fs/promises';
 export class ChangelogGenerator {
     async generate(file, notes, title) {
-        let oldContent = '';
+        const env_1 = { stack: [], error: void 0, hasError: false };
         try {
-            oldContent = await fs.readFile(file, 'utf8');
-        }
-        catch (err) {
-            if (err.code !== 'ENOENT')
-                throw err;
-        }
-        const stream = await fs.open(file, 'w');
-        if (title) {
-            await stream.write(title + '\n\n');
-        }
-        notes = notes.replace(/\n{3,}/, '\n\n');
-        await stream.write(notes.trim());
-        if (oldContent) {
-            const minorStart = oldContent.search('(^|\n\n)# \\[');
-            const patchStart = oldContent.search('(^|\n\n)## \\[');
-            const changesStart = [minorStart, patchStart].filter(index => index !== -1).map(index => index == 0 ? 0 : index + 2);
-            if (changesStart.length > 0) {
-                oldContent = oldContent.substring(Math.min(...changesStart));
+            let oldContent = '';
+            try {
+                oldContent = await fs.readFile(file, 'utf8');
             }
-            await stream.write('\n\n\n');
-            await stream.write(oldContent);
+            catch (err) {
+                if (err.code !== 'ENOENT')
+                    throw err;
+            }
+            const stream = __addDisposableResource(env_1, await fs.open(file, 'w'), true);
+            if (title) {
+                await stream.write(title + '\n\n');
+            }
+            notes = notes.replace(/\n{3,}/, '\n\n');
+            await stream.write(notes.trim());
+            if (oldContent) {
+                const minorStart = oldContent.search('(^|\n\n)# \\[');
+                const patchStart = oldContent.search('(^|\n\n)## \\[');
+                const changesStart = [minorStart, patchStart].filter(index => index !== -1).map(index => index == 0 ? 0 : index + 2);
+                if (changesStart.length > 0) {
+                    oldContent = oldContent.substring(Math.min(...changesStart));
+                }
+                await stream.write('\n\n\n');
+                await stream.write(oldContent);
+            }
+            await stream.close();
         }
-        await stream.close();
+        catch (e_1) {
+            env_1.error = e_1;
+            env_1.hasError = true;
+        }
+        finally {
+            const result_1 = __disposeResources(env_1);
+            if (result_1)
+                await result_1;
+        }
     }
 }

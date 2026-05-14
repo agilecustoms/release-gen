@@ -1,7 +1,7 @@
 import path from 'node:path';
 import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { ReleaseError } from './model.js';
+import { ReleaseError, VALID_VERSION_BUMPS } from './model.js';
 import { exec as execAsync } from './utils.js';
 const distDir = path.dirname(fileURLToPath(import.meta.url));
 const packageJsonDir = path.dirname(distDir);
@@ -31,6 +31,10 @@ const releasePlugins = getInput('release_plugins');
 const tagFormat = getInput('tag_format');
 const version = getInput('version');
 const versionBump = getInput('version_bump');
+if (!VALID_VERSION_BUMPS.includes(versionBump)) {
+    core.setFailed(`Invalid version-bump value: "${versionBump}"`);
+    process.exit(1);
+}
 const cwd = process.env.GITHUB_WORKSPACE;
 const options = {
     changelogFile,
