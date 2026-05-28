@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.11](https://github.com/agilecustoms/release-gen/compare/v4.2.10...v4.2.11) (2026-05-28)
+
+### Miscellaneous
+
+* update deps ([02ce971](https://github.com/agilecustoms/release-gen/commit/02ce9713dbceb408b0b0329f51ea64b995cc8b1d))
+
+
 ## [4.2.10](https://github.com/agilecustoms/release-gen/compare/v4.2.9...v4.2.10) (2026-05-14)
 
 ### Miscellaneous
