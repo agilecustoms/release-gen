@@ -43,6 +43,7 @@ export class SemanticReleaseAdapter {
       }
     )
 
+    // noinspection JSUnusedGlobalSymbols
     const semanticRelease: (options: Options, environment?: Config) => Promise<Result> = await esmock(
       'semantic-release/index.js',
       {
@@ -70,11 +71,15 @@ export class SemanticReleaseAdapter {
 
   public findBranch(branches: BranchSpec[], branch: string): BranchObject {
     for (const spec of branches) {
-      if (typeof spec === 'string' && micromatch.isMatch(branch, spec)) {
-        return { name: branch }
-      }
-      if (typeof spec === 'object' && micromatch.isMatch(branch, spec.name)) {
-        return { ...spec, name: branch } // clone the object to avoid mutation
+      if (typeof spec === 'string') {
+        if (micromatch.isMatch(branch, spec)) {
+          return { name: branch }
+        }
+      } else if (typeof spec === 'object') {
+        if (!('name' in spec)) {}
+        if (micromatch.isMatch(branch, spec.name)) {
+          return { ...spec, name: branch } // clone the object to avoid mutation
+        }
       }
     }
     throw new ReleaseError(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`)

@@ -39,6 +39,6 @@ describe('errors', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await runFix(branch, { releaseBranches: {} as any })
     })
-    expect(error).toContain(`Branch "${branch}" not found in branches: [{}]`)
+    expect(error).toContain(`Release branch name is required: {}`)
   })
 })

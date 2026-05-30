@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.0.0",
+    "@types/micromatch": "^4.0.10",
     "@types/node": "^24.0.0",
     "@vitest/coverage-v8": "^4.0.8",
     "eslint": "^9.9.0",

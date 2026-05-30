@@ -96,7 +96,9 @@ describe('ReleaseProcessor', () => {
 
     try {
       await process(options)
-    } catch {}
+    } catch (e) {
+      console.log(e)
+    }
 
     const args = semanticReleaseAdapter.run.mock.calls[0]
     expect(args![0].plugins).toEqual(['@semantic-release/commit-analyzer'])
