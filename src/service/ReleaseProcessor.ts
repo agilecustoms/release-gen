@@ -114,7 +114,7 @@ export class ReleaseProcessor {
     if (options.releaseBranches) {
       let branches
       try {
-        branches = JSON.parse(options.releaseBranches)
+        branches = JSON.parse(options.releaseBranches as string)
       } catch (cause) {
         throw new ReleaseError(`Failed to parse releaseBranches: ${options.releaseBranches}`, { cause })
       }
@@ -141,8 +141,7 @@ export class ReleaseProcessor {
           throw new ReleaseError('Unsupported release branch type ' + typeof spec)
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      options.releaseBranches = branches as any // TODO: not super good to assign array to string
+      options.branches = branches
     }
 
     if (options.releasePlugins) {
@@ -152,7 +151,7 @@ export class ReleaseProcessor {
       } catch (cause) {
         throw new ReleaseError(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause })
       }
-      options.releasePlugins = plugins // TODO: not super good to assign array to string
+      options.plugins = plugins
     }
   }
 
@@ -211,12 +210,11 @@ export class ReleaseProcessor {
     if (options.tagFormat) {
       opts.tagFormat = options.tagFormat
     }
-    if (options.releaseBranches) {
-      opts.branches = options.releaseBranches
+    if (options.branches) {
+      opts.branches = options.branches
     }
-    if (options.releasePlugins) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      opts.plugins = options.releasePlugins as any
+    if (options.plugins) {
+      opts.plugins = options.plugins
     }
 
     const config: Config = {
