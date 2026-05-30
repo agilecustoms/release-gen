@@ -27,13 +27,31 @@ describe('SemanticReleaseAdapter', () => {
       expect(res).toEqual({ name: 'main' })
     })
 
+    it('should find branch represented as string by pattern', () => {
+      const branches = ['main', '+([0-9])?(.{+([0-9]),x}).x']
+      const branch = '1.x.x'
+
+      const res = adapter.findBranch(branches, branch)
+
+      expect(res).toEqual({ name: '1.x.x' })
+    })
+
     it('should find branch represented as object', () => {
       const branches = [{ name: 'main' }, { name: 'develop' }]
       const branch = 'develop'
 
       const res = adapter.findBranch(branches, branch)
 
-      expect(res).toEqual({ name: 'develop' })
+      expect(res).toEqual({ name: branch })
+    })
+
+    it('should find branch represented as object by pattern', () => {
+      const branches = [{ name: 'main' }, { name: '+([0-9])?(.{+([0-9]),x}).x' }]
+      const branch = '1.32.x'
+
+      const res = adapter.findBranch(branches, branch)
+
+      expect(res).toEqual({ name: branch })
     })
   })
 
