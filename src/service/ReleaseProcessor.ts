@@ -17,21 +17,19 @@ export class ReleaseProcessor {
   ) {}
 
   public async process(options: ReleaseOptions): Promise<ReleaseDetails> {
+    this.validateInputs(options)
+
     const currentBranch = await this.gitClient.getCurrentBranch(options.cwd)
 
     if (options.version) {
       return this.explicitVersion(options, currentBranch)
     }
 
-    if (options.versionBump && !VERSION_BUMP_OPTIONS.includes(options.versionBump)) {
-      throw new ReleaseError(`Invalid version-bump option: ${options.versionBump}. Valid options are: ${VERSION_BUMP_OPTIONS.join(', ')}`)
-    }
-
     let result: SemanticReleaseResult
     try {
       result = await this.semanticRelease(options, currentBranch)
     } catch (e) {
-      this.handleError(e)
+      this.handleSemanticReleaseError(e)
       throw e
     }
 
@@ -108,6 +106,55 @@ export class ReleaseProcessor {
     }
   }
 
+  private validateInputs(options: ReleaseOptions): void {
+    if (options.versionBump && !VERSION_BUMP_OPTIONS.includes(options.versionBump)) {
+      throw new ReleaseError(`Invalid version-bump option: ${options.versionBump}. Valid options are: ${VERSION_BUMP_OPTIONS.join(', ')}`)
+    }
+
+    if (options.releaseBranches) {
+      let branches
+      try {
+        branches = JSON.parse(options.releaseBranches as string)
+      } catch (cause) {
+        throw new ReleaseError(`Failed to parse releaseBranches: ${options.releaseBranches}`, { cause })
+      }
+      if (!Array.isArray(branches)) {
+        branches = [branches]
+      }
+      for (const spec of branches) {
+        if (typeof spec === 'string') {
+          if (spec.trim() === '') {
+            throw new ReleaseError('Release branch can not be empty string')
+          }
+        } else if (typeof spec === 'object') {
+          const name = spec['name']
+          if (name === undefined) {
+            throw new ReleaseError('Release branch name is required: ' + JSON.stringify(spec))
+          }
+          if (typeof name !== 'string') {
+            throw new ReleaseError('Release branch name must be string: ' + JSON.stringify(spec))
+          }
+          if (name.trim() === '') {
+            throw new ReleaseError('Release branch name must not be empty: ' + JSON.stringify(spec))
+          }
+        } else {
+          throw new ReleaseError('Unsupported release branch type ' + typeof spec)
+        }
+      }
+      options.branches = branches
+    }
+
+    if (options.releasePlugins) {
+      let plugins
+      try {
+        plugins = JSON.parse(options.releasePlugins)
+      } catch (cause) {
+        throw new ReleaseError(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause })
+      }
+      options.plugins = plugins
+    }
+  }
+
   private explicitVersion(options: ReleaseOptions, currentBranch: string): ReleaseDetails {
     let channel = options.releaseChannel
     if (channel === false) {
@@ -145,7 +192,7 @@ export class ReleaseProcessor {
     }
   }
 
-  private handleError(e: unknown): void {
+  private handleSemanticReleaseError(e: unknown): void {
     if (!(e instanceof Error)) {
       return
     }
@@ -163,19 +210,11 @@ export class ReleaseProcessor {
     if (options.tagFormat) {
       opts.tagFormat = options.tagFormat
     }
-    if (options.releaseBranches) {
-      try {
-        opts.branches = JSON.parse(options.releaseBranches)
-      } catch (cause) {
-        throw new ReleaseError(`Failed to parse releaseBranches: ${options.releaseBranches}`, { cause })
-      }
+    if (options.branches) {
+      opts.branches = options.branches
     }
-    if (options.releasePlugins) {
-      try {
-        opts.plugins = JSON.parse(options.releasePlugins)
-      } catch (cause) {
-        throw new ReleaseError(`Failed to parse releasePlugins: ${options.releasePlugins}`, { cause })
-      }
+    if (options.plugins) {
+      opts.plugins = options.plugins
     }
 
     const config: Config = {

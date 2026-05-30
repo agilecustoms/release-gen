@@ -1,4 +1,4 @@
-import type { BranchObject, Result } from 'semantic-release'
+import type { BranchObject, BranchSpec, PluginSpec, Result } from 'semantic-release'
 
 export const VALID_VERSION_BUMPS = ['', 'default-minor', 'default-patch'] as const
 export type VersionBump = typeof VALID_VERSION_BUMPS[number]
@@ -10,8 +10,10 @@ export type ReleaseOptions = {
   cwd: string
   notesTmpFile: string
   releaseBranches?: string
+  branches?: BranchSpec[] | BranchSpec // parsed 'releaseBranches'
   releaseChannel?: string | false
   releasePlugins?: string
+  plugins?: PluginSpec[] // parsed 'releasePlugins'
   tagFormat?: string
   version?: string
   versionBump: VersionBump

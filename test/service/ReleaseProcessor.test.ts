@@ -51,102 +51,142 @@ describe('ReleaseProcessor', () => {
     gitClient.getCurrentBranch.mockResolvedValue('main')
   })
 
-  describe('errors', () => {
+  describe('validateInputs', () => {
     it('should throw an error if versionBump is invalid', async () => {
-      const options = { ...OPTIONS, versionBump: 'invalid-option' }
+      const options = { ...OPTIONS }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      options.versionBump = 'invalid-option' as any
 
       await expect(process(options)).rejects.toThrow('Invalid version-bump option: invalid-option. Valid options are: default-minor, default-patch')
     })
 
+    describe('releaseBranches', () => {
+      it('should throw an error if release branches cannot be parsed', async () => {
+        const options = { ...OPTIONS, releaseBranches: 'invalid-json' }
+
+        await expect(process(options)).rejects.toThrow('Failed to parse releaseBranches: invalid-json')
+      })
+
+      it('should convert object in list and fail w/o name', async () => {
+        const options = { ...OPTIONS, releaseBranches: '{}' }
+
+        await expect(process(options)).rejects.toThrow('Release branch name is required: {}')
+      })
+
+      it('should fail on empty branch', async () => {
+        const options = { ...OPTIONS, releaseBranches: '[""]' }
+
+        await expect(process(options)).rejects.toThrow('Release branch can not be empty string')
+      })
+
+      it('should fail if name is not string', async () => {
+        const options = { ...OPTIONS, releaseBranches: '[{"name":123}]' }
+
+        await expect(process(options)).rejects.toThrow('Release branch name must be string: ')
+      })
+
+      it('should fail on empty branch name', async () => {
+        const options = { ...OPTIONS, releaseBranches: '[{"name":" "}]' }
+
+        await expect(process(options)).rejects.toThrow('Release branch name must not be empty: ')
+      })
+
+      it('should fail if release branch is not an object', async () => {
+        const options = { ...OPTIONS, releaseBranches: '[false]' }
+
+        await expect(process(options)).rejects.toThrow('Unsupported release branch type ')
+      })
+    })
+
+    it('should throw an error if release plugins cannot be parsed', async () => {
+      const options = { ...OPTIONS, releasePlugins: 'invalid-json' }
+
+      await expect(process(options)).rejects.toThrow('Failed to parse releasePlugins: invalid-json')
+    })
+  })
+
+  describe('normal flow', () => {
+    it('should call semantic-release adapter', async () => {
+      try {
+        await process()
+      } catch {}
+
+      expect(semanticReleaseAdapter.run).toHaveBeenCalledOnce()
+    })
+
+    it('should pass release branches to semantic-release adapter', async () => {
+      const options = { ...OPTIONS, releaseBranches: '["main"]' }
+
+      try {
+        await process(options)
+      } catch {}
+
+      const args = semanticReleaseAdapter.run.mock.calls[0]
+      expect(args![0].branches).toEqual(['main'])
+    })
+
+    it('should pass release plugins to semantic-release adapter', async () => {
+      const options = { ...OPTIONS, releasePlugins: '["@semantic-release/commit-analyzer"]' }
+
+      try {
+        await process(options)
+      } catch (e) {
+        console.log(e)
+      }
+
+      const args = semanticReleaseAdapter.run.mock.calls[0]
+      expect(args![0].plugins).toEqual(['@semantic-release/commit-analyzer'])
+    })
+
+    it('should generate changelog if changelogFile is provided', async () => {
+      const options = { ...OPTIONS, changelogFile: 'CHANGELOG.md', changelogTitle: 'Changelog' }
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
+        branch: { name: 'main' }
+      })
+
+      await process(options)
+
+      expect(changelogGenerator.generate).toHaveBeenCalledWith('CHANGELOG.md', 'Release notes', 'Changelog')
+    })
+
+    it('should return release with nextVersion and notes', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
+        branch: { name: 'main' }
+      })
+
+      const result = await process()
+
+      expect(result).toBeTruthy()
+      if (result) {
+        expect(result.version).toBe('v1.0.0')
+        expect(result.notes).toBe('Release notes')
+      }
+    })
+  })
+
+  describe('semantic release errors', () => {
     it('should throw clear error if invalid tag format', () => {
       const error = new Error('Invalid `tagFormat` option')
       semanticReleaseAdapter.run.mockRejectedValue(error)
 
       return expect(process()).rejects.toThrow('Invalid tag format (tag-format input or tagFormat in .releaserc.json)')
     })
-  })
 
-  it('should call semantic-release adapter', async () => {
-    try {
-      await process()
-    } catch {}
+    it('should throw an error if next release has no notes', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { gitTag: 'v1.0.0', notes: '' }
+      })
 
-    expect(semanticReleaseAdapter.run).toHaveBeenCalledOnce()
-  })
-
-  it('should pass release branches to semantic-release adapter', async () => {
-    const options = { ...OPTIONS, releaseBranches: '["main"]' }
-
-    try {
-      await process(options)
-    } catch {}
-
-    const args = semanticReleaseAdapter.run.mock.calls[0]
-    expect(args![0].branches).toEqual(['main'])
-  })
-
-  it('should throw an error if release branches cannot be parsed', async () => {
-    const options = { ...OPTIONS, releaseBranches: 'invalid-json' }
-
-    await expect(process(options)).rejects.toThrow('Failed to parse releaseBranches: invalid-json')
-  })
-
-  it('should pass release plugins to semantic-release adapter', async () => {
-    const options = { ...OPTIONS, releasePlugins: '["@semantic-release/commit-analyzer"]' }
-
-    try {
-      await process(options)
-    } catch {}
-
-    const args = semanticReleaseAdapter.run.mock.calls[0]
-    expect(args![0].plugins).toEqual(['@semantic-release/commit-analyzer'])
-  })
-
-  it('should throw an error if release plugins cannot be parsed', async () => {
-    const options = { ...OPTIONS, releasePlugins: 'invalid-json' }
-
-    await expect(process(options)).rejects.toThrow('Failed to parse releasePlugins: invalid-json')
-  })
-
-  it('should throw ex if semantic-release returns false', async () => {
-    semanticReleaseAdapter.run.mockResolvedValue(false)
-
-    await expect(process()).rejects.toThrow('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
-  })
-
-  it('should throw an error if next release has no notes', async () => {
-    semanticReleaseAdapter.run.mockResolvedValue({
-      nextRelease: { gitTag: 'v1.0.0', notes: '' }
+      await expect(process()).rejects.toThrow('No release notes found in the next release. This is unexpected')
     })
 
-    await expect(process()).rejects.toThrow('No release notes found in the next release. This is unexpected')
-  })
+    it('should throw ex if semantic-release returns false', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue(false)
 
-  it('should generate changelog if changelogFile is provided', async () => {
-    const options = { ...OPTIONS, changelogFile: 'CHANGELOG.md', changelogTitle: 'Changelog' }
-    semanticReleaseAdapter.run.mockResolvedValue({
-      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
-      branch: { name: 'main' }
+      await expect(process()).rejects.toThrow('Unable to generate new version, please check PR commits\' messages (or aggregated message if used sqush commits)')
     })
-
-    await process(options)
-
-    expect(changelogGenerator.generate).toHaveBeenCalledWith('CHANGELOG.md', 'Release notes', 'Changelog')
-  })
-
-  it('should return release with nextVersion and notes', async () => {
-    semanticReleaseAdapter.run.mockResolvedValue({
-      nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
-      branch: { name: 'main' }
-    })
-
-    const result = await process()
-
-    expect(result).toBeTruthy()
-    if (result) {
-      expect(result.version).toBe('v1.0.0')
-      expect(result.notes).toBe('Release notes')
-    }
   })
 
   describe('channel and tags inference', () => {
