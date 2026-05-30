@@ -1,4 +1,5 @@
 import esmock from 'esmock';
+import micromatch from 'micromatch';
 import { ReleaseError } from '../model.js';
 const allowedPlugins = [
     '@semantic-release/commit-analyzer',
@@ -45,11 +46,16 @@ export class SemanticReleaseAdapter {
     }
     findBranch(branches, branch) {
         for (const spec of branches) {
-            if (spec === branch) {
-                return { name: branch };
+            if (typeof spec === 'string') {
+                if (micromatch.isMatch(branch, spec)) {
+                    return { name: branch };
+                }
             }
-            if (typeof spec === 'object' && spec.name === branch) {
-                return { ...spec };
+            else if (typeof spec === 'object') {
+                if (!('name' in spec)) { }
+                if (micromatch.isMatch(branch, spec.name)) {
+                    return { ...spec, name: branch };
+                }
             }
         }
         throw new ReleaseError(`Branch "${branch}" not found in branches: ${JSON.stringify(branches)}`);

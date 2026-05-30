@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.12](https://github.com/agilecustoms/release-gen/compare/v4.2.11...v4.2.12) (2026-05-30)
+
+### Bug Fixes
+
+* branch match logic ([4332a0b](https://github.com/agilecustoms/release-gen/commit/4332a0b22f9a88f010c6c287b3b36b93187d789b))
+
+
 ## [4.2.11](https://github.com/agilecustoms/release-gen/compare/v4.2.10...v4.2.11) (2026-05-28)
 
 ### Miscellaneous
