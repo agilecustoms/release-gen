@@ -5,7 +5,7 @@ app0-install-deps:
 	@npm install
 
 app0-update-deps:
-	@npm update; npm install; npm outdated; npm find-dupes
+	@npm update; npm install; npm outdated; npm find-dupes --ignore-scripts
 
 app1-lint:
 	@npm run lint
