@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.13](https://github.com/agilecustoms/release-gen/compare/v4.2.12...v4.2.13) (2026-06-24)
+
+### Miscellaneous
+
+* update deps and allowScripts ([e5d966c](https://github.com/agilecustoms/release-gen/commit/e5d966c4a5129eb074d109189f632e7b93c68b73))
+
+
 ## [4.2.12](https://github.com/agilecustoms/release-gen/compare/v4.2.11...v4.2.12) (2026-05-30)
 
 ### Bug Fixes
