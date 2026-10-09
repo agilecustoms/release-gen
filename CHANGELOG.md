@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.14](https://github.com/agilecustoms/release-gen/compare/v4.2.13...v4.2.14) (2026-10-09)
+
+### Miscellaneous
+
+* update GitHub actions to latest versions ([d7d14a3](https://github.com/agilecustoms/release-gen/commit/d7d14a328a9160432b12f66118fdef41375d1cbd))
+
+
 ## [4.2.13](https://github.com/agilecustoms/release-gen/compare/v4.2.12...v4.2.13) (2026-06-24)
 
 ### Miscellaneous
