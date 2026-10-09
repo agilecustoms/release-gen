@@ -33,22 +33,22 @@
     "run-local": "tsc && node dist/local.js"
   },
   "dependencies": {
-    "@actions/core": "^3.0.0",
-    "conventional-changelog-conventionalcommits": "^9.1.0",
-    "esmock": "^2.7.1",
+    "@actions/core": "^3.0.1",
+    "conventional-changelog-conventionalcommits": "^9.3.1",
+    "esmock": "^2.7.8",
     "micromatch": "^4.0.8",
-    "semantic-release": "^25.0.2"
+    "semantic-release": "^25.0.9"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^5.0.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^4.0.8",
-    "eslint": "^9.9.0",
-    "eslint-plugin-import": "^2.31.0",
-    "typescript": "^6.0.0",
-    "typescript-eslint": "^8.40.0",
-    "vitest": "^4.0.0"
+    "@types/node": "^24.19.1",
+    "@vitest/coverage-v8": "^5.0.3",
+    "eslint": "^9.39.5",
+    "eslint-plugin-import": "^2.32.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
   },
   "allowScripts": {
     "fsevents": true
