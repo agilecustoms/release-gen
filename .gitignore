@@ -1,9 +1,26 @@
-node_modules
-.idea
+# System files
+.DS_Store
+Thumbs.db
 
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Temp files
+.tmp
+
+# Dependencies
+node_modules/
+
+# Build output
+# dist/ is committed: GitHub Action runs dist/index.js
 dist/local.js
+
+# Test reports
+coverage/
+
+# Repo-specific
+# integration test working dirs
 test/integration/*/gh-action/*
 test/integration/*/git/*
-
-# system files
-.DS_Store
