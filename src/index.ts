@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -19,10 +20,13 @@ async function exec(command: string, error: string): Promise<string> {
 }
 
 console.log('Node version: ' + process.version)
-await exec(
-  'npm ci --only=prod --loglevel=error --no-audit --no-fund --no-progress',
-  'Error during npm ci - packages installed dynamically at runtime'
-)
+// node_modules are not part of the action, so install them at runtime. Integration tests install them once upfront
+if (!fs.existsSync(path.join(packageJsonDir, 'node_modules'))) {
+  await exec(
+    'npm ci --only=prod --loglevel=error --no-audit --no-fund --no-progress',
+    'Error during npm ci - packages installed dynamically at runtime'
+  )
+}
 
 const core = await import('@actions/core')
 function getInput(name: string): string {

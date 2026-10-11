@@ -19,8 +19,3 @@ dist/local.js
 
 # Test reports
 coverage/
-
-# Repo-specific
-# integration test working dirs
-test/integration/*/gh-action/*
-test/integration/*/git/*

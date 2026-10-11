@@ -17,6 +17,23 @@ export default defineConfig({
         lines: 86,
         branches: 90,
       }
-    }
+    },
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['test/service/**/*.test.ts'],
+        }
+      },
+      {
+        extends: true,
+        test: {
+          name: 'integration',
+          include: ['test/integration/**/*.test.ts'],
+          globalSetup: ['test/integration/globalSetup.ts'],
+        }
+      }
+    ]
   }
 })

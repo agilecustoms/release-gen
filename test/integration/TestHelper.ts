@@ -3,11 +3,9 @@ import type { ExecException } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import type { BranchSpec, NextRelease } from 'semantic-release'
-import { expect, type TestContext } from 'vitest'
+import { expect, inject, type TestContext } from 'vitest'
 import type { ReleaseDetails } from '../../src/model.js'
 import { exec } from '../../src/utils.js'
-
-const repoUrl = 'github.com/agilecustoms/release-gen.git'
 
 export const TIMEOUT = 120_000 // 2 min
 let counter = 0
@@ -33,13 +31,13 @@ class NodeError extends Error {
 }
 
 export class TestHelper {
-  private readonly ghActionDir: string
-  private readonly gitDir: string
+  // built release-gen and local 'origin' repo, see globalSetup.ts
+  private readonly ghActionDir = inject('ghActionDir')
+  private readonly originDir = inject('originDir')
+  private readonly itDir: string
 
   constructor(itName: string) {
-    const itDir = path.join(__dirname, itName)
-    this.ghActionDir = path.join(itDir, 'gh-action')
-    this.gitDir = path.join(itDir, 'git')
+    this.itDir = path.join(inject('tmpDir'), 'git', itName)
   }
 
   private testName!: string
@@ -47,30 +45,12 @@ export class TestHelper {
   private branchName!: string
 
   public async beforeAll(): Promise<void> {
-    const rootDir = path.resolve(__dirname, '../..')
-    const distDir = path.join(rootDir, 'dist')
-    // rebuild source code to reflect any changes while work on tests
-    await exec(`npm run build -- --outDir ${distDir}`, { cwd: rootDir })
-
-    // copy entire 'release-gen/dist/{itName}' dir into test/integration/{itName}/gh-action
-    await fs.promises.rm(this.ghActionDir, { recursive: true, force: true }) // clean before copy
-    await fs.promises.mkdir(this.ghActionDir, { recursive: true })
-    await exec(`cp -R "${distDir}" "${this.ghActionDir}"`)
-    // copy root package.json and package-lock.json into test/integration/{itName}/gh-action
-    await exec(`cp "${path.join(rootDir, 'package.json')}" "${this.ghActionDir}"`)
-    await exec(`cp "${path.join(rootDir, 'package-lock.json')}" "${this.ghActionDir}"`)
-
-    // create 'test/integration/{itName}/git' directory
-    await fs.promises.mkdir(this.gitDir, { recursive: true })
+    await fs.promises.mkdir(this.itDir, { recursive: true })
   }
 
   public async beforeEach(ctx: TestContext): Promise<void> {
     this.testName = ctx.task.name
-    this.testDir = path.join(this.gitDir, this.testName)
-
-    // some tests install extra dependency, need to remove it to avoid race conditions
-    const npmDynamicDep = path.join(this.ghActionDir, 'node_modules/conventional-changelog-conventionalcommits')
-    await fs.promises.rm(npmDynamicDep, { recursive: true, force: true })
+    this.testDir = path.join(this.itDir, this.testName)
 
     // delete (if any) and create a directory for this test
     await fs.promises.rm(this.testDir, { recursive: true, force: true })
@@ -85,14 +65,13 @@ export class TestHelper {
     this.branchName = branch
     const cwd = this.testDir
     const options: ExecSyncOptions = { cwd, stdio: 'inherit' }
-    // sparse checkout, specifically if clone with test, then vitest recognize all tests inside and try to run them!
-    await exec(`git clone --no-checkout --filter=blob:none https://${repoUrl} .`, options)
-    await exec('git sparse-checkout init --cone', options)
-    await exec(`git checkout ${branch}`, options)
+    // file:// URL (not a path): release-notes-generator parses repository URL with `new URL()`
+    await exec(`git clone -q --branch ${branch} "file://${this.originDir}" .`, options)
     // w/o user.name and user.email git will fail to commit on CI
     await exec('git config user.name "CI User"', options)
     await exec('git config user.email "ci@example.com"', options)
-    // copy assets/{testName}/* into test/integration/git/{testName}
+    await exec('git config commit.gpgsign false', options)
+    // copy assets/{testName}/* into the test repo
     const assetsDir = path.resolve(__dirname, 'assets')
     const assetsSrc = path.join(assetsDir, this.testName)
     if (await fs.promises.stat(assetsSrc).then(() => true, () => false)) {
@@ -152,7 +131,7 @@ export class TestHelper {
     const notesTmpFile = `/tmp/release-gen-notes-${Math.random().toString(36).slice(2)}`
     env['INPUT_NOTES_TMP_FILE'] = notesTmpFile
 
-    // launch release-gen/test/integration/{itName}/gh-action/dist/index.js
+    // launch {tmpDir}/gh-action/dist/index.js
     const indexJs = path.join(this.ghActionDir, 'dist', 'index.js')
 
     const options = {
