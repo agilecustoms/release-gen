@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.17](https://github.com/agilecustoms/release-gen/compare/v4.2.16...v4.2.17) (2026-10-11)
+
+### Miscellaneous
+
+* Build job needs only read access, tests no longer use GITHUB_TOKEN ([9efc9bf](https://github.com/agilecustoms/release-gen/commit/9efc9bf572d542c6aeb1c7c93da75f7416cc4896))
+
+
 ## [4.2.16](https://github.com/agilecustoms/release-gen/compare/v4.2.15...v4.2.16) (2026-10-11)
 
 ### Miscellaneous
