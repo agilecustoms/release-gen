@@ -3,6 +3,7 @@ import { ReleaseError } from '../model.js';
 const MAINTENANCE_BRANCH = /\d+\.x\.x/;
 const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/;
 const VERSION_BUMP_OPTIONS = ['default-minor', 'default-patch'];
+const DEFAULT_TAG_FORMAT = 'v${version}';
 export class ReleaseProcessor {
     semanticReleaseAdapter;
     changelogGenerator;
@@ -68,11 +69,14 @@ export class ReleaseProcessor {
             const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name);
             channel = branch.prerelease || maintenance ? branch.name : 'latest';
         }
-        const version = result.nextRelease.gitTag;
+        const version = result.nextRelease.version;
+        const toGitTag = this.gitTagFormatter(version, result.nextRelease.gitTag);
         const tags = [version];
-        const gitTags = [version];
         if (options.floatingTags) {
-            this.addTags(tags, gitTags, version, branch);
+            this.addFloatingVersions(tags, version, branch);
+        }
+        const gitTags = tags.map(toGitTag);
+        if (options.floatingTags) {
             if ((branch.channel || branch.channel === undefined) && channel !== branch.name) {
                 gitTags.push(channel);
             }
@@ -147,21 +151,22 @@ export class ReleaseProcessor {
         else if (!channel) {
             channel = 'latest';
         }
-        const version = options.version;
+        const version = options.version.replace(/^v(?=\d)/, '');
+        const tagFormat = options.tagFormat || DEFAULT_TAG_FORMAT;
+        const toGitTag = (v) => tagFormat.replace('${version}', v);
         const tags = [version];
-        const gitTags = [version];
         if (options.floatingTags) {
             let tag = version;
             for (let lastDotIndex; (lastDotIndex = tag.lastIndexOf('.')) !== -1;) {
                 tag = tag.slice(0, lastDotIndex);
                 tags.push(tag);
-                gitTags.push(tag);
             }
-            if (options.releaseChannel !== false) {
-                tags.push(channel);
-                if (channel !== currentBranch) {
-                    gitTags.push(channel);
-                }
+        }
+        const gitTags = tags.map(toGitTag);
+        if (options.floatingTags && options.releaseChannel !== false) {
+            tags.push(channel);
+            if (channel !== currentBranch) {
+                gitTags.push(channel);
             }
         }
         return {
@@ -200,17 +205,24 @@ export class ReleaseProcessor {
         };
         return await this.semanticReleaseAdapter.run(opts, config);
     }
-    addTags(tags, gitTags, version, branch) {
+    gitTagFormatter(version, gitTag) {
+        const index = gitTag.indexOf(version);
+        if (index === -1) {
+            throw new ReleaseError(`Git tag "${gitTag}" does not contain version "${version}". This is unexpected`);
+        }
+        const prefix = gitTag.slice(0, index);
+        const suffix = gitTag.slice(index + version.length);
+        return (v) => prefix + v + suffix;
+    }
+    addFloatingVersions(tags, version, branch) {
         if (!branch.prerelease) {
             const minor = version.slice(0, version.lastIndexOf('.'));
             tags.push(minor);
-            gitTags.push(minor);
             const range = branch.range || branch.name;
             const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range);
             if (!minorMaintenance) {
                 const major = minor.slice(0, minor.lastIndexOf('.'));
                 tags.push(major);
-                gitTags.push(major);
             }
         }
     }

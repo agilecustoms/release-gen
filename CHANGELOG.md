@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.0.0](https://github.com/agilecustoms/release-gen/compare/v4.2.17...v5.0.0) (2026-10-11)
+
+### ⚠ BREAKING CHANGES
+
+* outputs 'version' and 'tags' no longer include tag format (were 'v1.2.3', now '1.2.3').
+Use 'git_tags' output where a git tag is needed (e.g. 'gh release create')
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+### Features
+
+* version and tags outputs are bare semantic version, tag format applies only to git_tags ([cb00014](https://github.com/agilecustoms/release-gen/commit/cb000144a4ce67f8052fd06c5366393792a3e8b6))
+
+
 ## [4.2.17](https://github.com/agilecustoms/release-gen/compare/v4.2.16...v4.2.17) (2026-10-11)
 
 ### Miscellaneous
