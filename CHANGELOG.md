@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.16](https://github.com/agilecustoms/release-gen/compare/v4.2.15...v4.2.16) (2026-10-11)
+
+### Miscellaneous
+
+* run integration tests against local temporary git repos ([ee5c427](https://github.com/agilecustoms/release-gen/commit/ee5c42741843e47d4c810b7fff3c9a53c030f1cf))
+* unify .gitignore sections [skip ci] ([7330d4a](https://github.com/agilecustoms/release-gen/commit/7330d4af90b384f8725120d5aebd5d8bcb9a6c8f))
+
+
 ## [4.2.15](https://github.com/agilecustoms/release-gen/compare/v4.2.14...v4.2.15) (2026-10-09)
 
 ### Miscellaneous
