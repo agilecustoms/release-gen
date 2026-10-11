@@ -16,10 +16,10 @@ describe('main', () => {
 
     const release: Release = await runFix(branch)
 
-    expect(release.version).toBe('v0.5.1')
+    expect(release.version).toBe('0.5.1')
     expect(release.channel).toBe('latest')
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0', 'latest'])
-    expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0', 'latest'])
+    expect(release.tags).toEqual(['0.5.1', '0.5', '0', 'latest'])
   })
 
   it('channel-false', async () => {
@@ -31,10 +31,10 @@ describe('main', () => {
 
     const release: Release = await runFix(branch, { releaseBranches })
 
-    expect(release.version).toBe('v0.5.1')
+    expect(release.version).toBe('0.5.1')
     expect(release.channel).toBe('latest')
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0'])
-    expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0'])
+    expect(release.tags).toEqual(['0.5.1', '0.5', '0'])
   })
 
   it('channel-branch', async () => {
@@ -46,10 +46,10 @@ describe('main', () => {
 
     const release: Release = await runFix(branch, { releaseBranches })
 
-    expect(release.version).toBe('v0.5.1')
+    expect(release.version).toBe('0.5.1')
     expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0'])
-    expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0', branch])
+    expect(release.tags).toEqual(['0.5.1', '0.5', '0', branch])
   })
 
   it('channel-custom', async () => {
@@ -61,9 +61,9 @@ describe('main', () => {
 
     const release: Release = await runFix(branch, { releaseBranches })
 
-    expect(release.version).toBe('v0.5.1')
+    expect(release.version).toBe('0.5.1')
     expect(release.channel).toBe('release')
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0', 'release'])
-    expect(release.tags).toEqual(['v0.5.1', 'v0.5', 'v0', 'release'])
+    expect(release.tags).toEqual(['0.5.1', '0.5', '0', 'release'])
   })
 })

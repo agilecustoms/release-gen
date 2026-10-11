@@ -22,7 +22,7 @@ describe('explicit-version', () => {
 
       expect(release.version).toBe('1.2.4')
       expect(release.channel).toBe('latest')
-      expect(release.gitTags).toEqual(['1.2.4'])
+      expect(release.gitTags).toEqual(['v1.2.4'])
       expect(release.tags).toEqual(['1.2.4'])
       expect(release.notes).toBe('')
       expect(release.notesTmpFile).toBe('')
@@ -37,10 +37,10 @@ describe('explicit-version', () => {
 
       const release: Release = await runReleaseGen({ version: 'v2.0.0', floatingTags: true, releaseChannel: 'main' })
 
-      expect(release.version).toBe('v2.0.0')
+      expect(release.version).toBe('2.0.0')
       expect(release.channel).toBe('main')
       expect(release.gitTags).toEqual(['v2.0.0', 'v2.0', 'v2'])
-      expect(release.tags).toEqual(['v2.0.0', 'v2.0', 'v2', 'main'])
+      expect(release.tags).toEqual(['2.0.0', '2.0', '2', 'main'])
       expect(release.notes).toBe('')
       expect(release.notesTmpFile).toBe('')
     })

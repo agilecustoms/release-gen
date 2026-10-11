@@ -20,7 +20,7 @@ describe('conventionalcommits', () => {
 
     const release: Release = await runReleaseGen()
 
-    expect(release.version).toBe('v1.0.0')
+    expect(release.version).toBe('1.0.0')
     expect(release.notes).toContain('BREAKING CHANGES')
   })
 
@@ -50,7 +50,7 @@ describe('conventionalcommits', () => {
     await commit('fix: buf fix')
     await commit('docs: test documentation')
     const release = await runReleaseGen()
-    expect(release.version).toBe('v0.5.1')
+    expect(release.version).toBe('0.5.1')
     expect(release.notes).toContain('### Bug Fixes')
     expect(release.notes).toContain('### Documentation')
     expect(release.notes).toContain('### Miscellaneous')

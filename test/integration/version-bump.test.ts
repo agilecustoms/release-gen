@@ -19,7 +19,7 @@ describe('version-bump', () => {
 
     const release: Release = await runReleaseGen({ versionBump: 'default-minor' })
 
-    expect(release.version).toBe('v0.6.0')
+    expect(release.version).toBe('0.6.0')
     expect(release.gitTags).toEqual(['v0.6.0', 'v0.6', 'v0', 'latest'])
     expect(release.notesTmpFile).toBe('')
   })
@@ -31,7 +31,7 @@ describe('version-bump', () => {
 
     const release: Release = await runReleaseGen({ versionBump: 'default-patch' })
 
-    expect(release.version).toBe('v0.5.1')
+    expect(release.version).toBe('0.5.1')
     expect(release.gitTags).toEqual(['v0.5.1', 'v0.5', 'v0', 'latest'])
     expect(release.notesTmpFile).toBe('')
   })
@@ -43,7 +43,7 @@ describe('version-bump', () => {
 
     const release: Release = await runReleaseGen({ versionBump: 'default-patch' })
 
-    expect(release.version).toBe('v0.6.0')
+    expect(release.version).toBe('0.6.0')
     expect(release.notesTmpFile).toBeTruthy() // /tmp/release-gen-notes-kuhpg1g7mt
   })
 })

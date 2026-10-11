@@ -8,6 +8,7 @@ import type { SemanticReleaseAdapter } from './SemanticReleaseAdapter.js'
 const MAINTENANCE_BRANCH = /\d+\.x\.x/
 const MINOR_MAINTENANCE_BRANCH = /\d+\.\d+\.x/
 const VERSION_BUMP_OPTIONS = ['default-minor', 'default-patch']
+const DEFAULT_TAG_FORMAT = 'v${version}' // same as semantic-release default
 
 export class ReleaseProcessor {
   constructor(
@@ -80,12 +81,17 @@ export class ReleaseProcessor {
       channel = branch.prerelease || maintenance ? branch.name : 'latest'
     }
 
-    // second: infer gitTags - basically split the version tag and add a channel from a prev step
-    const version = result.nextRelease.gitTag
+    // second: infer tags - the version and floating versions (1.2.3 -> 1.2, 1) plus a channel from a prev step
+    // version and tags are bare (no tag format) as they are used for artifacts: S3 path, Docker image tag, etc.
+    // gitTags are the same, but with a tag format applied (v1.2.3, v1.2, v1), plus channel (if differs from branch name)
+    const version = result.nextRelease.version
+    const toGitTag = this.gitTagFormatter(version, result.nextRelease.gitTag)
     const tags = [version]
-    const gitTags = [version]
     if (options.floatingTags) {
-      this.addTags(tags, gitTags, version, branch)
+      this.addFloatingVersions(tags, version, branch)
+    }
+    const gitTags = tags.map(toGitTag)
+    if (options.floatingTags) {
       if ((branch.channel || branch.channel === undefined) && channel !== branch.name) {
         gitTags.push(channel)
       }
@@ -163,22 +169,23 @@ export class ReleaseProcessor {
       channel = 'latest'
     }
 
-    const version = options.version!
+    // tolerate 'v' prefix in explicit version (v1.2.3 -> 1.2.3): version is bare, tag format adds 'v' to git tags
+    const version = options.version!.replace(/^v(?=\d)/, '')
+    const tagFormat = options.tagFormat || DEFAULT_TAG_FORMAT
+    const toGitTag = (v: string): string => tagFormat.replace('${version}', v)
     const tags = [version]
-    const gitTags = [version]
     if (options.floatingTags) {
       let tag = version
       for (let lastDotIndex; (lastDotIndex = tag.lastIndexOf('.')) !== -1;) {
         tag = tag.slice(0, lastDotIndex)
         tags.push(tag)
-        gitTags.push(tag)
       }
-
-      if (options.releaseChannel !== false) {
-        tags.push(channel)
-        if (channel !== currentBranch) {
-          gitTags.push(channel)
-        }
+    }
+    const gitTags = tags.map(toGitTag)
+    if (options.floatingTags && options.releaseChannel !== false) {
+      tags.push(channel)
+      if (channel !== currentBranch) {
+        gitTags.push(channel)
       }
     }
 
@@ -224,17 +231,29 @@ export class ReleaseProcessor {
     return await this.semanticReleaseAdapter.run(opts, config)
   }
 
-  private addTags(tags: string[], gitTags: string[], version: string, branch: BranchObject): void {
+  /**
+   * semantic-release returns both version (1.2.3) and gitTag (v1.2.3) - the version with tag format applied.
+   * Tag format may come from input or .releaserc.json, so infer it from gitTag rather than from options
+   */
+  private gitTagFormatter(version: string, gitTag: string): (v: string) => string {
+    const index = gitTag.indexOf(version)
+    if (index === -1) {
+      throw new ReleaseError(`Git tag "${gitTag}" does not contain version "${version}". This is unexpected`)
+    }
+    const prefix = gitTag.slice(0, index)
+    const suffix = gitTag.slice(index + version.length)
+    return (v: string): string => prefix + v + suffix
+  }
+
+  private addFloatingVersions(tags: string[], version: string, branch: BranchObject): void {
     if (!branch.prerelease) {
       const minor = version.slice(0, version.lastIndexOf('.'))
       tags.push(minor)
-      gitTags.push(minor)
       const range = branch.range || branch.name
       const minorMaintenance = MINOR_MAINTENANCE_BRANCH.test(range)
       if (!minorMaintenance) {
         const major = minor.slice(0, minor.lastIndexOf('.'))
         tags.push(major)
-        gitTags.push(major)
       }
     }
   }

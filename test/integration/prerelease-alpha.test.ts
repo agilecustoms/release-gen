@@ -20,10 +20,10 @@ describe('prerelease-alpha', () => {
 
     const release: Release = await runBreaking(branch, { releaseBranches })
 
-    expect(release.version).toBe('v4.0.0-alpha.1')
+    expect(release.version).toBe('4.0.0-alpha.1')
     expect(release.channel).toBe('test-next')
     expect(release.gitTags).toEqual(['v4.0.0-alpha.1'])
-    expect(release.tags).toEqual(['v4.0.0-alpha.1'])
+    expect(release.tags).toEqual(['4.0.0-alpha.1'])
   })
 
   it('channel-false', async () => {
@@ -36,10 +36,10 @@ describe('prerelease-alpha', () => {
 
     const release: Release = await runBreaking(branch, { releaseBranches })
 
-    expect(release.version).toBe('v4.0.0-alpha.1')
+    expect(release.version).toBe('4.0.0-alpha.1')
     expect(release.channel).toBe('test-next')
     expect(release.gitTags).toEqual(['v4.0.0-alpha.1'])
-    expect(release.tags).toEqual(['v4.0.0-alpha.1'])
+    expect(release.tags).toEqual(['4.0.0-alpha.1'])
   })
 
   it('channel-branch', async () => {
@@ -52,10 +52,10 @@ describe('prerelease-alpha', () => {
 
     const release: Release = await runBreaking(branch, { releaseBranches })
 
-    expect(release.version).toBe('v4.0.0-alpha.1')
+    expect(release.version).toBe('4.0.0-alpha.1')
     expect(release.channel).toBe('test-next')
     expect(release.gitTags).toEqual(['v4.0.0-alpha.1'])
-    expect(release.tags).toEqual(['v4.0.0-alpha.1', 'test-next'])
+    expect(release.tags).toEqual(['4.0.0-alpha.1', 'test-next'])
   })
 
   it('channel-custom', async () => {
@@ -68,9 +68,9 @@ describe('prerelease-alpha', () => {
 
     const release: Release = await runBreaking(branch, { releaseBranches })
 
-    expect(release.version).toBe('v4.0.0-alpha.1')
+    expect(release.version).toBe('4.0.0-alpha.1')
     expect(release.channel).toBe('beta')
     expect(release.gitTags).toEqual(['v4.0.0-alpha.1', 'beta'])
-    expect(release.tags).toEqual(['v4.0.0-alpha.1', 'beta'])
+    expect(release.tags).toEqual(['4.0.0-alpha.1', 'beta'])
   })
 })

@@ -20,10 +20,10 @@ describe('maintenance', () => {
 
     const release: Release = await runFix(branch, { releaseBranches })
 
-    expect(release.version).toBe('v1.3.1')
+    expect(release.version).toBe('1.3.1')
     expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v1.3.1', 'v1.3', 'v1'])
-    expect(release.tags).toEqual(['v1.3.1', 'v1.3', 'v1'])
+    expect(release.tags).toEqual(['1.3.1', '1.3', '1'])
   })
 
   it('minor', async () => {
@@ -34,10 +34,10 @@ describe('maintenance', () => {
 
     const release: Release = await runFeat(branch, { releaseBranches })
 
-    expect(release.version).toBe('v1.4.0')
+    expect(release.version).toBe('1.4.0')
     expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v1.4.0', 'v1.4', 'v1'])
-    expect(release.tags).toEqual(['v1.4.0', 'v1.4', 'v1'])
+    expect(release.tags).toEqual(['1.4.0', '1.4', '1'])
   })
 
   it('channel-branch', async () => {
@@ -50,10 +50,10 @@ describe('maintenance', () => {
 
     const release: Release = await runFeat(branch, { releaseBranches })
 
-    expect(release.version).toBe('v1.4.0')
+    expect(release.version).toBe('1.4.0')
     expect(release.channel).toBe(branch)
     expect(release.gitTags).toEqual(['v1.4.0', 'v1.4', 'v1'])
-    expect(release.tags).toEqual(['v1.4.0', 'v1.4', 'v1', branch])
+    expect(release.tags).toEqual(['1.4.0', '1.4', '1', branch])
   })
 
   it('channel-custom', async () => {
@@ -66,9 +66,9 @@ describe('maintenance', () => {
 
     const release: Release = await runFeat(branch, { releaseBranches })
 
-    expect(release.version).toBe('v1.4.0')
+    expect(release.version).toBe('1.4.0')
     expect(release.channel).toBe('support')
     expect(release.gitTags).toEqual(['v1.4.0', 'v1.4', 'v1', 'support'])
-    expect(release.tags).toEqual(['v1.4.0', 'v1.4', 'v1', 'support'])
+    expect(release.tags).toEqual(['1.4.0', '1.4', '1', 'support'])
   })
 })

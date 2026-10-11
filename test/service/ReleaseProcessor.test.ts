@@ -141,7 +141,7 @@ describe('ReleaseProcessor', () => {
     it('should generate changelog if changelogFile is provided', async () => {
       const options = { ...OPTIONS, changelogFile: 'CHANGELOG.md', changelogTitle: 'Changelog' }
       semanticReleaseAdapter.run.mockResolvedValue({
-        nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
+        nextRelease: { version: '1.0.0', gitTag: 'v1.0.0', notes: 'Release notes' },
         branch: { name: 'main' }
       })
 
@@ -152,7 +152,7 @@ describe('ReleaseProcessor', () => {
 
     it('should return release with nextVersion and notes', async () => {
       semanticReleaseAdapter.run.mockResolvedValue({
-        nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes' },
+        nextRelease: { version: '1.0.0', gitTag: 'v1.0.0', notes: 'Release notes' },
         branch: { name: 'main' }
       })
 
@@ -160,9 +160,33 @@ describe('ReleaseProcessor', () => {
 
       expect(result).toBeTruthy()
       if (result) {
-        expect(result.version).toBe('v1.0.0')
+        expect(result.version).toBe('1.0.0')
         expect(result.notes).toBe('Release notes')
       }
+    })
+    it('should infer tag format from gitTag and apply it only to gitTags', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { version: '1.2.3', gitTag: 'release-1.2.3-final', notes: 'Release notes' },
+        branch: { name: 'main' }
+      })
+
+      const result = await process()
+
+      expect(result.version).toBe('1.2.3')
+      expect(result.gitTags).toEqual(['release-1.2.3-final', 'release-1.2-final', 'release-1-final', 'latest'])
+      expect(result.tags).toEqual(['1.2.3', '1.2', '1', 'latest'])
+    })
+
+    it('should support bare tag format', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { version: '1.2.3', gitTag: '1.2.3', notes: 'Release notes' },
+        branch: { name: 'main' }
+      })
+
+      const result = await process({ ...OPTIONS, tagFormat: '${version}' })
+
+      expect(result.gitTags).toEqual(['1.2.3', '1.2', '1', 'latest'])
+      expect(result.tags).toEqual(['1.2.3', '1.2', '1', 'latest'])
     })
   })
 
@@ -176,10 +200,19 @@ describe('ReleaseProcessor', () => {
 
     it('should throw an error if next release has no notes', async () => {
       semanticReleaseAdapter.run.mockResolvedValue({
-        nextRelease: { gitTag: 'v1.0.0', notes: '' }
+        nextRelease: { version: '1.0.0', gitTag: 'v1.0.0', notes: '' }
       })
 
       await expect(process()).rejects.toThrow('No release notes found in the next release. This is unexpected')
+    })
+
+    it('should throw an error if gitTag does not contain version', async () => {
+      semanticReleaseAdapter.run.mockResolvedValue({
+        nextRelease: { version: '1.0.0', gitTag: 'v2.0.0', notes: 'Release notes' },
+        branch: { name: 'main' }
+      })
+
+      await expect(process()).rejects.toThrow('Git tag "v2.0.0" does not contain version "1.0.0". This is unexpected')
     })
 
     it('should throw ex if semantic-release returns false', async () => {
@@ -192,7 +225,7 @@ describe('ReleaseProcessor', () => {
   describe('channel and tags inference', () => {
     async function release(version: string, branch: BranchObject, floatingTags: boolean = true): Promise<ReleaseDetails> {
       semanticReleaseAdapter.run.mockResolvedValue({
-        nextRelease: { gitTag: version, notes: 'Release notes' },
+        nextRelease: { version, gitTag: `v${version}`, notes: 'Release notes' },
         branch
       })
       const options = { ...OPTIONS, floatingTags }
@@ -206,7 +239,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: '1.1.x' }
         const result = await release('1.1.1', branch)
         expect(result.channel).toBe('1.1.x')
-        expect(result.gitTags).toEqual(['1.1.1', '1.1'])
+        expect(result.gitTags).toEqual(['v1.1.1', 'v1.1'])
         expect(result.tags).toEqual(['1.1.1', '1.1'])
       })
 
@@ -214,7 +247,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: '1.1.x', channel: '1.1.x' }
         const result = await release('1.1.1', branch)
         expect(result.channel).toBe('1.1.x')
-        expect(result.gitTags).toEqual(['1.1.1', '1.1'])
+        expect(result.gitTags).toEqual(['v1.1.1', 'v1.1'])
         expect(result.tags).toEqual(['1.1.1', '1.1', '1.1.x'])
       })
 
@@ -222,7 +255,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: '1.1.x', channel: 'legacy' }
         const result = await release('1.1.1', branch)
         expect(result.channel).toBe('legacy')
-        expect(result.gitTags).toEqual(['1.1.1', '1.1', 'legacy'])
+        expect(result.gitTags).toEqual(['v1.1.1', 'v1.1', 'legacy'])
         expect(result.tags).toEqual(['1.1.1', '1.1', 'legacy'])
       })
 
@@ -230,7 +263,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: '1.x.x' }
         const result = await release('1.6.0', branch)
         expect(result.channel).toBe('1.x.x')
-        expect(result.gitTags).toEqual(['1.6.0', '1.6', '1'])
+        expect(result.gitTags).toEqual(['v1.6.0', 'v1.6', 'v1'])
         expect(result.tags).toEqual(['1.6.0', '1.6', '1'])
       })
 
@@ -238,7 +271,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: '1.x.x', channel: '1.x.x' }
         const result = await release('1.6.0', branch)
         expect(result.channel).toBe('1.x.x')
-        expect(result.gitTags).toEqual(['1.6.0', '1.6', '1'])
+        expect(result.gitTags).toEqual(['v1.6.0', 'v1.6', 'v1'])
         expect(result.tags).toEqual(['1.6.0', '1.6', '1', '1.x.x'])
       })
 
@@ -246,7 +279,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: '1.x.x', channel: 'support' }
         const result = await release('1.6.0', branch)
         expect(result.channel).toBe('support')
-        expect(result.gitTags).toEqual(['1.6.0', '1.6', '1', 'support'])
+        expect(result.gitTags).toEqual(['v1.6.0', 'v1.6', 'v1', 'support'])
         expect(result.tags).toEqual(['1.6.0', '1.6', '1', 'support'])
       })
 
@@ -254,7 +287,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'main' }
         const result = await release('2.3.0', branch)
         expect(result.channel).toBe('latest')
-        expect(result.gitTags).toEqual(['2.3.0', '2.3', '2', 'latest'])
+        expect(result.gitTags).toEqual(['v2.3.0', 'v2.3', 'v2', 'latest'])
         expect(result.tags).toEqual(['2.3.0', '2.3', '2', 'latest'])
       })
 
@@ -262,7 +295,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'main', channel: '' }
         const result = await release('2.3.0', branch)
         expect(result.channel).toBe('latest')
-        expect(result.gitTags).toEqual(['2.3.0', '2.3', '2'])
+        expect(result.gitTags).toEqual(['v2.3.0', 'v2.3', 'v2'])
         expect(result.tags).toEqual(['2.3.0', '2.3', '2'])
       })
 
@@ -270,7 +303,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'main', channel: 'main' }
         const result = await release('2.3.0', branch)
         expect(result.channel).toBe('main')
-        expect(result.gitTags).toEqual(['2.3.0', '2.3', '2'])
+        expect(result.gitTags).toEqual(['v2.3.0', 'v2.3', 'v2'])
         expect(result.tags).toEqual(['2.3.0', '2.3', '2', 'main'])
       })
 
@@ -278,7 +311,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'main', channel: 'stable' }
         const result = await release('2.3.0', branch)
         expect(result.channel).toBe('stable')
-        expect(result.gitTags).toEqual(['2.3.0', '2.3', '2', 'stable'])
+        expect(result.gitTags).toEqual(['v2.3.0', 'v2.3', 'v2', 'stable'])
         expect(result.tags).toEqual(['2.3.0', '2.3', '2', 'stable'])
       })
 
@@ -286,7 +319,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'beta', prerelease: true }
         const result = await release('3.0.0-beta.4', branch)
         expect(result.channel).toBe('beta')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4'])
         expect(result.tags).toEqual(['3.0.0-beta.4'])
       })
 
@@ -294,7 +327,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'beta', channel: '', prerelease: true }
         const result = await release('3.0.0-beta.4', branch)
         expect(result.channel).toBe('beta')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4'])
         expect(result.tags).toEqual(['3.0.0-beta.4'])
       })
 
@@ -302,7 +335,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'beta', channel: 'beta', prerelease: true }
         const result = await release('3.0.0-beta.4', branch)
         expect(result.channel).toBe('beta')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4'])
         expect(result.tags).toEqual(['3.0.0-beta.4', 'beta'])
       })
 
@@ -310,7 +343,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'beta', channel: 'next', prerelease: true }
         const result = await release('3.0.0-beta.4', branch)
         expect(result.channel).toBe('next')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4', 'next'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4', 'next'])
         expect(result.tags).toEqual(['3.0.0-beta.4', 'next'])
       })
 
@@ -318,12 +351,12 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'next', channel: 'release-${name}', prerelease: true }
 
         semanticReleaseAdapter.run.mockResolvedValue({
-          nextRelease: { gitTag: '3.0.0-beta.4', notes: 'Release notes', channel: 'release-next' },
+          nextRelease: { version: '3.0.0-beta.4', gitTag: 'v3.0.0-beta.4', notes: 'Release notes', channel: 'release-next' },
           branch
         })
         const result = await process()
         expect(result.channel).toBe('release-next')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4', 'release-next'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4', 'release-next'])
         expect(result.tags).toEqual(['3.0.0-beta.4', 'release-next'])
       })
     })
@@ -335,7 +368,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'main' }
         const result = await release('2.3.0', branch, floatingTags)
         expect(result.channel).toBe('latest')
-        expect(result.gitTags).toEqual(['2.3.0'])
+        expect(result.gitTags).toEqual(['v2.3.0'])
         expect(result.tags).toEqual(['2.3.0'])
       })
 
@@ -343,7 +376,7 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'beta', channel: 'next', prerelease: true }
         const result = await release('3.0.0-beta.4', branch, floatingTags)
         expect(result.channel).toBe('next')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4'])
         expect(result.tags).toEqual(['3.0.0-beta.4'])
       })
 
@@ -351,12 +384,12 @@ describe('ReleaseProcessor', () => {
         const branch = { name: 'next', channel: 'release-${name}', prerelease: true }
 
         semanticReleaseAdapter.run.mockResolvedValue({
-          nextRelease: { gitTag: '3.0.0-beta.4', notes: 'Release notes', channel: 'release-next' },
+          nextRelease: { version: '3.0.0-beta.4', gitTag: 'v3.0.0-beta.4', notes: 'Release notes', channel: 'release-next' },
           branch
         })
         const result = await process({ ...OPTIONS, floatingTags })
         expect(result.channel).toBe('release-next')
-        expect(result.gitTags).toEqual(['3.0.0-beta.4'])
+        expect(result.gitTags).toEqual(['v3.0.0-beta.4'])
         expect(result.tags).toEqual(['3.0.0-beta.4'])
       })
     })
@@ -384,7 +417,7 @@ describe('ReleaseProcessor', () => {
     it('should return empty release notes', async () => {
       semanticReleaseAdapter.run.mockResolvedValueOnce(false)
       semanticReleaseAdapter.run.mockResolvedValueOnce({
-        nextRelease: { gitTag: 'v1.0.0', notes: 'Release notes2' },
+        nextRelease: { version: '1.0.0', gitTag: 'v1.0.0', notes: 'Release notes2' },
         branch: { name: 'main' }
       })
 
@@ -408,11 +441,33 @@ describe('ReleaseProcessor', () => {
       expect(result.prerelease).toBe(false)
     })
 
+    it('should strip v prefix from explicit version', async () => {
+      const result = await process({ ...OPTIONS, version: 'v1.2.4', floatingTags: false })
+
+      expect(result.version).toBe('1.2.4')
+      expect(result.gitTags).toEqual(['v1.2.4'])
+      expect(result.tags).toEqual(['1.2.4'])
+    })
+
+    it('should apply input tag format to git tags', async () => {
+      const result = await process({ ...OPTIONS, version: '1.2.4', floatingTags: true, tagFormat: '${version}' })
+
+      expect(result.version).toBe('1.2.4')
+      expect(result.gitTags).toEqual(['1.2.4', '1.2', '1', 'latest'])
+      expect(result.tags).toEqual(['1.2.4', '1.2', '1', 'latest'])
+    })
+
+    it('should use default tag format v${version} if no input tag format', async () => {
+      const result = await process({ ...OPTIONS, version: '1.2.4', floatingTags: false, tagFormat: undefined })
+
+      expect(result.gitTags).toEqual(['v1.2.4'])
+    })
+
     describe('no floating tags', () => {
       it('channel-empty', async () => {
         const result = await process({ ...OPTIONS, version: '1.2.4', floatingTags: false })
 
-        expect(result.gitTags).toEqual(['1.2.4'])
+        expect(result.gitTags).toEqual(['v1.2.4'])
         expect(result.tags).toEqual(['1.2.4'])
         expect(result.channel).toBe('latest')
       })
@@ -420,7 +475,7 @@ describe('ReleaseProcessor', () => {
       it('channel-false', async () => {
         const result = await process({ ...OPTIONS, version: '1.3.0', floatingTags: false, releaseChannel: false })
 
-        expect(result.gitTags).toEqual(['1.3.0'])
+        expect(result.gitTags).toEqual(['v1.3.0'])
         expect(result.tags).toEqual(['1.3.0'])
         expect(result.channel).toBe('main')
       })
@@ -428,7 +483,7 @@ describe('ReleaseProcessor', () => {
       it('channel-branch', async () => {
         const result = await process({ ...OPTIONS, version: '2.0.0', floatingTags: false, releaseChannel: 'main' })
 
-        expect(result.gitTags).toEqual(['2.0.0'])
+        expect(result.gitTags).toEqual(['v2.0.0'])
         expect(result.tags).toEqual(['2.0.0'])
         expect(result.channel).toBe('main')
       })
@@ -436,7 +491,7 @@ describe('ReleaseProcessor', () => {
       it('channel-release', async () => {
         const result = await process({ ...OPTIONS, version: '2.1', floatingTags: false, releaseChannel: 'release' })
 
-        expect(result.gitTags).toEqual(['2.1'])
+        expect(result.gitTags).toEqual(['v2.1'])
         expect(result.tags).toEqual(['2.1'])
         expect(result.channel).toBe('release')
       })
@@ -446,7 +501,7 @@ describe('ReleaseProcessor', () => {
       it('channel-empty', async () => {
         const result = await process({ ...OPTIONS, version: '1.2.4', floatingTags: true })
 
-        expect(result.gitTags).toEqual(['1.2.4', '1.2', '1', 'latest'])
+        expect(result.gitTags).toEqual(['v1.2.4', 'v1.2', 'v1', 'latest'])
         expect(result.tags).toEqual(['1.2.4', '1.2', '1', 'latest'])
         expect(result.channel).toBe('latest')
       })
@@ -454,7 +509,7 @@ describe('ReleaseProcessor', () => {
       it('channel-false', async () => {
         const result = await process({ ...OPTIONS, version: '1.3.0', floatingTags: true, releaseChannel: false })
 
-        expect(result.gitTags).toEqual(['1.3.0', '1.3', '1'])
+        expect(result.gitTags).toEqual(['v1.3.0', 'v1.3', 'v1'])
         expect(result.tags).toEqual(['1.3.0', '1.3', '1'])
         expect(result.channel).toBe('main')
       })
@@ -462,7 +517,7 @@ describe('ReleaseProcessor', () => {
       it('channel-branch', async () => {
         const result = await process({ ...OPTIONS, version: '2.0.0', floatingTags: true, releaseChannel: 'main' })
 
-        expect(result.gitTags).toEqual(['2.0.0', '2.0', '2'])
+        expect(result.gitTags).toEqual(['v2.0.0', 'v2.0', 'v2'])
         expect(result.tags).toEqual(['2.0.0', '2.0', '2', 'main'])
         expect(result.channel).toBe('main')
       })
@@ -470,7 +525,7 @@ describe('ReleaseProcessor', () => {
       it('channel-release', async () => {
         const result = await process({ ...OPTIONS, version: '2.1', floatingTags: true, releaseChannel: 'release' })
 
-        expect(result.gitTags).toEqual(['2.1', '2', 'release'])
+        expect(result.gitTags).toEqual(['v2.1', 'v2', 'release'])
         expect(result.tags).toEqual(['2.1', '2', 'release'])
         expect(result.channel).toBe('release')
       })

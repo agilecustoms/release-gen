@@ -21,7 +21,7 @@ describe('branches', () => {
 
     const release: Release = await runBreaking(branch, { releaseBranches: undefined })
 
-    expect(release.version).toBe('v5.0.0')
+    expect(release.version).toBe('5.0.0')
     expect(release.gitTags).toEqual(['v5.0.0', 'v5.0', 'v5', 'latest'])
   })
 
