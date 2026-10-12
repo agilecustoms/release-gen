@@ -29,13 +29,13 @@ jobs:
         run: npm ci
 
       - name: Lint
-        run: npm run lint
+        run: make app1-lint
 
       - name: Test
-        run: npm run test
+        run: make app2-test
 
       - name: Build
-        run: npm run build
+        run: make app3-build
 
       - name: Upload artifacts
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/1.x.x'
