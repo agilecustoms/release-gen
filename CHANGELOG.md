@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/agilecustoms/release-gen/compare/v5.0.0...v5.0.1) (2026-10-12)
+
+### Miscellaneous
+
+* use make targets in build pipeline ([1ce3734](https://github.com/agilecustoms/release-gen/commit/1ce37342eaeb9252b29c5999171e2ed7bf0ef856))
+
+
 ## [5.0.0](https://github.com/agilecustoms/release-gen/compare/v4.2.17...v5.0.0) (2026-10-11)
 
 ### ⚠ BREAKING CHANGES
