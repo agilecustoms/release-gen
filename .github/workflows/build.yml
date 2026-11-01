@@ -31,8 +31,11 @@ jobs:
       - name: Lint
         run: make app1-lint
 
-      - name: Test
+      - name: Unit tests
         run: make app2-test
+
+      - name: Integration tests
+        run: make app2-integration-tests
 
       - name: Build
         run: make app3-build

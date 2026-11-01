@@ -16,9 +16,8 @@ app1-lint-fix:
 app2-test:
 	@npm run test
 
-# does not run integration tests, bcz they are slow and do not contribute to coverage
-app2-test-coverage:
-	@npm run test-coverage
+app2-integration-tests:
+	@npm run test-integration
 
 app3-build:
 	@npm run build
