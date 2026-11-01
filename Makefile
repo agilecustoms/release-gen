@@ -10,7 +10,7 @@ app0-update-deps:
 app1-lint:
 	@npm run lint
 
-app1-lint-fix:
+app1-lint-fix: # not called by CI (local only: fixes lint errors in place)
 	@npm run lint:fix
 
 app2-test:
