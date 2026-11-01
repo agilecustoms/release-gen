@@ -23,9 +23,6 @@ app2-test-coverage:
 app3-build:
 	@npm run build
 
-git-fetch-tags:
-	@git fetch --tags --force
-
 # ---------------------------------------------------
 
 x-install-git-hooks:
