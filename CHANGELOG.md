@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.0.2](https://github.com/agilecustoms/release-gen/compare/v5.0.1...v5.0.2) (2026-11-15)
+
+### Miscellaneous
+
+* normalize package.json key order [skip ci] ([547b875](https://github.com/agilecustoms/release-gen/commit/547b8751bda0ca38d4ead8ab990e50020ad4ad15))
+* update deps, @stylistic/eslint-plugin 5 -> 6 (list-style rule off: several short items per line are fine) ([ba14ca1](https://github.com/agilecustoms/release-gen/commit/ba14ca14d915670b816deb0219cb84ac589564c4))
+
+### Dependencies update
+
+* app2-test runs unit tests, app2-integration-tests runs integration tests, separate CI steps [skip ci] ([9874673](https://github.com/agilecustoms/release-gen/commit/9874673629c8482c13e17089bc774c666d7b59bb))
+* git hooks in .githooks (core.hooksPath), drop x-install-git-hooks [skip ci] ([1ac6818](https://github.com/agilecustoms/release-gen/commit/1ac68180e47089f6b74c7b647115c67948ba9572))
+* mark Makefile targets not called by CI [skip ci] ([299a897](https://github.com/agilecustoms/release-gen/commit/299a897b572fe5a22cb682aba001f1fde7159774))
+* remove git-fetch-tags target [skip ci] ([382ef29](https://github.com/agilecustoms/release-gen/commit/382ef296d3e7a4fc0b8f7f01d858582f5db84d73))
+* sort action inputs alphabetically [skip ci] ([e8384fc](https://github.com/agilecustoms/release-gen/commit/e8384fc454d782bb62e23ab1a62fc314ad93a201))
+
+
 ## [5.0.1](https://github.com/agilecustoms/release-gen/compare/v5.0.0...v5.0.1) (2026-10-12)
 
 ### Miscellaneous
