@@ -1,5 +1,5 @@
 import plugin from '@stylistic/eslint-plugin'
-import importPlugin from 'eslint-plugin-import'
+import { importX } from 'eslint-plugin-import-x'
 import tseslint from 'typescript-eslint'
 
 export default [
@@ -7,7 +7,7 @@ export default [
   plugin.configs['recommended'],
   {
     plugins: {
-      import: importPlugin,
+      'import-x': importX,
     },
     rules: {
       '@stylistic/brace-style': ['error', '1tbs'], // 'else' keyword on the same line as closing brace
@@ -19,10 +19,10 @@ export default [
       }],
 
       // Enforce Alphabetical Import Order and Merge Duplicate Imports
-      'import/order': ['error', {
+      'import-x/order': ['error', {
         alphabetize: { order: 'asc', caseInsensitive: true }
       }],
-      'import/no-duplicates': 'error',
+      'import-x/no-duplicates': 'error',
     }
   }
 ]
