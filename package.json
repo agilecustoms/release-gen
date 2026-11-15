@@ -1,6 +1,6 @@
 {
   "name": "release-gen",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "private": true,
   "description": "GitHub Action wrapper for Semantic Release",
   "keywords": [

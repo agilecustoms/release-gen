@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.3](https://github.com/agilecustoms/release-gen/compare/v5.0.2...v5.0.3) (2026-11-15)
+
+### Miscellaneous
+
+* eslint 9 -> 10, eslint-plugin-import -> eslint-plugin-import-x (eslint-plugin-import doesn't support eslint 10) ([4f1fdb8](https://github.com/agilecustoms/release-gen/commit/4f1fdb85977fb4da3350f231ad0500ddcacf560a))
+
+
 ## [5.0.2](https://github.com/agilecustoms/release-gen/compare/v5.0.1...v5.0.2) (2026-11-15)
 
 ### Miscellaneous
