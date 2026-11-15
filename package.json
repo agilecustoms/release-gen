@@ -35,21 +35,26 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "conventional-changelog-conventionalcommits": "^9.3.1",
-    "esmock": "^2.7.8",
+    "esmock": "^3.0.0",
     "micromatch": "^4.0.8",
     "semantic-release": "^25.0.9"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^5.10.0",
+    "@stylistic/eslint-plugin": "^6.0.0",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.19.1",
-    "@vitest/coverage-v8": "^5.0.3",
+    "@types/node": "^24.19.2",
+    "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^9.39.5",
     "eslint-plugin-import": "^2.32.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.1",
-    "vitest": "^5.0.3"
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0"
   },
+  "updates-blocked": [
+    "typescript 6.0.3 -> 7.x: TS 7 has no JS compiler API and typescript-eslint peer range is <6.1.0. Wait until typescript-eslint supports TS 7, then upgrade",
+    "eslint 9 -> 10: eslint-plugin-import 2.32 peer range is eslint <= 9. Wait for its support or switch to eslint-plugin-import-x (as ev-invoice did)",
+    "conventional-changelog-conventionalcommits 9.x -> 10.x: v10 needs conventional-changelog-writer 9, semantic-release 25 uses writer 8 (\"Missing helper\" error). Wait until semantic-release upgrades the writer"
+  ],
   "allowScripts": {
     "fsevents": true
   }
