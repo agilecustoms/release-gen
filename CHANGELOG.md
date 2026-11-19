@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.4](https://github.com/agilecustoms/release-gen/compare/v5.0.3...v5.0.4) (2026-11-19)
+
+### Dependencies update
+
+* make targets lint, test-app, test-it, build, deps-*; pre-commit hook runs make lint ([4d3efbb](https://github.com/agilecustoms/release-gen/commit/4d3efbb6a7c6cac9494e235f9b542bab1106516c))
+
+
 ## [5.0.3](https://github.com/agilecustoms/release-gen/compare/v5.0.2...v5.0.3) (2026-11-15)
 
 ### Miscellaneous
