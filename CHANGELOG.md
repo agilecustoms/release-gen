@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.5](https://github.com/agilecustoms/release-gen/compare/v5.0.4...v5.0.5) (2026-11-19)
+
+### Dependencies update
+
+* lint runs type check (tsc --noEmit) after eslint ([44b6637](https://github.com/agilecustoms/release-gen/commit/44b6637f39bca2adda4b95a932ad6610492d1622))
+
+
 ## [5.0.4](https://github.com/agilecustoms/release-gen/compare/v5.0.3...v5.0.4) (2026-11-19)
 
 ### Dependencies update
