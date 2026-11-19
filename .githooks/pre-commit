@@ -1,1 +1,2 @@
-npm run lint
+#!/bin/sh
+exec make lint

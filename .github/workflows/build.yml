@@ -29,16 +29,16 @@ jobs:
         run: npm ci
 
       - name: Lint
-        run: make app1-lint
+        run: make lint
 
       - name: Unit tests
-        run: make app2-test
+        run: make test-app
 
       - name: Integration tests
-        run: make app2-integration-tests
+        run: make test-it
 
       - name: Build
-        run: make app3-build
+        run: make build
 
       - name: Upload artifacts
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/1.x.x'

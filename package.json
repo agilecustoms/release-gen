@@ -26,7 +26,6 @@
   },
   "scripts": {
     "lint": "eslint *.{ts,mjs} \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint:fix": "npm run lint -- --fix",
     "test": "vitest run --coverage --project unit",
     "test-integration": "vitest run --project integration",
     "build": "tsc",

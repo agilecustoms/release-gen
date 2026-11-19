@@ -1,23 +1,20 @@
-.PHONY: test
-
 # npm list --all - show dependency tree
-app0-install-deps:
+deps-install:
 	@npm install
 
-app0-update-deps:
+deps-update:
 	@npm update; npm install; npm outdated; npm find-dupes --ignore-scripts
 
-app1-lint:
+# fix: npm run lint -- --fix
+lint:
 	@npm run lint
 
-app1-lint-fix: # not called by CI (local only: fixes lint errors in place)
-	@npm run lint:fix
-
-app2-test:
+test-app:
 	@npm run test
 
-app2-integration-tests:
+# local git repos in a temp dir, no network
+test-it:
 	@npm run test-integration
 
-app3-build:
+build:
 	@npm run build
