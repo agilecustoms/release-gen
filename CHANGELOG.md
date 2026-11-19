@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.6](https://github.com/agilecustoms/release-gen/compare/v5.0.5...v5.0.6) (2026-11-19)
+
+### Dependencies update
+
+* .releaserc.json same as gha-release: build: releases a patch, 'Dependencies update' section ([7d1f9f7](https://github.com/agilecustoms/release-gen/commit/7d1f9f74a34803464eee910f77c0a112294994ca))
+
+
 ## [5.0.5](https://github.com/agilecustoms/release-gen/compare/v5.0.4...v5.0.5) (2026-11-19)
 
 ### Dependencies update
