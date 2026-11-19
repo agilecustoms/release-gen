@@ -5,9 +5,10 @@ deps-install:
 deps-update:
 	@npm update; npm install; npm outdated; npm find-dupes --ignore-scripts
 
+# eslint, then type check (tsc)
 # fix: npm run lint -- --fix
 lint:
-	@npm run lint
+	@npm run lint && npm run typecheck
 
 test-app:
 	@npm run test
