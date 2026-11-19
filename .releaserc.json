@@ -1,14 +1,18 @@
 {
+  "branches": [
+    "main",
+    { "name": "next", "prerelease": "beta", "channel": "beta" }
+  ],
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
       {
         "preset": "conventionalcommits",
         "releaseRules": [
-          { "type": "perf", "release": false },
+          { "type": "build", "release": "patch" },
           { "type": "docs", "release": "patch" },
           { "type": "misc", "release": "patch" },
-          { "type": "build", "release": "patch" }
+          { "type": "perf", "release": false }
         ]
       }
     ],
@@ -19,6 +23,14 @@
         "presetConfig": {
           "types": [
             {
+              "type": "build",
+              "section": "Dependencies update"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
               "type": "feat",
               "section": "Features"
             },
@@ -27,16 +39,8 @@
               "section": "Bug Fixes"
             },
             {
-              "type": "docs",
-              "section": "Documentation"
-            },
-            {
               "type": "misc",
               "section": "Miscellaneous"
-            },
-            {
-              "type": "build",
-              "section": "Dependencies update"
             }
           ]
         }
