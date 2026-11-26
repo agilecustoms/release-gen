@@ -1,4 +1,5 @@
-Integration tests release from a local 'origin' repo (created in [globalSetup.ts](integration/globalSetup.ts)) with these branches:
+Integration tests release from a local 'origin' repo (created in [globalSetup.ts](integration/globalSetup.ts))
+with these branches:
 
 **int-test050**
 latest tag: v0.5.0
