@@ -17,8 +17,8 @@ inputs:
     required: false
     default: /tmp/release-gen-notes
   release_branches:
-    required: false
     description: 'The branches on which releases should happen. It will override the branches attribute in your configuration file'
+    required: false
   release_channel:
     description: 'Basically a tag that moves on each release, primarily used with with input `version`'
     required: false
