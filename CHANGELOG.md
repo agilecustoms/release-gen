@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.7](https://github.com/agilecustoms/release-gen/compare/v5.0.6...v5.0.7) (2026-11-26)
+
+### Documentation
+
+* README follows repo-standards rule 002 ([00e1e22](https://github.com/agilecustoms/release-gen/commit/00e1e22c927e35997ccb9ded690bc407ae53cbf5))
+
+
 ## [5.0.6](https://github.com/agilecustoms/release-gen/compare/v5.0.5...v5.0.6) (2026-11-19)
 
 ### Dependencies update
