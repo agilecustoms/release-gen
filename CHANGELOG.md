@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.0.8](https://github.com/agilecustoms/release-gen/compare/v5.0.7...v5.0.8) (2026-11-27)
+
+### Dependencies update
+
+* ESLint max-len 120 ([3fbf7c2](https://github.com/agilecustoms/release-gen/commit/3fbf7c2ff98013d3247d142fa3d60856abdbfdab))
+* ESLint preserve-caught-error, rethrown error keeps the caught one as cause ([2bcfce1](https://github.com/agilecustoms/release-gen/commit/2bcfce168ee86c18dd6c6768894379b7bca7bb49))
+
+### Documentation
+
+* wrap md lines at 120 chars [skip ci] ([3400b6a](https://github.com/agilecustoms/release-gen/commit/3400b6acda574b1ac0bc7fd46a369b04eccc528b))
+
+### Miscellaneous
+
+* action inputs keys in order description, required, default [skip ci] ([d6cf4cc](https://github.com/agilecustoms/release-gen/commit/d6cf4cc57ab8450291f9e50d021e0db717968ac7))
+
+
 ## [5.0.7](https://github.com/agilecustoms/release-gen/compare/v5.0.6...v5.0.7) (2026-11-26)
 
 ### Documentation

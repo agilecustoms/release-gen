@@ -66,7 +66,8 @@ export class ReleaseProcessor {
         }
         let channel = branch.channel;
         if (!channel || channel.trim() === '') {
-            const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name);
+            const maintenance = branch.range
+                || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name);
             channel = branch.prerelease || maintenance ? branch.name : 'latest';
         }
         const version = result.nextRelease.version;
