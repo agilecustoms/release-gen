@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url'
 import { type ReleaseDetails, ReleaseError, type ReleaseOptions, VALID_VERSION_BUMPS, type VersionBump } from './model.js'
 import { exec as execAsync } from './utils.js'
 
-const distDir = path.dirname(fileURLToPath(import.meta.url)) // /home/runner/work/_actions/agilecustoms/release-gen/main/dist
+// /home/runner/work/_actions/agilecustoms/release-gen/main/dist
+const distDir = path.dirname(fileURLToPath(import.meta.url))
 const packageJsonDir = path.dirname(distDir)
 
 async function exec(command: string, error: string): Promise<string> {

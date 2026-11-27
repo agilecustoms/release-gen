@@ -223,7 +223,7 @@ describe('ReleaseProcessor', () => {
   })
 
   describe('channel and tags inference', () => {
-    async function release(version: string, branch: BranchObject, floatingTags: boolean = true): Promise<ReleaseDetails> {
+    async function release(version: string, branch: BranchObject, floatingTags = true): Promise<ReleaseDetails> {
       semanticReleaseAdapter.run.mockResolvedValue({
         nextRelease: { version, gitTag: `v${version}`, notes: 'Release notes' },
         branch

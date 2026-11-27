@@ -22,7 +22,7 @@ export class ChangelogGenerator {
     if (oldContent) {
       const minorStart = oldContent.search('(^|\n\n)# \\[')
       const patchStart = oldContent.search('(^|\n\n)## \\[')
-      const changesStart = [minorStart, patchStart].filter(index => index !== -1).map(index => index == 0 ? 0 : index + 2)
+      const changesStart = [minorStart, patchStart].filter(i => i !== -1).map(i => i == 0 ? 0 : i + 2)
       if (changesStart.length > 0) {
         oldContent = oldContent.substring(Math.min(...changesStart))
       }

@@ -18,6 +18,9 @@ export default [
         destructuredArrayIgnorePattern: '^_'
       }],
 
+      '@stylistic/max-len': ['error', { // strings, template literals, URLs and regexes can't be split
+        code: 120, ignoreStrings: true, ignoreTemplateLiterals: true, ignoreUrls: true, ignoreRegExpLiterals: true
+      }],
       'preserve-caught-error': 'error', // error thrown in catch keeps the caught one as `cause`
 
       // Enforce Alphabetical Import Order and Merge Duplicate Imports

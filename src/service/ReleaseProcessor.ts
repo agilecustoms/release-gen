@@ -77,13 +77,14 @@ export class ReleaseProcessor {
     // special rules apply for prerelease
     let channel = branch.channel
     if (!channel || channel.trim() === '') {
-      const maintenance = branch.range || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name)
+      const maintenance = branch.range
+        || MINOR_MAINTENANCE_BRANCH.test(branch.name) || MAINTENANCE_BRANCH.test(branch.name)
       channel = branch.prerelease || maintenance ? branch.name : 'latest'
     }
 
     // second: infer tags - the version and floating versions (1.2.3 -> 1.2, 1) plus a channel from a prev step
     // version and tags are bare (no tag format) as they are used for artifacts: S3 path, Docker image tag, etc.
-    // gitTags are the same, but with a tag format applied (v1.2.3, v1.2, v1), plus channel (if differs from branch name)
+    // gitTags are the same, but with tag format applied (v1.2.3, v1.2, v1), plus channel (if differs from branch name)
     const version = result.nextRelease.version
     const toGitTag = this.gitTagFormatter(version, result.nextRelease.gitTag)
     const tags = [version]

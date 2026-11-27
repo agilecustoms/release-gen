@@ -93,17 +93,17 @@ export class TestHelper {
     const env: NodeJS.ProcessEnv = {
       ...process.env,
 
-      // release-gen action is run from a completely different directory, so it uses GITHUB_WORKSPACE to find the actual repo that needs to be released
+      // release-gen runs from a different directory, so it uses GITHUB_WORKSPACE to find the repo to release
       // in our case the repo lays deep inside, so need to nudge release-gen to it
       GITHUB_WORKSPACE: cwd,
 
       // this makes `core.setOutput` to print to stdout instead of file
       GITHUB_OUTPUT: '',
 
-      // semantic-release doesn't look into the current (checked-out) branch, it sniffs for the current CI tool by various env vars,
-      // and then for each CI tool it has separate logic how to determine the current branch, env.GITHUB_REF for GH Actions.
+      // semantic-release doesn't look at the checked-out branch, it detects the current CI tool by various env vars,
+      // and for each CI tool it has own logic to determine the current branch: env.GITHUB_REF for GH Actions.
       // If not passed, semantic-release uses the current feature branch name, not a branch from the integration test
-      // This trick with env variable 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
+      // This trick with 'GITHUB_REF' only works for non-PR builds, see node_modules/env-ci/services/github.js
       GITHUB_REF: branch,
     }
     env['INPUT_FLOATING_TAGS'] = opts.floatingTags === false ? 'false' : 'true'

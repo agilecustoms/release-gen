@@ -16,7 +16,7 @@ const rootDir = path.resolve(__dirname, '../..')
 
 /**
  * Runs once before all integration tests:
- * 1. builds release-gen into a temp 'gh-action' dir and installs prod dependencies there (like GitHub does for an action)
+ * 1. builds release-gen into a temp 'gh-action' dir and installs prod deps there (like GitHub does for an action)
  * 2. creates a local bare 'origin' repo with branches and tags that tests release from
  */
 export default function setup(project: TestProject): () => void {
