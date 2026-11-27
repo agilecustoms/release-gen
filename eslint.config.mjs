@@ -18,6 +18,8 @@ export default [
         destructuredArrayIgnorePattern: '^_'
       }],
 
+      'preserve-caught-error': 'error', // error thrown in catch keeps the caught one as `cause`
+
       // Enforce Alphabetical Import Order and Merge Duplicate Imports
       'import-x/order': ['error', {
         alphabetize: { order: 'asc', caseInsensitive: true }
