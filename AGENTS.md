@@ -1,6 +1,6 @@
 # AGENTS.md
 
-## Changes
+## Release procedure
 
 The action is public, its only known consumer is *release*: it pins an exact version
 (`agilecustoms/release-gen@v{version}` in its `action.yml`),
